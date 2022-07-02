@@ -1,11 +1,14 @@
 package me.sandbox.item.custom;
 
+import eu.pb4.polymer.api.item.PolymerItem;
+import me.sandbox.poly.PolymerAutoItem;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -13,10 +16,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class HornOfSightItem extends Item {
+public class HornOfSightItem extends Item implements PolymerAutoItem {
 
     public HornOfSightItem(Settings settings) {
         super(settings);
@@ -60,12 +64,17 @@ public class HornOfSightItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        user.playSound(SoundRegistry.HORN_OF_SIGHT, 1.0f, 1.0f);
-            ItemStack itemStack = user.getStackInHand(hand);
-                getTargets(user).forEach(this::glow);
-                user.setCurrentHand(hand);
-                user.getItemCooldownManager().set(this, 80);
-                return TypedActionResult.consume(itemStack);
-            }
+        world.playSound(null, user.getX(), user.getEyeY(), user.getZ(), SoundRegistry.HORN_OF_SIGHT, user.getSoundCategory(), 1.0f, 1.0f);
+        ItemStack itemStack = user.getStackInHand(hand);
+        getTargets(user).forEach(this::glow);
+        user.setCurrentHand(hand);
+        user.getItemCooldownManager().set(this, 80);
+        return TypedActionResult.consume(itemStack);
     }
+
+    @Override
+    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+        return Items.GOAT_HORN;
+    }
+}
 

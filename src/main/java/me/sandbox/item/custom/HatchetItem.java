@@ -2,8 +2,10 @@ package me.sandbox.item.custom;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import eu.pb4.polymer.api.item.PolymerItem;
 import me.sandbox.entity.projectile.HatchetEntity;
 import me.sandbox.item.ItemRegistry;
+import me.sandbox.poly.PolymerAutoItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -16,7 +18,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.Vanishable;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -26,10 +30,11 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class HatchetItem
         extends Item
-        implements Vanishable {
+        implements Vanishable, PolymerAutoItem {
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
@@ -122,5 +127,10 @@ public class HatchetItem
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+        return Items.IRON_AXE;
     }
 }

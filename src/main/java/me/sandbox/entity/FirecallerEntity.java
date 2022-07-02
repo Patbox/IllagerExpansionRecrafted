@@ -2,24 +2,19 @@ package me.sandbox.entity;
 
 
 import com.chocohead.mm.api.ClassTinkerers;
-import me.sandbox.block.BlockRegistry;
-import me.sandbox.client.particle.ParticleRegistry;
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.entity.projectile.MagmaEntity;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -27,20 +22,19 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FirecallerEntity extends SpellcastingIllagerEntity
+public class FirecallerEntity extends SpellcastingIllagerEntity implements PlayerPolymerEntity
 {
     @Nullable
     private SheepEntity wololoTarget;
@@ -317,6 +311,27 @@ public class FirecallerEntity extends SpellcastingIllagerEntity
         protected SpellcastingIllagerEntity.Spell getSpell() {
             return ClassTinkerers.getEnum(Spell.class, "PROVOKE");
         }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+    @Override
+    public Property getSkin() {
+        return EntitySkins.FIRECALLER;
     }
 }
 

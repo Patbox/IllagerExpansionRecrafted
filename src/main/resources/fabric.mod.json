@@ -30,9 +30,6 @@
     ],
     "mm:early_risers": [
       "me.sandbox.EarlyRiser"
-    ],
-    "modmenu": [
-      "me.sandbox.config.ModMenu"
     ]
   },
   "mixins": [

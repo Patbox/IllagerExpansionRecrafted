@@ -2,7 +2,12 @@ package me.sandbox.entity;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.item.ItemRegistry;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -13,7 +18,6 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -31,11 +35,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.random.Random;
@@ -48,10 +53,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.function.Predicate;
 
 public class BasherEntity
-        extends IllagerEntity {
+        extends IllagerEntity implements PlayerPolymerEntity {
     public int stunTick = 60;
     public boolean isStunned = false;
     public int blockedCount;
@@ -282,5 +286,27 @@ public class BasherEntity
             }
             return super.getSquaredMaxAttackDistance(entity);
         }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.BASHER;
     }
 }

@@ -1,6 +1,11 @@
 package me.sandbox.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.api.utils.PolymerUtils;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import me.sandbox.util.spellutil.EnchantToolUtil;
 import net.minecraft.entity.*;
@@ -15,9 +20,10 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -27,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ArchivistEntity
-        extends SpellcastingIllagerEntity {
+        extends SpellcastingIllagerEntity implements PlayerPolymerEntity {
     @Nullable
     private SheepEntity wololoTarget;
     private IllagerEntity enchantTarget;
@@ -332,6 +338,28 @@ public class ArchivistEntity
         protected SpellcastingIllagerEntity.Spell getSpell() {
             return ClassTinkerers.getEnum(Spell.class, "ENCHANT");
         }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.ARCHIVIST;
     }
 }
 

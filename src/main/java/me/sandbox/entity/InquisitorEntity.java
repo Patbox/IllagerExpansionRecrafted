@@ -1,6 +1,11 @@
 package me.sandbox.entity;
 
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.item.ItemRegistry;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.*;
@@ -12,15 +17,15 @@ import net.minecraft.enchantment.Enchantment;
 import java.util.HashMap;
 
 import net.minecraft.entity.mob.*;
+import net.minecraft.network.Packet;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
-import java.util.Map;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import com.google.common.collect.Maps;
 import net.minecraft.world.*;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import java.util.function.Consumer;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -41,7 +46,6 @@ import java.util.List;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.nbt.NbtCompound;
 
-import java.util.Iterator;
 import net.minecraft.util.math.Box;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.entity.Entity;
@@ -59,7 +63,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.item.Item;
 import java.util.Set;
 
-public class InquisitorEntity extends IllagerEntity
+public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEntity
 {
     public boolean finalRoar;
     public int stunTick;
@@ -340,5 +344,27 @@ public class InquisitorEntity extends IllagerEntity
             }
             return super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
         }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.INQUISITOR;
     }
 }

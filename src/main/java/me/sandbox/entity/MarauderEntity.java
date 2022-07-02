@@ -1,8 +1,12 @@
 package me.sandbox.entity;
 
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import me.sandbox.entity.goal.HatchetAttackGoal;
 import me.sandbox.entity.projectile.HatchetEntity;
 import me.sandbox.item.ItemRegistry;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
@@ -19,6 +23,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.LocalDifficulty;
@@ -27,7 +33,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class MarauderEntity
-        extends IllagerEntity implements RangedAttackMob {
+        extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(MarauderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public MarauderEntity(EntityType<? extends MarauderEntity> entityType, World world) {
@@ -172,5 +178,27 @@ public class MarauderEntity
             return State.ATTACKING;
         }
         return State.NEUTRAL;
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.SAVAGER;
     }
 }

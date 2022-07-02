@@ -1,11 +1,18 @@
 package me.sandbox.entity;
 
+import com.mojang.authlib.properties.Property;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.api.utils.PolymerUtils;
+import me.sandbox.poly.EntitySkins;
+import me.sandbox.poly.PlayerPolymerEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.mob.VexEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.potion.Potions;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.entity.effect.StatusEffect;
@@ -53,7 +60,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.IllagerEntity;
 
-public class AlchemistEntity extends IllagerEntity implements RangedAttackMob
+public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity
 {
     private static final TrackedData<Boolean> POTION;
     private static final TrackedData<Boolean> BOW;
@@ -257,6 +264,28 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob
             return IllagerEntity.State.ATTACKING;
         }
         return IllagerEntity.State.CROSSED;
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return PolymerEntityUtils.createPlayerSpawnPacket(this);
+    }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.onTrackingStarted(player);
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.ALCHEMIST;
     }
 
     static {

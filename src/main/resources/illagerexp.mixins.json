@@ -8,13 +8,16 @@
     "IllagerModelMixin",
     "IllusionerEntityMixin",
     "MarauderPatrolMixin",
+    "PlayerEntityMixin",
     "PotionsAccessor",
     "RaidMixin",
-    "StructureTemplateMixin",
     "StructureProcessorAccessor",
+    "StructureTemplateMixin",
     "SurrenderedChargeMixin",
     "WoodlandMansionPiecesMixin",
-    "PlayerEntityMixin"
+    "poly.EntityAccessor",
+    "poly.PlayerEntityAccessor",
+    "poly.ThrownItemEntityAccessor"
   ],
   "client": [
   ],

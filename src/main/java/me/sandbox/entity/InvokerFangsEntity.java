@@ -3,6 +3,7 @@ package me.sandbox.entity;
 import java.util.List;
 import java.util.UUID;
 
+import eu.pb4.polymer.api.entity.PolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,7 +19,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class InvokerFangsEntity
-        extends Entity {
+        extends Entity implements PolymerEntity {
     public static final int field_30662 = 20;
     public static final int field_30663 = 2;
     public static final int field_30664 = 14;
@@ -163,6 +164,12 @@ public class InvokerFangsEntity
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
     }
+
+    @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.EVOKER_FANGS;
+    }
+
 }
 
 

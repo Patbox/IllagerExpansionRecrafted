@@ -1,6 +1,8 @@
 package me.sandbox.block.custom;
 
+import eu.pb4.polymer.api.block.PolymerBlock;
 import net.minecraft.block.AbstractFireBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -17,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class MagicFireBlock extends AbstractFireBlock {
+public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     public static final IntProperty AGE = Properties.AGE_15;
     public MagicFireBlock(Settings settings, float damage) {
         super(settings.nonOpaque(), 0.0f);
@@ -64,6 +66,11 @@ public class MagicFireBlock extends AbstractFireBlock {
     @Override
     protected boolean isFlammable(BlockState state) {
         return true;
+    }
+
+    @Override
+    public Block getPolymerBlock(BlockState state) {
+        return Blocks.SOUL_FIRE;
     }
 }
 

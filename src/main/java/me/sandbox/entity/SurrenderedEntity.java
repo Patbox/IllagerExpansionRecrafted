@@ -1,5 +1,7 @@
 package me.sandbox.entity;
 
+import com.mojang.datafixers.util.Pair;
+import eu.pb4.polymer.api.entity.PolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
@@ -39,8 +41,9 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.List;
 
-public class SurrenderedEntity extends SkeletonEntity {
+public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(SurrenderedEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final int CHARGING_FLAG = 1;
@@ -226,6 +229,27 @@ public class SurrenderedEntity extends SkeletonEntity {
     protected void initEquipment(Random random, LocalDifficulty difficulty) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.AIR));
         this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
+    }
+
+    @Override
+    public void modifyTrackedData(List<DataTracker.Entry<?>> data) {
+        for (int i = 0; i < data.size(); i++) {
+            var e = data.get(i);
+
+            if (e.getData() == Entity.FLAGS) {
+                data.set(i, new DataTracker.Entry<>(Entity.FLAGS, (byte) (((byte) e.get()) | 0x1 << 5)));
+            }
+        }
+    }
+
+    @Override
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
+        return List.of(new Pair<>(EquipmentSlot.HEAD, Items.SKELETON_SKULL.getDefaultStack()), new Pair<>(EquipmentSlot.CHEST, Items.CHAINMAIL_CHESTPLATE.getDefaultStack()));
+    }
+
+    @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.STRAY;
     }
 
     class VexMoveControl

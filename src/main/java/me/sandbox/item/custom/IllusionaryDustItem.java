@@ -1,12 +1,16 @@
 package me.sandbox.item.custom;
 
+import eu.pb4.polymer.api.item.SimplePolymerItem;
+import me.sandbox.poly.PolymerAutoItem;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -14,9 +18,10 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 
-public class IllusionaryDustItem extends Item {
+public class IllusionaryDustItem extends Item implements PolymerAutoItem {
     public IllusionaryDustItem(Settings settings) { super(settings); }
 
     @Override
@@ -36,5 +41,10 @@ public class IllusionaryDustItem extends Item {
             }
         }
         return TypedActionResult.success(itemStack);
+    }
+
+    @Override
+    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+        return Items.GLOWSTONE_DUST;
     }
 }

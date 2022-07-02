@@ -1,5 +1,7 @@
 package me.sandbox.block.custom;
 
+import eu.pb4.polymer.api.block.PolymerHeadBlock;
+import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.gui.ImbuingTableScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -19,7 +21,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class ImbuingTableBlock extends Block {
+public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     private static final Text TITLE = Text.literal("Imbue");
 
     public ImbuingTableBlock(Settings settings) {
@@ -71,5 +73,15 @@ public class ImbuingTableBlock extends Block {
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
         world.createAndScheduleBlockTick(pos, this, 5);
+    }
+
+    @Override
+    public String getPolymerSkinValue(BlockState state) {
+        return PolymerUtils.NO_TEXTURE_HEAD_VALUE;
+    }
+
+    @Override
+    public Block getPolymerBlock(BlockState state) {
+        return Blocks.PLAYER_HEAD;
     }
 }

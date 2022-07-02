@@ -1,7 +1,9 @@
 package me.sandbox.entity.projectile;
 
+import eu.pb4.polymer.api.entity.PolymerEntity;
 import me.sandbox.entity.EntityRegistry;
 import me.sandbox.item.ItemRegistry;
+import me.sandbox.mixin.poly.ThrownItemEntityAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -13,6 +15,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -27,8 +30,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class HatchetEntity
-        extends PersistentProjectileEntity implements FlyingItemEntity {
+        extends PersistentProjectileEntity implements FlyingItemEntity, PolymerEntity {
     private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(HatchetEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private ItemStack hatchetStack = new ItemStack(ItemRegistry.HATCHET);
     private boolean dealtDamage;
@@ -161,5 +166,20 @@ public class HatchetEntity
             return age;
         }
         return 1.0f;
+    }
+
+    @Override
+    public void modifyTrackedData(List<DataTracker.Entry<?>> data) {
+        data.add(new DataTracker.Entry<>(ThrownItemEntityAccessor.getITEM(), this.hatchetStack.copy()));
+    }
+
+    @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.SNOWBALL;
+    }
+
+    @Override
+    public Vec3d getSyncedPos() {
+        return super.getSyncedPos().add(0, 0.1, 0);
     }
 }

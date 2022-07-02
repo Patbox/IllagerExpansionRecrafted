@@ -1,6 +1,7 @@
 package me.sandbox.entity.projectile;
 
 
+import eu.pb4.polymer.api.entity.PolymerEntity;
 import me.sandbox.entity.EntityRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -20,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class MagmaEntity
-        extends ExplosiveProjectileEntity {
+        extends ExplosiveProjectileEntity implements PolymerEntity {
 
     public MagmaEntity(EntityType<? extends MagmaEntity> entityType, World world) {
         super((EntityType<? extends ExplosiveProjectileEntity>)entityType, world);
@@ -87,6 +88,11 @@ public class MagmaEntity
     @Override
     protected boolean isBurning() {
         return false;
+    }
+
+    @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.FIREBALL;
     }
 }
 

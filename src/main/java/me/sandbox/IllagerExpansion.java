@@ -7,6 +7,7 @@ import me.sandbox.entity.EntityRegistry;
 import me.sandbox.gui.ModdedScreenHandler;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.item.potion.PotionRegistry;
+import me.sandbox.poly.PolymerModels;
 import me.sandbox.sounds.SoundRegistry;
 import me.sandbox.world.ProcessorRegistry;
 import me.sandbox.world.features.StructureRegistry;
@@ -20,6 +21,8 @@ public class IllagerExpansion implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        PolymerModels.setup();
+
         IllagerExpansionConfig.registerConfig();
         ItemRegistry.registerModItems();
         BlockRegistry.registerModBlocks();
