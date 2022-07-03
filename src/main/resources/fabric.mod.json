@@ -25,9 +25,6 @@
     "main": [
       "me.sandbox.IllagerExpansion"
     ],
-    "client": [
-      "me.sandbox.client.ClientRegistry"
-    ],
     "mm:early_risers": [
       "me.sandbox.EarlyRiser"
     ]

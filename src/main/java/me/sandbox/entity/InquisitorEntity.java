@@ -6,6 +6,7 @@ import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
+import me.sandbox.poly.Stunnable;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.*;
@@ -63,7 +64,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.item.Item;
 import java.util.Set;
 
-public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEntity
+public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEntity, Stunnable
 {
     public boolean finalRoar;
     public int stunTick;

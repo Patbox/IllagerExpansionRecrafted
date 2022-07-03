@@ -1,16 +1,14 @@
 package me.sandbox.block.custom;
 
 import eu.pb4.polymer.api.block.PolymerHeadBlock;
-import eu.pb4.polymer.api.utils.PolymerUtils;
-import me.sandbox.gui.ImbuingTableScreenHandler;
+import me.sandbox.gui.ImbuingTableGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -19,7 +17,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     private static final Text TITLE = Text.literal("Imbue");
@@ -35,7 +32,7 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (canActivate(pos, world)) {
-            player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+            new ImbuingTableGui((ServerPlayerEntity) player);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
@@ -57,15 +54,11 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
         private boolean goodBlock(Block block) {
             return block == Blocks.COPPER_BLOCK || block == Blocks.CUT_COPPER || block == Blocks.WAXED_COPPER_BLOCK || block == Blocks.WAXED_CUT_COPPER;
         }
-    @Override
-    @Nullable
-    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new ImbuingTableScreenHandler(syncId, inventory), TITLE);
-    }
+
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (canActivate(pos, world)) {
-            world.spawnParticles(ParticleTypes.ENCHANT, pos.getX(), pos.getY()+0.8, pos.getZ(), 3, 0.7D, 0.3D, 0.7D, 0.05);
+            world.spawnParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY()+0.8, pos.getZ() + 0.5, 3, 0.7D, 0.3D, 0.7D, 0.05);
         }
         world.createAndScheduleBlockTick(pos, this, 5);
     }
@@ -77,7 +70,7 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
 
     @Override
     public String getPolymerSkinValue(BlockState state) {
-        return PolymerUtils.NO_TEXTURE_HEAD_VALUE;
+        return "ewogICJ0aW1lc3RhbXAiIDogMTY1NjgyODY5NjAzMiwKICAicHJvZmlsZUlkIiA6ICIxNzU1N2FjNTEzMWE0YTUzODAwODg3Y2E4ZTQ4YWQyNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJQZW50YXRpbCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9hYzE4YjFiN2NlM2Y3YmNiZmUxM2UzZWY5NTY1NTk5OWQ5MWY3OTNjMDFmYWFlOTI0ZDI3ZjlmZTY0NjA5MjAxIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0";
     }
 
     @Override

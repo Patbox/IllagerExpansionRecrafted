@@ -1,5 +1,9 @@
 package me.sandbox.block;
 
+import eu.pb4.polymer.api.block.PolymerBlock;
+import eu.pb4.polymer.api.block.PolymerHeadBlock;
+import eu.pb4.polymer.api.item.PolymerBlockItem;
+import eu.pb4.polymer.api.item.PolymerHeadBlockItem;
 import me.sandbox.IllagerExpansion;
 import me.sandbox.block.custom.ImbuingTableBlock;
 import me.sandbox.block.custom.MagicFireBlock;
@@ -12,11 +16,14 @@ import net.minecraft.block.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 public class BlockRegistry {
 
@@ -35,8 +42,13 @@ public class BlockRegistry {
     }
 
     private static Item registerBlockItem(String name, Block block, ItemGroup group) {
-        return Registry.register(Registry.ITEM, new Identifier(IllagerExpansion.MOD_ID, name),
-                new BlockItem(block, new FabricItemSettings().group(group)));
+        if (block instanceof PolymerHeadBlock) {
+            return Registry.register(Registry.ITEM, new Identifier(IllagerExpansion.MOD_ID, name),
+                    new PolymerHeadBlockItem((PolymerHeadBlock) block, new FabricItemSettings().group(group)));
+        } else {
+            return Registry.register(Registry.ITEM, new Identifier(IllagerExpansion.MOD_ID, name),
+                    new PolymerBlockItem(block, new FabricItemSettings().group(group), Items.STRUCTURE_VOID));
+        }
     }
 
     public static void registerModBlocks() {

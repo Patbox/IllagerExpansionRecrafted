@@ -8,6 +8,7 @@ import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
+import me.sandbox.poly.Stunnable;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -55,7 +56,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class BasherEntity
-        extends IllagerEntity implements PlayerPolymerEntity {
+        extends IllagerEntity implements PlayerPolymerEntity, Stunnable {
     public int stunTick = 60;
     public boolean isStunned = false;
     public int blockedCount;

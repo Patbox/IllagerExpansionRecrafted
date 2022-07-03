@@ -3,7 +3,6 @@ package me.sandbox.entity;
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import me.sandbox.client.particle.ParticleRegistry;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
@@ -267,7 +266,7 @@ public class SorcererEntity
             offenseSpell = false;
             target.damage(DamageSource.MAGIC, 3.0f);
             if (world instanceof ServerWorld) {
-                ((ServerWorld) world).spawnParticles(ParticleRegistry.MAGIC_FLAME, target.getX(), target.getY()+1, target.getZ(), 30, 0.3D, 0.5D, 0.3D, 0.08D);
+                ((ServerWorld) world).spawnParticles(ParticleTypes.FLAME, target.getX(), target.getY()+1, target.getZ(), 30, 0.3D, 0.5D, 0.3D, 0.08D);
             }
         }
 

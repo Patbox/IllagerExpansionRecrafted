@@ -2,6 +2,7 @@ package me.sandbox.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
+import com.mojang.datafixers.util.Pair;
 import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.poly.EntitySkins;
@@ -20,6 +21,8 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
@@ -360,6 +363,13 @@ public class ArchivistEntity
     @Override
     public Property getSkin() {
         return EntitySkins.ARCHIVIST;
+    }
+
+    @Override
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
+        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
+        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.WRITTEN_BOOK.getDefaultStack()));
+        return items;
     }
 }
 

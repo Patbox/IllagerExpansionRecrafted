@@ -3,8 +3,8 @@ package me.sandbox.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
+import com.mojang.datafixers.util.Pair;
 import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.entity.projectile.MagmaEntity;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
@@ -21,18 +21,24 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 public class FirecallerEntity extends SpellcastingIllagerEntity implements PlayerPolymerEntity
 {
@@ -332,6 +338,13 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
     @Override
     public Property getSkin() {
         return EntitySkins.FIRECALLER;
+    }
+
+    @Override
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
+        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
+        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.STICK.getDefaultStack()));
+        return items;
     }
 }
 

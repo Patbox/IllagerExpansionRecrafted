@@ -1,0 +1,20 @@
+{
+    "providers": [
+        {
+            "type": "space",
+            "advances": {
+                ".": -170,
+                "-": -8
+            }
+        },
+        {
+            "type": "bitmap",
+            "file": "illagerexp:gui/imbue_table.png",
+            "ascent": 13,
+            "height": 256,
+            "chars": [
+                "0"
+            ]
+        }
+    ]
+}

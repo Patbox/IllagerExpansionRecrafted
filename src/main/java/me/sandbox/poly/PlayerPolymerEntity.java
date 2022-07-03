@@ -10,13 +10,20 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface PlayerPolymerEntity extends PolymerEntity {
@@ -48,6 +55,25 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     default void onTrackingStopped(ServerPlayerEntity player) {
         player.networkHandler.sendPacket(this.createRemoveFromList());
     }
+
+    default void onEntityTrackerTick(Set<EntityTrackingListener> listeners) {
+        var e = (IllagerEntity) this;
+        if (e.getState() == IllagerEntity.State.SPELLCASTING) {
+                var packet = new EntityAnimationS2CPacket(e, e.getRandom().nextBoolean() ? 0 : 3);
+
+                for (var p : listeners) {
+                    p.sendPacket(packet);
+                }
+        } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
+            var packet = new ParticleS2CPacket(ParticleTypes.AMBIENT_ENTITY_EFFECT, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
+
+            for (var p : listeners) {
+                p.sendPacket(packet);
+            }
+        }
+
+    }
+
 
     @Override
     default EntityType<?> getPolymerEntityType() {

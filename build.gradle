@@ -1,10 +1,13 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
+archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
+
 
 repositories {
 
@@ -15,63 +18,81 @@ repositories {
     maven { url "https://maven.nucleoid.xyz" }
 }
 
-    loom {
-        accessWidenerPath = file("src/main/resources/illagerexp.accesswidener")
+loom {
+    accessWidenerPath = file("src/main/resources/illagerexp.accesswidener")
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    //Fabric ASM
+    modImplementation 'com.github.chocohead:fabric-asm:v2.3'
+    include 'com.github.chocohead:fabric-asm:v2.3'
+
+    //Cloth API
+    modApi("me.shedaniel.cloth:cloth-config-fabric:7.0.72") {
+        exclude(group: "net.fabricmc.fabric-api")
     }
+    include 'me.shedaniel.cloth:cloth-config-fabric:7.0.72'
 
-    dependencies {
-        // To change the versions see the gradle.properties file
-        minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modCompileOnly modRuntimeOnly("eu.pb4.polyport:trinkets:3.4.0+polymerport.0")
 
-        //Fabric ASM
-        modImplementation 'com.github.chocohead:fabric-asm:v2.3'
-        include 'com.github.chocohead:fabric-asm:v2.3'
+    modImplementation include("eu.pb4:polymer:0.2.3+1.19")
+    modImplementation include("fr.catcore:server-translations-api:1.4.16+1.19")
+}
 
-        //Cloth API
-        modApi("me.shedaniel.cloth:cloth-config-fabric:7.0.72") {
-            exclude(group: "net.fabricmc.fabric-api")
-        }
-        include 'me.shedaniel.cloth:cloth-config-fabric:7.0.72'
+processResources {
+    inputs.property "version", project.version
 
-        modCompileOnly modRuntimeOnly("eu.pb4.polyport:trinkets:3.4.0+polymerport.0")
-
-        modImplementation include("eu.pb4:polymer:0.2.3+1.19")
-        modImplementation include("fr.catcore:server-translations-api:1.4.16+1.19")
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
+}
 
-    processResources {
-        inputs.property "version", project.version
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
 
-        filesMatching("fabric.mod.json") {
-            expand "version": project.version
-        }
+java {
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
     }
+}
 
-    tasks.withType(JavaCompile).configureEach {
-        it.options.release = 17
-    }
-
-    java {
-        withSourcesJar()
-    }
-
-    jar {
-        from("LICENSE") {
-            rename { "${it}_${project.archivesBaseName}" }
-        }
-    }
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-            }
-        }
-
-        repositories {
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
         }
     }
+
+    repositories {
+    }
+}
+
+
+if (System.getenv("MODRINTH")) {
+    modrinth {
+        token = System.getenv("MODRINTH")
+        projectId = 'zkp424MG'// The ID of your modrinth project, slugs will not work.
+        versionNumber = "" + version // The version of the mod to upload.
+        versionType = "beta"
+        uploadFile = remapJar // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
+        gameVersions = [((String) project.minecraft_version)]
+        changelog = System.getenv("CHANGELOG")
+        loaders = ["fabric", "quilt"]
+    }
+
+    remapJar {
+        finalizedBy project.tasks.modrinth
+    }
+}
 
