@@ -76,7 +76,7 @@ public class MagmaEntity
     }
 
     @Override
-    public boolean collides() {
+    public boolean isCollidable() {
         return false;
     }
 

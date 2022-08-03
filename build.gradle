@@ -4,8 +4,8 @@ plugins {
     id "com.modrinth.minotaur" version "2.+"
 }
 
-archivesBaseName = project.archives_base_name + "+polymerport." + project.polyport_version
-version = project.mod_version
+archivesBaseName = project.archives_base_name
+version = project.mod_version + "+polymerport." + project.polyport_version
 group = project.maven_group
 
 
@@ -41,7 +41,7 @@ dependencies {
 
     modCompileOnly modRuntimeOnly("eu.pb4.polyport:trinkets:3.4.0+polymerport.0")
 
-    modImplementation include("eu.pb4:polymer:0.2.3+1.19")
+    modImplementation include("eu.pb4:polymer:0.2.10+1.19.1")
     modImplementation include("fr.catcore:server-translations-api:1.4.16+1.19")
 }
 

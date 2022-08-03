@@ -144,9 +144,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
 
     private void cancelEffect(final AreaEffectCloudEntity areaEffectCloudEntity, final LivingEntity entity) {
         final Potion potion = areaEffectCloudEntity.getPotion();
-        final StatusEffectInstance statusEffectInstance = potion.getEffects().get(0);
-        final StatusEffect statusEffect = statusEffectInstance.getEffectType();
         if (potion.getEffects().size() > 0) {
+            final StatusEffectInstance statusEffectInstance = potion.getEffects().get(0);
+            final StatusEffect statusEffect = statusEffectInstance.getEffectType();
             entity.removeStatusEffect(statusEffect);
         }
     }
