@@ -1,9 +1,10 @@
 package me.sandbox.poly;
 
-import eu.pb4.polymer.api.item.PolymerItem;
-import eu.pb4.polymer.api.resourcepack.PolymerArmorModel;
-import eu.pb4.polymer.api.resourcepack.PolymerModelData;
-import eu.pb4.polymer.api.resourcepack.PolymerRPUtils;
+
+import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.resourcepack.api.PolymerArmorModel;
+import eu.pb4.polymer.resourcepack.api.PolymerModelData;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import me.sandbox.IllagerExpansion;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
@@ -16,49 +17,49 @@ public class PolymerArmorItem extends ArmorItem implements PolymerItem {
     private final Item polymerItemBase;
     private final PolymerArmorModel armorModel;
 
-    public PolymerArmorItem(ArmorMaterial material, EquipmentSlot slot, Settings settings) {
+    public PolymerArmorItem(ArmorMaterial material, Type slot, Settings settings) {
         super(material, slot, settings);
         this.polymerItemBase = switch (slot) {
-            case HEAD -> Items.NETHERITE_HELMET;
-            case CHEST -> Items.NETHERITE_CHESTPLATE;
-            case LEGS -> Items.NETHERITE_LEGGINGS;
-            case FEET -> Items.NETHERITE_BOOTS;
+            case HELMET -> Items.NETHERITE_HELMET;
+            case CHESTPLATE -> Items.NETHERITE_CHESTPLATE;
+            case LEGGINGS -> Items.NETHERITE_LEGGINGS;
+            case BOOTS -> Items.NETHERITE_BOOTS;
             default -> Items.STICK;
         };
 
         var item = switch (slot) {
-            case HEAD -> Items.LEATHER_HELMET;
-            case CHEST -> Items.LEATHER_CHESTPLATE;
-            case LEGS -> Items.LEATHER_LEGGINGS;
-            case FEET -> Items.LEATHER_BOOTS;
+            case HELMET -> Items.LEATHER_HELMET;
+            case CHESTPLATE -> Items.LEATHER_CHESTPLATE;
+            case LEGGINGS -> Items.LEATHER_LEGGINGS;
+            case BOOTS -> Items.LEATHER_BOOTS;
             default -> Items.STICK;
         };
 
-        this.polymerTextured = PolymerRPUtils.requestModel(item,
+        this.polymerTextured = PolymerResourcePackUtils.requestModel(item,
                 new Identifier(IllagerExpansion.MOD_ID, "item/" + material.getName() + "_" + (switch (slot) {
-                    case HEAD -> "helmet";
-                    case CHEST -> "chestplate";
-                    case LEGS -> "leggings";
-                    case FEET -> "boots";
+                    case HELMET -> "helmet";
+                    case CHESTPLATE -> "chestplate";
+                    case LEGGINGS -> "leggings";
+                    case BOOTS -> "boots";
                     default -> "";
                 })
                 ));
 
-        this.armorModel = PolymerRPUtils.requestArmor(new Identifier(material.getName()));
+        this.armorModel = PolymerResourcePackUtils.requestArmor(new Identifier(material.getName()));
     }
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return PolymerRPUtils.hasPack(player) ? this.polymerTextured.item() : this.polymerItemBase;
+        return PolymerResourcePackUtils.hasMainPack(player) ? this.polymerTextured.item() : this.polymerItemBase;
     }
 
     @Override
     public int getPolymerCustomModelData(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return PolymerRPUtils.hasPack(player) ? this.polymerTextured.value() : -1;
+        return PolymerResourcePackUtils.hasMainPack(player) ? this.polymerTextured.value() : -1;
     }
 
     @Override
     public int getPolymerArmorColor(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return PolymerRPUtils.hasPack(player) ? this.armorModel.value() : -1;
+        return PolymerResourcePackUtils.hasMainPack(player) ? this.armorModel.color() : -1;
     }
 }

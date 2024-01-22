@@ -1,7 +1,6 @@
 package me.sandbox.gui;
 
-import dev.emi.trinkets.TrinketsMain;
-import eu.pb4.polymer.api.resourcepack.PolymerRPUtils;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import me.sandbox.IllagerExpansion;
@@ -38,9 +37,9 @@ public class ImbuingTableGui extends SimpleGui {
     };
 
     public ImbuingTableGui(ServerPlayerEntity player) {
-        super(PolymerRPUtils.hasPack(player) ? ScreenHandlerType.GENERIC_9X3 : ScreenHandlerType.GENERIC_9X4, player, false);
+        super(PolymerResourcePackUtils.hasMainPack(player) ? ScreenHandlerType.GENERIC_9X3 : ScreenHandlerType.GENERIC_9X4, player, false);
 
-        this.setTitle(PolymerRPUtils.hasPack(player)
+        this.setTitle(PolymerResourcePackUtils.hasMainPack(player)
                 ? Text.empty().append(Text.literal("-0.")
                         .setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFont(new Identifier(IllagerExpansion.MOD_ID, "gui"))))
                 .append(Text.literal("Imbue"))
@@ -79,11 +78,11 @@ public class ImbuingTableGui extends SimpleGui {
                 input.setStack(0, ItemStack.EMPTY);
                 input.setStack(1, ItemStack.EMPTY);
                 input.getStack(2).increment(-1);
-                playerEntity.world.playSound(null, player.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundRegistry.SORCERER_COMPLETE_CAST, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                playerEntity.getWorld().playSound(null, player.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundRegistry.SORCERER_COMPLETE_CAST, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
         });
 
-        if (!PolymerRPUtils.hasPack(player)) {
+        if (!PolymerResourcePackUtils.hasMainPack(player)) {
             this.setSlot(27 + 1, new GuiElementBuilder(Items.BOOK).setName(Text.empty()));
             this.setSlot(27 + 4, new GuiElementBuilder(Items.STICK).setName(Text.empty()));
             this.setSlot(27 + 7, new GuiElementBuilder(Items.EMERALD).setName(Text.empty()));
@@ -125,8 +124,6 @@ public class ImbuingTableGui extends SimpleGui {
                     //bigBook = true;
                 } else if (ImbueUtil.getBadEnchants().contains(bookEnchantment.getTranslationKey())) {
                     //badEnchant = true;
-                } else if (bookmap.getOrDefault(bookEnchantment, 0) != bookEnchantment.getMaxLevel()) {
-                    //lowEnchant = true;
                 } else if (!bookEnchantment.isAcceptableItem(imbuingItem)) {
                     //badItem = true;
                 } else {

@@ -1,6 +1,5 @@
 package me.sandbox.item.custom;
 
-import eu.pb4.polymer.api.item.PolymerItem;
 import me.sandbox.poly.PolymerAutoItem;
 import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;

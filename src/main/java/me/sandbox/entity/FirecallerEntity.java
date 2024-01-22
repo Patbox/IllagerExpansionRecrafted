@@ -4,7 +4,6 @@ package me.sandbox.entity;
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import me.sandbox.entity.projectile.MagmaEntity;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
@@ -24,24 +23,18 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 
-public class FirecallerEntity extends SpellcastingIllagerEntity implements PlayerPolymerEntity
-{
+public class FirecallerEntity extends SpellcastingIllagerEntity implements PlayerPolymerEntity {
     @Nullable
     private SheepEntity wololoTarget;
     private int cooldown = 160;
@@ -51,22 +44,23 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
     public FirecallerEntity(final EntityType<? extends FirecallerEntity> entityType, final World world) {
         super(entityType, world);
         this.experiencePoints = 15;
+        this.onCreated(this);
     }
 
     protected void initGoals() {
         super.initGoals();
-        this.goalSelector.add(0, new SwimGoal((MobEntity)this));
+        this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new LookAtTargetOrWololoTarget());
         this.goalSelector.add(4, new ConjureSkullGoal());
         this.goalSelector.add(3, new AreaDamageGoal());
         this.goalSelector.add(5, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 0.6, 1.0));
-        this.goalSelector.add(8, new WanderAroundGoal((PathAwareEntity)this, 0.6));
+        this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, false));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
 
     }
 
@@ -116,9 +110,9 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
             return true;
         }
         if (other instanceof VexEntity) {
-            return this.isTeammate((Entity)((VexEntity)other).getOwner());
+            return this.isTeammate(((VexEntity) other).getOwner());
         }
-        return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
+        return other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
     }
 
     protected SoundEvent getAmbientSound() {
@@ -152,6 +146,24 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         return IllagerEntity.State.CROSSED;
     }
 
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.FIRECALLER;
+    }
+
+    @Override
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
+        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.STICK.getDefaultStack()));
+        return items;
+    }
+
     class LookAtTargetOrWololoTarget
             extends SpellcastingIllagerEntity.LookAtTargetGoal {
 
@@ -168,7 +180,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
     public class ConjureSkullGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(5), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(5), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
         }
 
         @Override
@@ -189,38 +201,38 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
 
         @Override
         public void tick() {
-            if (world instanceof ServerWorld) {
-                ((ServerWorld) world).spawnParticles(ParticleTypes.FLAME, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
-                ((ServerWorld) world).spawnParticles(ParticleTypes.LARGE_SMOKE, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
+            if (getWorld() instanceof ServerWorld world) {
+                world.spawnParticles(ParticleTypes.FLAME, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
+                world.spawnParticles(ParticleTypes.LARGE_SMOKE, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
             }
             super.tick();
         }
 
         private void shootSkullAt(LivingEntity target) {
-            this.shootSkullAt(target.getX(), target.getY() + (double)target.getStandingEyeHeight() * 0.5, target.getZ());
+            this.shootSkullAt(target.getX(), target.getY() + (double) target.getStandingEyeHeight() * 0.5, target.getZ());
         }
 
         private void shootSkullAt(double targetX, double targetY, double targetZ) {
             double d = FirecallerEntity.this.getX();
-            double e = FirecallerEntity.this.getY()+2.5;
+            double e = FirecallerEntity.this.getY() + 2.5;
             double f = FirecallerEntity.this.getZ();
             double g = targetX - d;
             double h = targetY - e;
             double i = targetZ - f;
-            MagmaEntity Magma = new MagmaEntity(FirecallerEntity.this.world, FirecallerEntity.this, g, h, i);
+            MagmaEntity Magma = new MagmaEntity(FirecallerEntity.this.getWorld(), FirecallerEntity.this, g, h, i);
             Magma.setOwner(FirecallerEntity.this);
             Magma.setPos(d, e, f);
-            FirecallerEntity.this.world.spawnEntity(Magma);
+            FirecallerEntity.this.getWorld().spawnEntity(Magma);
         }
 
         @Override
         protected void castSpell() {
             this.shootSkullAt(FirecallerEntity.this.getTarget());
-            if (world instanceof ServerWorld) {
+            if (getWorld() instanceof ServerWorld) {
                 double x = FirecallerEntity.this.getX();
-                double y = FirecallerEntity.this.getY()+2.5;
+                double y = FirecallerEntity.this.getY() + 2.5;
                 double z = FirecallerEntity.this.getZ();
-                ((ServerWorld) world).spawnParticles(ParticleTypes.SMOKE, x, y, z, 40, 0.4D, 0.4D, 0.4D, 0.15D);
+                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 40, 0.4D, 0.4D, 0.4D, 0.15D);
             }
             FirecallerEntity.this.cooldown = 160;
         }
@@ -250,6 +262,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
             return Spell.WOLOLO;
         }
     }
+
     public class AreaDamageGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
 
@@ -261,13 +274,11 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
             if (FirecallerEntity.this.isSpellcasting()) {
                 return false;
             }
-            if (FirecallerEntity.this.aoecooldown <= 0) {
-                return true;
-            }
-            return false;
+            return FirecallerEntity.this.aoecooldown <= 0;
         }
+
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
         }
 
 
@@ -275,16 +286,17 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         public void stop() {
             super.stop();
         }
+
         private void buff(LivingEntity entity) {
             entity.addVelocity(0.0f, 1.2f, 0.0f);
-            entity.damage(DamageSource.MAGIC, 6.0f);
+            entity.damage(getDamageSources().magic(), 6.0f);
             entity.setFireTicks(120);
             double x = entity.getX();
-            double y = entity.getY()+1;
+            double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.SMOKE,x, y+1,z,10,0.2D, 0.2D,0.2D,0.015D);
+            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
             BlockPos blockPos = entity.getBlockPos();
-            FirecallerEntity.this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+            FirecallerEntity.this.getWorld().setBlockState(blockPos, Blocks.FIRE.getDefaultState());
         }
 
         @Override
@@ -315,36 +327,8 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
 
         @Override
         protected SpellcastingIllagerEntity.Spell getSpell() {
-            return ClassTinkerers.getEnum(Spell.class, "PROVOKE");
+            return ClassTinkerers.getEnum(Spell.class, "IE_PROVOKE");
         }
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
-
-    @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        this.onStartedTrackingBy(player);
-        this.onTrackingStopped(player);
-    }
-    @Override
-    public Property getSkin() {
-        return EntitySkins.FIRECALLER;
-    }
-
-    @Override
-    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
-        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
-        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.STICK.getDefaultStack()));
-        return items;
     }
 }
 

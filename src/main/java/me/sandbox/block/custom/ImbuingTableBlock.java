@@ -1,6 +1,6 @@
 package me.sandbox.block.custom;
 
-import eu.pb4.polymer.api.block.PolymerHeadBlock;
+import eu.pb4.polymer.core.api.block.PolymerHeadBlock;
 import me.sandbox.gui.ImbuingTableGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -60,16 +60,16 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
         if (canActivate(pos, world)) {
             world.spawnParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY()+0.8, pos.getZ() + 0.5, 3, 0.7D, 0.3D, 0.7D, 0.05);
         }
-        world.createAndScheduleBlockTick(pos, this, 5);
+        world.scheduleBlockTick(pos, this, 5);
     }
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        world.createAndScheduleBlockTick(pos, this, 5);
+        world.scheduleBlockTick(pos, this, 5);
     }
 
     @Override
-    public String getPolymerSkinValue(BlockState state) {
+    public String getPolymerSkinValue(BlockState state, BlockPos pos, ServerPlayerEntity player) {
         return "ewogICJ0aW1lc3RhbXAiIDogMTY1NjgyODY5NjAzMiwKICAicHJvZmlsZUlkIiA6ICIxNzU1N2FjNTEzMWE0YTUzODAwODg3Y2E4ZTQ4YWQyNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJQZW50YXRpbCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9hYzE4YjFiN2NlM2Y3YmNiZmUxM2UzZWY5NTY1NTk5OWQ5MWY3OTNjMDFmYWFlOTI0ZDI3ZjlmZTY0NjA5MjAxIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0";
     }
 

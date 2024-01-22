@@ -2,7 +2,6 @@ package me.sandbox.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
@@ -25,26 +24,28 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.*;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ProvokerEntity
-        extends SpellcastingIllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
+public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
     @Nullable
     private SheepEntity wololoTarget;
     private int cooldown;
+    private AttributeContainer attributeContainer;
 
     public ProvokerEntity(EntityType<? extends ProvokerEntity> entityType, World world) {
-        super((EntityType<? extends SpellcastingIllagerEntity>)entityType, world);
+        super(entityType, world);
         this.experiencePoints = 10;
+        this.onCreated(this);
     }
 
     @Override
@@ -57,38 +58,36 @@ public class ProvokerEntity
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, false));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
     }
-    private AttributeContainer attributeContainer;
+
     @Override
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D)
-                    .build());
+            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0D).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D).build());
         }
         return attributeContainer;
     }
+
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
     @Override
-    public void attack(LivingEntity target, float pullProgress) {
-        ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
+    public void shootAt(LivingEntity target, float pullProgress) {
+        ItemStack itemStack = this.getProjectileType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         double f = target.getZ() - this.getZ();
         double g = Math.sqrt(d * d + f * f);
-        persistentProjectileEntity.setVelocity(d, e + g * (double)0.2f, f, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
+        persistentProjectileEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.6f, 14 - this.getWorld().getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.world.spawnEntity(persistentProjectileEntity);
+        this.getWorld().spawnEntity(persistentProjectileEntity);
     }
 
     @Override
@@ -129,9 +128,9 @@ public class ProvokerEntity
             return true;
         }
         if (other instanceof VexEntity) {
-            return this.isTeammate(((VexEntity)other).getOwner());
+            return this.isTeammate(((VexEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
@@ -152,13 +151,12 @@ public class ProvokerEntity
         return SoundRegistry.PROVOKER_HURT;
     }
 
-    void setWololoTarget(@Nullable SheepEntity sheep) {
-        this.wololoTarget = sheep;
+    @Nullable SheepEntity getWololoTarget() {
+        return this.wololoTarget;
     }
 
-    @Nullable
-    SheepEntity getWololoTarget() {
-        return this.wololoTarget;
+    void setWololoTarget(@Nullable SheepEntity sheep) {
+        this.wololoTarget = sheep;
     }
 
     @Override
@@ -169,6 +167,7 @@ public class ProvokerEntity
     @Override
     public void addBonusForWave(int wave, boolean unused) {
     }
+
     @Override
     public IllagerEntity.State getState() {
         if (this.isSpellcasting()) {
@@ -180,8 +179,18 @@ public class ProvokerEntity
         return IllagerEntity.State.CROSSED;
     }
 
-    class LookAtTargetOrWololoTarget
-            extends SpellcastingIllagerEntity.LookAtTargetGoal {
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
+
+    @Override
+    public Property getSkin() {
+        return EntitySkins.PROVOKER;
+    }
+
+    class LookAtTargetOrWololoTarget extends SpellcastingIllagerEntity.LookAtTargetGoal {
 
         @Override
         public void tick() {
@@ -193,35 +202,32 @@ public class ProvokerEntity
         }
     }
 
-
-    public class BuffAllyGoal
-            extends SpellcastingIllagerEntity.CastSpellGoal {
+    public class BuffAllyGoal extends SpellcastingIllagerEntity.CastSpellGoal {
 
         @Override
         public boolean canStart() {
             if (ProvokerEntity.this.getTarget() == null) {
                 return false;
             }
-            if (ProvokerEntity.this.cooldown < 0) {
-                return true;
-            }
-            return false;
+            return ProvokerEntity.this.cooldown < 0;
         }
+
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(12), entity ->  (entity instanceof IllagerEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(12), entity -> (entity instanceof IllagerEntity));
         }
 
         @Override
         public void stop() {
             super.stop();
         }
+
         private void buff(LivingEntity entity) {
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 120, 0));
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 120, 0));
             double x = entity.getX();
-            double y = entity.getY()+1;
+            double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.ANGRY_VILLAGER,x, y,z,10,0.4D, 0.4D,0.4D,0.15D);
+            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER, x, y, z, 10, 0.4D, 0.4D, 0.4D, 0.15D);
 
         }
 
@@ -229,7 +235,7 @@ public class ProvokerEntity
         protected void castSpell() {
             ProvokerEntity.this.cooldown = 300;
             getTargets().forEach(this::buff);
-            }
+        }
 
         @Override
         protected int getInitialCooldown() {
@@ -253,29 +259,7 @@ public class ProvokerEntity
 
         @Override
         protected SpellcastingIllagerEntity.Spell getSpell() {
-            return ClassTinkerers.getEnum(Spell.class, "PROVOKE");
+            return ClassTinkerers.getEnum(Spell.class, "IE_PROVOKE");
         }
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
-
-    @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        this.onStartedTrackingBy(player);
-        this.onTrackingStopped(player);
-    }
-
-    @Override
-    public Property getSkin() {
-        return EntitySkins.PROVOKER;
     }
 }

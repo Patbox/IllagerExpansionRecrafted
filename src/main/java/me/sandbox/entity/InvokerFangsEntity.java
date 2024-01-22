@@ -3,26 +3,22 @@ package me.sandbox.entity;
 import java.util.List;
 import java.util.UUID;
 
-import eu.pb4.polymer.api.entity.PolymerEntity;
+import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class InvokerFangsEntity
         extends Entity implements PolymerEntity {
-    public static final int field_30662 = 20;
-    public static final int field_30663 = 2;
-    public static final int field_30664 = 14;
     private int warmup;
     private boolean startedAttack;
     private int ticksLeft = 22;
@@ -37,7 +33,7 @@ public class InvokerFangsEntity
     }
 
     public InvokerFangsEntity(World world, double x, double y, double z, float yaw, int warmup, LivingEntity owner) {
-        this((EntityType<? extends InvokerFangsEntity>)EntityRegistry.INVOKER_FANGS, world);
+        this(EntityRegistry.INVOKER_FANGS, world);
         this.warmup = warmup;
         this.setOwner(owner);
         this.setYaw(yaw * 57.295776f);
@@ -56,7 +52,7 @@ public class InvokerFangsEntity
     @Nullable
     public LivingEntity getOwner() {
         Entity entity;
-        if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld && (entity = ((ServerWorld)this.world).getEntity(this.ownerUuid)) instanceof LivingEntity) {
+        if (this.owner == null && this.ownerUuid != null && this.getWorld() instanceof ServerWorld serverWorld && (entity = serverWorld.getEntity(this.ownerUuid)) instanceof LivingEntity) {
             this.owner = (LivingEntity)entity;
         }
         return this.owner;
@@ -81,7 +77,7 @@ public class InvokerFangsEntity
     @Override
     public void tick() {
         super.tick();
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             if (this.playingAnimation) {
                 --this.ticksLeft;
                 if (this.ticksLeft == 14) {
@@ -92,19 +88,19 @@ public class InvokerFangsEntity
                         double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
                         double h = 0.3 + this.random.nextDouble() * 0.3;
                         double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-                        this.world.addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
+                        this.getWorld().addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
                     }
                 }
             }
         } else if (--this.warmup < 0) {
             if (this.warmup == -8) {
-                List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
+                List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
                 for (LivingEntity livingEntity : list) {
                     this.damage(livingEntity);
                 }
             }
             if (!this.startedAttack) {
-                this.world.sendEntityStatus(this, (byte)4);
+                this.getWorld().sendEntityStatus(this, (byte)4);
                 this.startedAttack = true;
             }
             if (--this.ticksLeft < 0) {
@@ -119,13 +115,13 @@ public class InvokerFangsEntity
             return;
         }
         if (livingEntity == null) {
-            target.damage(DamageSource.MAGIC, 10.0f);
+            target.damage(this.getDamageSources().magic(), 10.0f);
             target.addVelocity(0.0f, 1.7f, 0.0f);
         } else {
             if (livingEntity.isTeammate(target)) {
                 return;
             }
-            target.damage(DamageSource.magic(this, livingEntity), 10.0f);
+            target.damage(this.getDamageSources().indirectMagic(this, livingEntity), 10.0f);
             this.knockBack(target);
 
         }
@@ -137,7 +133,7 @@ public class InvokerFangsEntity
         if (status == 4) {
             this.playingAnimation = true;
             if (!this.isSilent()) {
-                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f, false);
+                this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f, false);
             }
         }
     }
@@ -161,12 +157,7 @@ public class InvokerFangsEntity
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
-    @Override
-    public EntityType<?> getPolymerEntityType() {
+    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
         return EntityType.EVOKER_FANGS;
     }
 

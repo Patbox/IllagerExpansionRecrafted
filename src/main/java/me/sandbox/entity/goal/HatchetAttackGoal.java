@@ -89,7 +89,7 @@ public class HatchetAttackGoal
                 ((MarauderEntity)hostile).setCharging(true);
             }
             if (chargeTime == -80) {
-                ((MarauderEntity)hostile).attack(target, 1.0f);
+                ((MarauderEntity)hostile).shootAt(target, 1.0f);
                 ((MarauderEntity)hostile).setCharging(false);
                 chargeTime = 0;
             }

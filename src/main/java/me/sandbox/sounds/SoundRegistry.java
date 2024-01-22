@@ -1,11 +1,10 @@
 package me.sandbox.sounds;
 
-import eu.pb4.polymer.api.other.PolymerSoundEvent;
+import eu.pb4.polymer.core.api.other.PolymerSoundEvent;
 import me.sandbox.IllagerExpansion;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SoundRegistry {
     public static SoundEvent SURRENDERED_AMBIENT = registerSoundEvent("surrendered_ambient", SoundEvents.ENTITY_STRAY_AMBIENT);
@@ -50,7 +49,7 @@ public class SoundRegistry {
 
     private static SoundEvent registerSoundEvent(String name, SoundEvent soundEvent) {
         Identifier id = new Identifier(IllagerExpansion.MOD_ID, name);
-        return Registry.register(Registry.SOUND_EVENT, id, new PolymerSoundEvent(id, soundEvent));
+        return PolymerSoundEvent.of(id, soundEvent);
     }
     public static void registerSounds() {
     }

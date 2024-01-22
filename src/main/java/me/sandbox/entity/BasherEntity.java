@@ -3,8 +3,6 @@ package me.sandbox.entity;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.properties.Property;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
@@ -36,7 +34,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -57,17 +54,21 @@ import java.util.Set;
 
 public class BasherEntity
         extends IllagerEntity implements PlayerPolymerEntity, Stunnable {
-    public int stunTick = 60;
-    public boolean isStunned = false;
-    public int blockedCount;
     public static final Set<Item> AXES;
     private static final TrackedData<Boolean> STUNNED = DataTracker.registerData(BasherEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
     static {
         AXES = Sets.newHashSet(Items.DIAMOND_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.NETHERITE_AXE, Items.WOODEN_AXE, Items.GOLDEN_AXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_AXE);
     }
 
+    public int stunTick = 60;
+    public boolean isStunned = false;
+    public int blockedCount;
+    private AttributeContainer attributeContainer;
+
     public BasherEntity(EntityType<? extends BasherEntity> entityType, World world) {
-        super((EntityType<? extends IllagerEntity>) entityType, world);
+        super(entityType, world);
+        this.onCreated(this);
     }
 
     @Override
@@ -76,10 +77,10 @@ public class BasherEntity
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
         this.goalSelector.add(4, new BasherEntity.AttackGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity) this, PlayerEntity.class, true));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity) this, MerchantEntity.class, true));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity) this, IronGolemEntity.class, true));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, true));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, true));
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
@@ -88,14 +89,14 @@ public class BasherEntity
     @Override
     protected void mobTick() {
         if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
-            boolean bl = ((ServerWorld) this.world).hasRaidAt(this.getBlockPos());
+            boolean bl = ((ServerWorld) getWorld()).hasRaidAt(this.getBlockPos());
             ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(bl);
             super.mobTick();
         }
         if (!this.isAlive()) {
-            return;
         }
     }
+
     @Override
     public boolean canSee(Entity entity) {
         if (this.getStunnedState()) {
@@ -103,6 +104,7 @@ public class BasherEntity
         }
         return super.canSee(entity);
     }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putBoolean("Stunned", this.isStunned);
@@ -114,16 +116,19 @@ public class BasherEntity
         super.readCustomDataFromNbt(nbt);
         this.setStunnedState(nbt.getBoolean("Stunned"));
     }
+
     @Override
     protected void initDataTracker() {
         this.dataTracker.startTracking(STUNNED, false);
         super.initDataTracker();
     }
-    public void setStunnedState(boolean isStunned) {
-        this.dataTracker.set(STUNNED, isStunned);
-    }
+
     public boolean getStunnedState() {
         return this.dataTracker.get(STUNNED);
+    }
+
+    public void setStunnedState(boolean isStunned) {
+        this.dataTracker.set(STUNNED, isStunned);
     }
 
     @Override
@@ -139,7 +144,6 @@ public class BasherEntity
             }
         }
     }
-    private AttributeContainer attributeContainer;
 
     @Override
     protected boolean isImmobile() {
@@ -153,7 +157,7 @@ public class BasherEntity
                     .add(EntityAttributes.GENERIC_MAX_HEALTH, 28.0D)
                     .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.31D)
                     .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D)
-                    .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,0.2D)
+                    .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.2D)
                     .build());
         }
         return attributeContainer;
@@ -188,8 +192,8 @@ public class BasherEntity
                 if ((BasherEntity.AXES.contains(item.getItem()) || attacker instanceof IronGolemEntity || this.blockedCount >= 4) && isShield) {
                     this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0f, 1.0f);
                     this.setStunnedState(true);
-                    if (this.world instanceof ServerWorld) {
-                        ((ServerWorld)this.world).spawnParticles((ParticleEffect)new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
+                    if (getWorld() instanceof ServerWorld) {
+                        ((ServerWorld) getWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
                         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_AXE));
                     }
                     return super.damage(source, amount);
@@ -272,34 +276,6 @@ public class BasherEntity
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
-    class AttackGoal
-            extends MeleeAttackGoal {
-        public AttackGoal(BasherEntity vindicator) {
-            super(vindicator, 1.0, false);
-
-        }
-
-        @Override
-        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-            if (this.mob.getVehicle() instanceof RavagerEntity) {
-                float f = this.mob.getVehicle().getWidth() - 0.1f;
-                return f * 2.0f * (f * 2.0f) + entity.getWidth();
-            }
-            return super.getSquaredMaxAttackDistance(entity);
-        }
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
-
     @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         this.onStartedTrackingBy(player);
@@ -307,7 +283,24 @@ public class BasherEntity
     }
 
     @Override
+    public boolean isInAttackRange(LivingEntity entity) {
+        if (this.getVehicle() instanceof RavagerEntity r) {
+            return r.isInAttackRange(entity);
+        }
+
+        return super.isInAttackRange(entity);
+    }
+
+    @Override
     public Property getSkin() {
         return EntitySkins.BASHER;
+    }
+
+    class AttackGoal
+            extends MeleeAttackGoal {
+        public AttackGoal(BasherEntity vindicator) {
+            super(vindicator, 1.0, false);
+
+        }
     }
 }

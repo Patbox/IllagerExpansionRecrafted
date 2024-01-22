@@ -26,6 +26,6 @@ public class SetMagicFireUtil {
 
     }
     private boolean goodBlock(Block block) {
-        return block == Blocks.AIR || block == Blocks.GRASS || block == Blocks.FERN || block ==Blocks.TALL_GRASS;
+        return block == Blocks.AIR || block == Blocks.SHORT_GRASS || block == Blocks.FERN || block ==Blocks.TALL_GRASS;
     }
 }

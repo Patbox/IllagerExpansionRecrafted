@@ -1,20 +1,21 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.4.+'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + "+polymerport." + project.polyport_version
+version = project.mod_version
 group = project.maven_group
 
 
 repositories {
-
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://maven.ladysnake.org/releases'
+    }
     maven { url 'https://jitpack.io' }
-    maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
-    maven { url "https://ladysnake.jfrog.io/artifactory/mods" }
     maven { url "https://maven.nucleoid.xyz" }
 }
 
@@ -33,16 +34,14 @@ dependencies {
     modImplementation 'com.github.chocohead:fabric-asm:v2.3'
     include 'com.github.chocohead:fabric-asm:v2.3'
 
-    //Cloth API
-    modApi("me.shedaniel.cloth:cloth-config-fabric:7.0.72") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    include 'me.shedaniel.cloth:cloth-config-fabric:7.0.72'
+    modCompileOnly modRuntimeOnly("eu.pb4.polyport:trinkets:3.8.0+polymerport.2")
 
-    modCompileOnly modRuntimeOnly("eu.pb4.polyport:trinkets:3.4.0+polymerport.0")
-
-    modImplementation include("eu.pb4:polymer:0.2.10+1.19.1")
-    modImplementation include("fr.catcore:server-translations-api:1.4.16+1.19")
+    modImplementation include("eu.pb4:sgui:1.4.1+1.20.4")
+    modImplementation include("eu.pb4:polymer-autohost:0.7.5+1.20.4")
+    modImplementation include("eu.pb4:polymer-core:0.7.5+1.20.4")
+    modImplementation include("eu.pb4:polymer-resource-pack:0.7.5+1.20.4")
+    modImplementation include("eu.pb4:polymer-virtual-entity:0.7.5+1.20.4")
+    modImplementation include("xyz.nucleoid:server-translations-api:2.2.0+1.20.3-rc1")
 }
 
 processResources {

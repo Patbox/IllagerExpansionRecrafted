@@ -1,7 +1,6 @@
 package me.sandbox.entity;
 
 import com.mojang.authlib.properties.Property;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import me.sandbox.entity.goal.HatchetAttackGoal;
 import me.sandbox.entity.projectile.HatchetEntity;
 import me.sandbox.item.ItemRegistry;
@@ -16,14 +15,16 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -32,13 +33,14 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class MarauderEntity
-        extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
+public class MarauderEntity extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(MarauderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private AttributeContainer attributeContainer;
 
     public MarauderEntity(EntityType<? extends MarauderEntity> entityType, World world) {
-        super((EntityType<? extends IllagerEntity>) entityType, world);
+        super(entityType, world);
         this.experiencePoints = 5;
+        this.onCreated(this);
     }
 
     @Override
@@ -46,24 +48,19 @@ public class MarauderEntity
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
-        this.goalSelector.add(2, new HatchetAttackGoal(this, 1.0,100, 8.0f));
+        this.goalSelector.add(2, new HatchetAttackGoal(this, 1.0, 100, 8.0f));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity) this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity) this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity) this, IronGolemEntity.class, false));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
     }
-
-    private AttributeContainer attributeContainer;
 
     @Override
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 21.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.30D)
-                    .build());
+            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 21.0D).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.30D).build());
         }
         return attributeContainer;
     }
@@ -75,8 +72,6 @@ public class MarauderEntity
     public void setCharging(boolean charging) {
         this.dataTracker.set(CHARGING, charging);
     }
-
-
 
 
     @Override
@@ -93,16 +88,16 @@ public class MarauderEntity
 
 
     @Override
-    public void attack(LivingEntity target, float pullProgress) {
+    public void shootAt(LivingEntity target, float pullProgress) {
 
-        HatchetEntity hatchetEntity = new HatchetEntity(this.world, (LivingEntity)this, new ItemStack(ItemRegistry.HATCHET));
+        HatchetEntity hatchetEntity = new HatchetEntity(this.getWorld(), this, new ItemStack(ItemRegistry.HATCHET));
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - hatchetEntity.getY();
         double f = target.getZ() - this.getZ();
         double g = Math.sqrt(d * d + f * f);
-        hatchetEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.2f, 14 - this.world.getDifficulty().getId() * 4);
+        hatchetEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.2f, 14 - this.getWorld().getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ITEM_TRIDENT_THROW, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.world.spawnEntity(hatchetEntity);
+        this.getWorld().spawnEntity(hatchetEntity);
     }
 
 
@@ -180,16 +175,6 @@ public class MarauderEntity
         return State.NEUTRAL;
     }
 
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
 
     @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {

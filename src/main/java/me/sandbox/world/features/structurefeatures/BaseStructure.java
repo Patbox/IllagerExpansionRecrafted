@@ -4,20 +4,24 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.sandbox.world.features.StructureRegistry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.structure.StructureSets;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureKeys;
 import net.minecraft.world.gen.structure.StructureType;
 
 import java.util.Optional;
@@ -71,16 +75,15 @@ public class BaseStructure extends Structure {
         ChunkPos chunkPos = context.chunkPos();
         int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
         BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
-        StructurePools.method_44111();
 
-        return StructurePoolBasedGenerator.generate(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter);
+        return StructurePoolBasedGenerator.generate(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter, StructurePoolAliasLookup.EMPTY);
     }
 
     public StructureType<?> getType() {
         return StructureRegistry.BASE_STRUCTURE;
     }
 
-    public static boolean canGenerate(Context context) {
+    public boolean canGenerate(Context context) {
         ChunkPos chunkPos = context.chunkPos();
         int i = chunkPos.x >> 4;
         int j = chunkPos.z >> 4;
@@ -90,7 +93,10 @@ public class BaseStructure extends Structure {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !context.chunkGenerator().shouldStructureGenerateInRange(StructureSets.VILLAGES, context.noiseConfig(), context.seed(), chunkPos.x, chunkPos.z, 10);
+        return !context.chunkGenerator().createStructurePlacementCalculator(context.dynamicRegistryManager().getWrapperOrThrow(RegistryKeys.STRUCTURE_SET),
+                context.noiseConfig(),
+                context.seed()
+                ).canGenerate(context.dynamicRegistryManager().get(RegistryKeys.STRUCTURE_SET).entryOf(StructureSetKeys.VILLAGES), chunkPos.x, chunkPos.z, 10);
     }
 
     private static Function<BaseStructure, DataResult<BaseStructure>> createValidator() {
@@ -110,7 +116,7 @@ public class BaseStructure extends Structure {
             }
 
             int i = var10000;
-            return feature.maxDistanceFromCenter + i > 128 ? DataResult.error("Structure size including terrain adaptation must not exceed 128") : DataResult.success(feature);
+            return feature.maxDistanceFromCenter + i > 128 ? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128") : DataResult.success(feature);
         };
     }
 }

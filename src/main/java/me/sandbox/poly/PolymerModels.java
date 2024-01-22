@@ -1,9 +1,8 @@
 package me.sandbox.poly;
 
-import eu.pb4.polymer.api.item.PolymerItem;
-import eu.pb4.polymer.api.resourcepack.PolymerModelData;
-import eu.pb4.polymer.api.resourcepack.PolymerRPUtils;
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.resourcepack.api.PolymerModelData;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
@@ -14,11 +13,11 @@ public class PolymerModels {
     public static final Map<Item, PolymerModelData> MODELS = new IdentityHashMap<>();
 
     public static void setup() {
-        PolymerRPUtils.addAssetSource("illagerexp");
+        PolymerResourcePackUtils.addModAssets("illagerexp");
 
     }
 
     public static void requestModel(Identifier identifier, Item item) {
-        MODELS.put(item, PolymerRPUtils.requestModel(((PolymerItem) item).getPolymerItem(item.getDefaultStack(), null), identifier));
+        MODELS.put(item, PolymerResourcePackUtils.requestModel(((PolymerItem) item).getPolymerItem(item.getDefaultStack(), null), identifier));
     }
 }

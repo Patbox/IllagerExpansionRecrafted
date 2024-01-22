@@ -1,16 +1,13 @@
 package me.sandbox.entity;
 
 import com.mojang.datafixers.util.Pair;
-import eu.pb4.polymer.api.entity.PolymerEntity;
+import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -28,13 +25,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -44,21 +41,20 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
-    public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(SurrenderedEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final int CHARGING_FLAG = 1;
-    @Nullable
-    MobEntity owner;
+    @Nullable MobEntity owner;
     @Nullable
     private BlockPos bounds;
     private boolean alive;
     private int lifeTicks;
+    private AttributeContainer attributeContainer;
+
 
     public SurrenderedEntity(EntityType<? extends SurrenderedEntity> entityType, World world) {
-        super((EntityType<? extends SkeletonEntity>)entityType, world);
+        super(entityType, world);
         this.moveControl = new SurrenderedEntity.VexMoveControl(this);
     }
-
 
     @Override
     public void move(MovementType movementType, Vec3d movement) {
@@ -72,7 +68,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.setNoGravity(true);
         if (this.alive && --this.lifeTicks <= 0) {
             this.lifeTicks = 20;
-            this.damage(DamageSource.STARVE, 1.0f);
+            this.damage(this.getDamageSources().starve(), 1.0f);
         }
     }
 
@@ -84,23 +80,19 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.goalSelector.add(8, new SurrenderedEntity.LookAtTargetGoal());
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
         this.targetSelector.add(2, new SurrenderedEntity.TrackOwnerTargetGoal(this));
-        this.targetSelector.add(3, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
-
-    private AttributeContainer attributeContainer;
 
     @Override
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 18.0D)
-                    .add(EntityAttributes.GENERIC_ATTACK_DAMAGE,5.0D)
-                    .build());
+            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 18.0D).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D).build());
         }
         return attributeContainer;
     }
+
     @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
@@ -109,7 +101,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(VEX_FLAGS, (byte)0);
+        this.dataTracker.startTracking(VEX_FLAGS, (byte) 0);
     }
 
     @Override
@@ -141,6 +133,10 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         return this.owner;
     }
 
+    public void setOwner(@Nullable MobEntity owner) {
+        this.owner = owner;
+    }
+
     @Nullable
     public BlockPos getBounds() {
         return this.bounds;
@@ -156,12 +152,12 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     private void setVexFlag(int mask, boolean value) {
-        int i = this.dataTracker.get(VEX_FLAGS).byteValue();
+        int i = this.dataTracker.get(VEX_FLAGS);
         i = value ? (i |= mask) : (i &= ~mask);
-        this.dataTracker.set(VEX_FLAGS, (byte)(i & 0xFF));
+        this.dataTracker.set(VEX_FLAGS, (byte) (i & 0xFF));
     }
 
-        public boolean isCharging() {
+    public boolean isCharging() {
         return this.areFlagsSet(CHARGING_FLAG);
     }
 
@@ -169,33 +165,31 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.setVexFlag(CHARGING_FLAG, charging);
     }
 
-    public void setOwner(MobEntity owner) {
-        this.owner = owner;
-    }
-
     public void setLifeTicks(int lifeTicks) {
         this.alive = true;
         this.lifeTicks = lifeTicks;
     }
+
     @Override
     public boolean tryAttack(Entity target) {
         if (!super.tryAttack(target)) {
             return false;
         }
         if (target instanceof LivingEntity) {
-            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1), this);
+            ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1), this);
         }
         return true;
     }
+
     @Override
     public void tickMovement() {
-        if(!world.isClient()) {
+        if (!getWorld().isClient()) {
             for (int i = 0; i < 2; ++i) {
-                ((ServerWorld) world).spawnParticles(ParticleTypes.WHITE_ASH, this.prevX, this.prevY + 1.2, this.prevZ, 2, 0.2D, 0D, 0.2D, 0.025D);
+                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.prevX, this.prevY + 1.2, this.prevZ, 2, 0.2D, 0D, 0.2D, 0.025D);
             }
         }
         super.tickMovement();
-        }
+    }
 
     @Override
     protected SoundEvent getAmbientSound() {
@@ -232,28 +226,27 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public void modifyTrackedData(List<DataTracker.Entry<?>> data) {
+    public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
         for (int i = 0; i < data.size(); i++) {
             var e = data.get(i);
 
-            if (e.getData() == Entity.FLAGS) {
-                data.set(i, new DataTracker.Entry<>(Entity.FLAGS, (byte) (((byte) e.get()) | 0x1 << 5)));
+            if (e.id() == Entity.FLAGS.getId()) {
+                data.set(i, DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) e.value()) | 0x1 << 5)));
             }
         }
     }
 
     @Override
-    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
         return List.of(new Pair<>(EquipmentSlot.HEAD, Items.SKELETON_SKULL.getDefaultStack()), new Pair<>(EquipmentSlot.CHEST, Items.CHAINMAIL_CHESTPLATE.getDefaultStack()));
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType() {
+    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
         return EntityType.STRAY;
     }
 
-    class VexMoveControl
-            extends MoveControl {
+    class VexMoveControl extends MoveControl {
         public VexMoveControl(SurrenderedEntity owner) {
             super(owner);
         }
@@ -272,20 +265,19 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
                 SurrenderedEntity.this.setVelocity(SurrenderedEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
                 if (SurrenderedEntity.this.getTarget() == null) {
                     Vec3d vec3d2 = SurrenderedEntity.this.getVelocity();
-                    SurrenderedEntity.this.setYaw(-((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
+                    SurrenderedEntity.this.setYaw(-((float) MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
                     SurrenderedEntity.this.bodyYaw = SurrenderedEntity.this.getYaw();
                 } else {
                     double e = SurrenderedEntity.this.getTarget().getX() - SurrenderedEntity.this.getX();
                     double f = SurrenderedEntity.this.getTarget().getZ() - SurrenderedEntity.this.getZ();
-                    SurrenderedEntity.this.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
+                    SurrenderedEntity.this.setYaw(-((float) MathHelper.atan2(e, f)) * 57.295776f);
                     SurrenderedEntity.this.bodyYaw = SurrenderedEntity.this.getYaw();
                 }
             }
         }
     }
 
-     class ChargeTargetGoal
-            extends Goal {
+    class ChargeTargetGoal extends Goal {
         public ChargeTargetGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
@@ -311,7 +303,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
                 SurrenderedEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             }
             SurrenderedEntity.this.setCharging(true);
-            SurrenderedEntity.this.playSound(SoundRegistry.SURRENDERED_CHARGE , 1.0f, 1.0f);
+            SurrenderedEntity.this.playSound(SoundRegistry.SURRENDERED_CHARGE, 1.0f, 1.0f);
         }
 
         @Override
@@ -343,8 +335,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         }
     }
 
-    class LookAtTargetGoal
-            extends Goal {
+    class LookAtTargetGoal extends Goal {
         public LookAtTargetGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
@@ -367,17 +358,16 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
             }
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos2 = blockPos.add(SurrenderedEntity.this.random.nextInt(15) - 7, SurrenderedEntity.this.random.nextInt(11) - 5, SurrenderedEntity.this.random.nextInt(15) - 7);
-                if (!SurrenderedEntity.this.world.isAir(blockPos2)) continue;
-                SurrenderedEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
+                if (!SurrenderedEntity.this.getWorld().isAir(blockPos2)) continue;
+                SurrenderedEntity.this.moveControl.moveTo((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 0.25);
                 if (SurrenderedEntity.this.getTarget() != null) break;
-                SurrenderedEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0f, 20.0f);
+                SurrenderedEntity.this.getLookControl().lookAt((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 180.0f, 20.0f);
                 break;
             }
         }
     }
 
-    class TrackOwnerTargetGoal
-            extends TrackTargetGoal {
+    class TrackOwnerTargetGoal extends TrackTargetGoal {
         private final TargetPredicate targetPredicate;
 
         public TrackOwnerTargetGoal(PathAwareEntity mob) {

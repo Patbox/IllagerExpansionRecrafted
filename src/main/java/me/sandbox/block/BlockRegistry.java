@@ -1,54 +1,53 @@
 package me.sandbox.block;
 
-import eu.pb4.polymer.api.block.PolymerBlock;
-import eu.pb4.polymer.api.block.PolymerHeadBlock;
-import eu.pb4.polymer.api.item.PolymerBlockItem;
-import eu.pb4.polymer.api.item.PolymerHeadBlockItem;
+import eu.pb4.polymer.core.api.block.PolymerHeadBlock;
+import eu.pb4.polymer.core.api.item.PolymerBlockItem;
+import eu.pb4.polymer.core.api.item.PolymerHeadBlockItem;
 import me.sandbox.IllagerExpansion;
 import me.sandbox.block.custom.ImbuingTableBlock;
 import me.sandbox.block.custom.MagicFireBlock;
-import me.sandbox.item.ModItemGroup;
+import me.sandbox.item.ItemRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.Optional;
 
 public class BlockRegistry {
 
 
     //Decoration Blocks
     public static final Block IMBUING_TABLE = registerBlock("imbuing_table",
-            new ImbuingTableBlock(FabricBlockSettings.of(Material.METAL).sounds(BlockSoundGroup.COPPER).strength(4f).requiresTool()), ModItemGroup.SandBoxMisc);
+            new ImbuingTableBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).sounds(BlockSoundGroup.COPPER).strength(4f).requiresTool()), true);
 
 
     public static final Block MAGIC_FIRE = registerBlock("magic_fire",
-            new MagicFireBlock(FabricBlockSettings.of(Material.FIRE, MapColor.PURPLE).noCollision().luminance(state -> 10), 0.0f), null);
+            new MagicFireBlock(AbstractBlock.Settings.create().dropsNothing().nonOpaque().mapColor(MapColor.PURPLE).noCollision().luminance(state -> 10), 0.0f), false);
 
-    private static Block registerBlock(String name, Block block, @Nullable ItemGroup group) {
+    private static Block registerBlock(String name, Block block, boolean group) {
         registerBlockItem(name, block, group);
-        return Registry.register(Registry.BLOCK, new Identifier(IllagerExpansion.MOD_ID, name), block);
+        return Registry.register(Registries.BLOCK, new Identifier(IllagerExpansion.MOD_ID, name), block);
     }
 
-    private static Item registerBlockItem(String name, Block block, ItemGroup group) {
+    private static <T extends Block & PolymerHeadBlock> Item registerBlockItem(String name, Block block, boolean group) {
+        Item x;
         if (block instanceof PolymerHeadBlock) {
-            return Registry.register(Registry.ITEM, new Identifier(IllagerExpansion.MOD_ID, name),
-                    new PolymerHeadBlockItem((PolymerHeadBlock) block, new FabricItemSettings().group(group)));
+            x = ItemRegistry.registerItem(name, new PolymerHeadBlockItem((T) block, new FabricItemSettings()));
         } else {
-            return Registry.register(Registry.ITEM, new Identifier(IllagerExpansion.MOD_ID, name),
-                    new PolymerBlockItem(block, new FabricItemSettings().group(group), Items.STRUCTURE_VOID));
+            x = ItemRegistry.registerItem(name, new PolymerBlockItem(block, new FabricItemSettings(), Items.STRUCTURE_VOID));
         }
+        if (!group) {
+            ItemRegistry.ITEMS.remove(x);
+        }
+        return x;
     }
 
     public static void registerModBlocks() {

@@ -1,6 +1,7 @@
 package me.sandbox.block.custom;
 
-import eu.pb4.polymer.api.block.PolymerBlock;
+import com.mojang.serialization.MapCodec;
+import eu.pb4.polymer.core.api.block.PolymerBlock;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,11 +26,15 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
         super(settings.nonOpaque(), 0.0f);
     }
 
+    @Override
+    protected MapCodec<? extends AbstractFireBlock> getCodec() {
+        return null;
+    }
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
             if (!(entity instanceof IllagerEntity || entity instanceof RavagerEntity) ) {
-                entity.damage(DamageSource.MAGIC, 3.0f);
+                entity.damage(world.getDamageSources().magic(), 3.0f);
             } else {
                 return;
             }
@@ -42,13 +47,13 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         world.removeBlock(pos, false);
-        world.createAndScheduleBlockTick(pos, this, 180);
+        world.scheduleBlockTick(pos, this, 180);
     }
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        world.createAndScheduleBlockTick(pos, this, 180);
+        world.scheduleBlockTick(pos, this, 180);
     }
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {

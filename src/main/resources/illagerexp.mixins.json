@@ -5,12 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BrewingRecipeRegistryMixin",
-    "IllagerModelMixin",
-    "IllusionerEntityMixin",
     "MarauderPatrolMixin",
     "PlayerEntityMixin",
     "PotionsAccessor",
-    "RaidMixin",
     "StructureProcessorAccessor",
     "StructureTemplateMixin",
     "SurrenderedChargeMixin",

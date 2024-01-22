@@ -1,6 +1,5 @@
 package me.sandbox.item.custom;
 
-import eu.pb4.polymer.api.item.PolymerItem;
 import me.sandbox.poly.PolymerAutoItem;
 import me.sandbox.sounds.SoundRegistry;
 import net.minecraft.entity.LivingEntity;
@@ -34,7 +33,7 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
             return;
         }
         PlayerEntity playerEntity = (PlayerEntity)user;
-        ItemStack itemStack = playerEntity.getArrowType(stack);
+        ItemStack itemStack = playerEntity.getProjectileType(stack);
         if (itemStack.isEmpty()) {
             return;
         }
@@ -56,7 +55,7 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
     }
 
     private List<LivingEntity> getTargets(PlayerEntity user) {
-        return user.world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(30), entity -> (entity instanceof LivingEntity) && !(entity instanceof PlayerEntity));
+        return user.getWorld().getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(30), entity -> (entity instanceof LivingEntity) && !(entity instanceof PlayerEntity));
     }
     private void glow(LivingEntity entity) {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 400, 0));

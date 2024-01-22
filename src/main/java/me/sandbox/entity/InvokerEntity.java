@@ -1,11 +1,6 @@
-
 package me.sandbox.entity;
 
-import java.util.List;
-
 import com.mojang.authlib.properties.Property;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
@@ -34,8 +29,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -51,11 +46,12 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class InvokerEntity
         extends SpellcastingIllagerEntity implements SkinOverlayOwner, PlayerPolymerEntity {
-    @Nullable
-    private SheepEntity wololoTarget;
     private static final TrackedData<Boolean> SHIELDED = DataTracker.registerData(InvokerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(), BossBar.Color.YELLOW, BossBar.Style.PROGRESS).setDarkenSky(true);
     public boolean inSecondPhase = false;
     public int cooldown;
     public int tpcooldown;
@@ -66,10 +62,14 @@ public class InvokerEntity
     public int shieldduration;
     public boolean canCastShield;
     public int damagecount;
+    @Nullable
+    private SheepEntity wololoTarget;
+    private AttributeContainer attributeContainer;
 
     public InvokerEntity(EntityType<? extends InvokerEntity> entityType, World world) {
-        super((EntityType<? extends SpellcastingIllagerEntity>) entityType, world);
+        super(entityType, world);
         this.experiencePoints = 80;
+        this.onCreated(this);
     }
 
     @Override
@@ -87,18 +87,16 @@ public class InvokerEntity
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity) this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity) this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity) this, IronGolemEntity.class, false));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
     }
 
     @Override
     public boolean shouldRenderOverlay() {
         return this.getShieldedState();
     }
-
-    private AttributeContainer attributeContainer;
 
     @Override
     public AttributeContainer getAttributes() {
@@ -112,18 +110,17 @@ public class InvokerEntity
         }
         return attributeContainer;
     }
+
     @Override
     public boolean tryAttack(Entity target) {
         if (!super.tryAttack(target)) {
             return false;
         }
         if (target instanceof LivingEntity) {
-            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0), this);
+            ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0), this);
         }
         return true;
     }
-
-    private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(), BossBar.Color.YELLOW, BossBar.Style.PROGRESS).setDarkenSky(true);
 
     @Override
     protected void initDataTracker() {
@@ -156,15 +153,18 @@ public class InvokerEntity
         nbt.putBoolean("Invul", this.isShielded);
         super.writeCustomDataToNbt(nbt);
     }
-    public void setShieldedState(boolean isShielded) {
-        this.dataTracker.set(SHIELDED, isShielded);
-    }
+
     public boolean getShieldedState() {
         return this.dataTracker.get(SHIELDED);
     }
 
+    public void setShieldedState(boolean isShielded) {
+        this.dataTracker.set(SHIELDED, isShielded);
+    }
+
     @Override
     protected void mobTick() {
+        var world = this.getWorld();
         --this.tpcooldown;
         --this.cooldown;
         --this.fangaoecooldown;
@@ -172,33 +172,34 @@ public class InvokerEntity
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
         if (isAoeCasting && this.isSpellcasting()) {
             SpellParticleUtil spellParticleUtil = new SpellParticleUtil();
-            spellParticleUtil.setSpellParticles(this, this.world, ParticleTypes.SMOKE, 2, 0.06D);
+            spellParticleUtil.setSpellParticles(this, this.getWorld(), ParticleTypes.SMOKE, 2, 0.06D);
         }
         if (damagecount >= 2) {
             this.setShieldedState(true);
         }
         if (getShieldedState()) {
             if (world instanceof ServerWorld) {
-                ((ServerWorld) world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.5D, 0.7D, 0.5D, 0.15D);
+                ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.5D, 0.7D, 0.5D, 0.15D);
             }
         }
         Vec3d vec3d = this.getVelocity();
-        if (!this.onGround && vec3d.y < 0.0) {
+        if (!this.isOnGround() && vec3d.y < 0.0) {
             this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
         }
         if (world instanceof ServerWorld) {
-            ((ServerWorld) world).spawnParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.3, this.getZ(), 1, 0.2D, 0.2D, 0.2D, 0.005D);
+            ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.3, this.getZ(), 1, 0.2D, 0.2D, 0.2D, 0.005D);
         }
     }
+
     @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
+
     @Override
     public void onStartedTrackingBy(ServerPlayerEntity player) {
         super.onStartedTrackingBy(player);
         this.bossBar.addPlayer(player);
-        this.onTrackingStarted(player);
     }
 
     @Override
@@ -207,6 +208,7 @@ public class InvokerEntity
         this.bossBar.removePlayer(player);
         this.onTrackingStopped(player);
     }
+
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
     }
@@ -230,6 +232,7 @@ public class InvokerEntity
         }
         return false;
     }
+
     @Override
     public IllagerEntity.State getState() {
         if (this.isAttacking()) {
@@ -243,6 +246,7 @@ public class InvokerEntity
         }
         return IllagerEntity.State.CROSSED;
     }
+
     @Override
     public boolean damage(DamageSource source, float amount) {
         if ((source.getSource()) instanceof PersistentProjectileEntity) {
@@ -254,11 +258,11 @@ public class InvokerEntity
         }
         if (!((source.getSource()) instanceof PersistentProjectileEntity)) {
             if (getShieldedState()) {
-                if ((source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE)) {
+                if ((source.isIn(DamageTypeTags.IS_FIRE))) {
                     return false;
                 } else {
-                    if (world instanceof ServerWorld) {
-                        ((ServerWorld) world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1, this.getZ(), 30, 0.5D, 0.7D, 0.5D, 0.5D);
+                    if (this.getWorld() instanceof ServerWorld) {
+                        ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1, this.getZ(), 30, 0.5D, 0.7D, 0.5D, 0.5D);
                     }
                     this.playSound(SoundRegistry.INVOKER_SHIELD_BREAK, 1.0f, 1.0f);
                     this.setShieldedState(false);
@@ -286,13 +290,13 @@ public class InvokerEntity
         return SoundRegistry.INVOKER_HURT;
     }
 
-    void setWololoTarget(@Nullable SheepEntity sheep) {
-        this.wololoTarget = sheep;
-    }
-
     @Nullable
     SheepEntity getWololoTarget() {
         return this.wololoTarget;
+    }
+
+    void setWololoTarget(@Nullable SheepEntity sheep) {
+        this.wololoTarget = sheep;
     }
 
     @Override
@@ -304,6 +308,10 @@ public class InvokerEntity
     public void addBonusForWave(int wave, boolean unused) {
     }
 
+    @Override
+    public Property getSkin() {
+        return EntitySkins.INVOKER;
+    }
 
     class LookAtTargetOrWololoTarget
             extends SpellcastingIllagerEntity.LookAtTargetGoal {
@@ -335,7 +343,7 @@ public class InvokerEntity
             if (inSecondPhase) {
                 return false;
             }
-            int i = InvokerEntity.this.world.getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
+            int i = InvokerEntity.this.getWorld().getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
             return 3 > i;
         }
 
@@ -351,12 +359,12 @@ public class InvokerEntity
 
         @Override
         protected void castSpell() {
-            ServerWorld serverWorld = (ServerWorld) InvokerEntity.this.world;
+            ServerWorld serverWorld = (ServerWorld) InvokerEntity.this.getWorld();
             for (int i = 0; i < 4; ++i) {
                 BlockPos blockPos = InvokerEntity.this.getBlockPos().add(-2 + InvokerEntity.this.random.nextInt(5), 1, -2 + InvokerEntity.this.random.nextInt(5));
-                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.world);
+                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getWorld());
                 surrenderedEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
+                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
                 surrenderedEntity.setOwner(InvokerEntity.this);
                 surrenderedEntity.setBounds(blockPos);
                 surrenderedEntity.setLifeTicks(20 * (30 + InvokerEntity.this.random.nextInt(90)));
@@ -379,14 +387,12 @@ public class InvokerEntity
             extends SpellcastingIllagerEntity.CastSpellGoal {
         ConjureFangsGoal() {
         }
+
         public boolean canStart() {
             if (!super.canStart()) {
                 return false;
             }
-            if (inSecondPhase) {
-                return false;
-            }
-            return true;
+            return !inSecondPhase;
         }
 
         @Override
@@ -424,24 +430,24 @@ public class InvokerEntity
             } else {
                 for (int i = 0; i < 16; ++i) {
                     double h = 1.25 * (double) (i + 1);
-                    int j = 1 * i;
+                    int j = i;
                     this.conjureFangs(InvokerEntity.this.getX() + (double) MathHelper.cos(f) * h, InvokerEntity.this.getZ() + (double) MathHelper.sin(f) * h, d, e, f, j);
                 }
                 for (int i = 0; i < 16; ++i) {
                     double h = 1.25 * (double) (i + 1);
-                    int j = 1 * i;
-                    this.conjureFangs(InvokerEntity.this.getX() + (double) MathHelper.cos(f+ 0.4f) * h, InvokerEntity.this.getZ() + (double) MathHelper.sin(f + 0.3f) * h, d, e, f, j);
+                    int j = i;
+                    this.conjureFangs(InvokerEntity.this.getX() + (double) MathHelper.cos(f + 0.4f) * h, InvokerEntity.this.getZ() + (double) MathHelper.sin(f + 0.3f) * h, d, e, f, j);
                 }
                 for (int i = 0; i < 16; ++i) {
                     double h = 1.25 * (double) (i + 1);
-                    int j = 1 * i;
-                    this.conjureFangs(InvokerEntity.this.getX() + (double) MathHelper.cos(f - 0.4f) * h, InvokerEntity.this.getZ() + (double) MathHelper.sin(f -0.3f) * h, d, e, f, j);
+                    int j = i;
+                    this.conjureFangs(InvokerEntity.this.getX() + (double) MathHelper.cos(f - 0.4f) * h, InvokerEntity.this.getZ() + (double) MathHelper.sin(f - 0.3f) * h, d, e, f, j);
                 }
             }
         }
 
         private void conjureFangs(double x, double z, double maxY, double y, float yaw, int warmup) {
-            BlockPos blockPos = new BlockPos(x, y, z);
+            BlockPos blockPos = BlockPos.ofFloored(x, y, z);
             boolean bl = false;
             double d = 0.0;
             do {
@@ -449,16 +455,16 @@ public class InvokerEntity
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!(blockState = InvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.world, blockPos2, Direction.UP))
+                if (!(blockState = InvokerEntity.this.getWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getWorld(), blockPos2, Direction.UP))
                     continue;
-                if (!InvokerEntity.this.world.isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.world.getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.world, blockPos)).isEmpty()) {
+                if (!InvokerEntity.this.getWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getWorld(), blockPos)).isEmpty()) {
                     d = voxelShape.getMax(Direction.Axis.Y);
                 }
                 bl = true;
                 break;
             } while ((blockPos = blockPos.down()).getY() >= MathHelper.floor(maxY) - 1);
             if (bl) {
-                InvokerEntity.this.world.spawnEntity(new InvokerFangsEntity(InvokerEntity.this.world, x, (double)blockPos.getY()+0.2 + d, z, yaw, warmup, InvokerEntity.this));
+                InvokerEntity.this.getWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup, InvokerEntity.this));
             }
         }
 
@@ -488,10 +494,10 @@ public class InvokerEntity
             if (InvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!InvokerEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (!InvokerEntity.this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
-            List<SheepEntity> list = InvokerEntity.this.world.getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<SheepEntity> list = InvokerEntity.this.getWorld().getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }
@@ -543,6 +549,7 @@ public class InvokerEntity
             return SpellcastingIllagerEntity.Spell.WOLOLO;
         }
     }
+
     public class AreaDamageGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
 
@@ -557,15 +564,18 @@ public class InvokerEntity
             }
             return false;
         }
+
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
         }
+
         private void knockBack(Entity entity) {
             double d = entity.getX() - InvokerEntity.this.getX();
             double e = entity.getZ() - InvokerEntity.this.getZ();
             double f = Math.max(d * d + e * e, 0.001);
             entity.addVelocity(d / f * 6, 0.65, e / f * 6);
         }
+
         protected void knockback(LivingEntity target) {
             this.knockBack(target);
             target.velocityModified = true;
@@ -577,13 +587,14 @@ public class InvokerEntity
             isAoeCasting = false;
             super.stop();
         }
+
         private void buff(LivingEntity entity) {
             this.knockback(entity);
-            entity.damage(DamageSource.MAGIC, 11.0f);
+            entity.damage(getDamageSources().magic(), 11.0f);
             double x = entity.getX();
-            double y = entity.getY()+1;
+            double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.SMOKE,x, y+1,z,10,0.2D, 0.2D,0.2D,0.015D);
+            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
         }
 
         @Override
@@ -594,7 +605,7 @@ public class InvokerEntity
             double posx = InvokerEntity.this.getX();
             double posy = InvokerEntity.this.getY();
             double posz = InvokerEntity.this.getZ();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.LARGE_SMOKE,posx, posy+1, posz,350,1.0D, 0.8D,1.0D,0.3D);
+            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LARGE_SMOKE, posx, posy + 1, posz, 350, 1.0D, 0.8D, 1.0D, 0.3D);
         }
 
         @Override
@@ -622,9 +633,11 @@ public class InvokerEntity
             return Spell.BLINDNESS;
         }
     }
+
     public class CastTeleportGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
         InvokerEntity sorcerer = InvokerEntity.this;
+
         @Override
         public boolean canStart() {
             if (InvokerEntity.this.getTarget() == null) {
@@ -633,22 +646,23 @@ public class InvokerEntity
             if (InvokerEntity.this.isSpellcasting()) {
                 return false;
             }
-            if (InvokerEntity.this.tpcooldown < 0 && !(getTargets().isEmpty())) {
-                return true;
-            }
-            return false;
+            return InvokerEntity.this.tpcooldown < 0 && !(getTargets().isEmpty());
         }
+
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> ((entity instanceof PlayerEntity && !((PlayerEntity)entity).getAbilities().creativeMode)) || (entity instanceof IronGolemEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> ((entity instanceof PlayerEntity && !((PlayerEntity) entity).getAbilities().creativeMode)) || (entity instanceof IronGolemEntity));
         }
+
         @Override
         public boolean shouldContinue() {
             return !getTargets().isEmpty();
         }
+
         @Override
         public void stop() {
             super.stop();
         }
+
         @Override
         public void start() {
             super.start();
@@ -659,10 +673,10 @@ public class InvokerEntity
         protected void castSpell() {
             TeleportUtil teleportUtil = new TeleportUtil();
             double x = sorcerer.getX();
-            double y = sorcerer.getY()+1;
+            double y = sorcerer.getY() + 1;
             double z = sorcerer.getZ();
-            if (sorcerer.world instanceof ServerWorld) {
-                ((ServerWorld) world).spawnParticles(ParticleTypes.SMOKE, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
+            if (sorcerer.getWorld() instanceof ServerWorld) {
+                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
             }
             teleportUtil.doRandomTeleport(InvokerEntity.this);
         }
@@ -692,6 +706,7 @@ public class InvokerEntity
             return Spell.BLINDNESS;
         }
     }
+
     public class ConjureAoeFangsGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
 
@@ -706,17 +721,15 @@ public class InvokerEntity
             if (InvokerEntity.this.isSpellcasting()) {
                 return false;
             }
-            if (InvokerEntity.this.fangaoecooldown < 0) {
-                return true;
-            }
-            return false;
+            return InvokerEntity.this.fangaoecooldown < 0;
         }
+
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(18), entity -> !(entity instanceof HostileEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(18), entity -> !(entity instanceof HostileEntity));
         }
 
         private void conjureFangs(double x, double z, double maxY, double y, float yaw, int warmup) {
-            BlockPos blockPos = new BlockPos(x, y, z);
+            BlockPos blockPos = BlockPos.ofFloored(x, y, z);
             boolean bl = false;
             double d = 0.0;
             do {
@@ -724,16 +737,16 @@ public class InvokerEntity
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!(blockState = InvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.world, blockPos2, Direction.UP))
+                if (!(blockState = InvokerEntity.this.getWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getWorld(), blockPos2, Direction.UP))
                     continue;
-                if (!InvokerEntity.this.world.isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.world.getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.world, blockPos)).isEmpty()) {
+                if (!InvokerEntity.this.getWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getWorld(), blockPos)).isEmpty()) {
                     d = voxelShape.getMax(Direction.Axis.Y);
                 }
                 bl = true;
                 break;
             } while ((blockPos = blockPos.down()).getY() >= MathHelper.floor(maxY) - 1);
             if (bl) {
-                InvokerEntity.this.world.spawnEntity(new InvokerFangsEntity(InvokerEntity.this.world, x, (double)blockPos.getY()+0.2 + d, z, yaw, warmup + 4, InvokerEntity.this));
+                InvokerEntity.this.getWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup + 4, InvokerEntity.this));
             }
         }
 
@@ -777,16 +790,6 @@ public class InvokerEntity
         protected SpellcastingIllagerEntity.Spell getSpell() {
             return Spell.FANGS;
         }
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public Property getSkin() {
-        return EntitySkins.INVOKER;
     }
 }
 

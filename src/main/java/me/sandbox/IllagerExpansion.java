@@ -1,7 +1,6 @@
 package me.sandbox;
 
 import me.sandbox.block.BlockRegistry;
-import me.sandbox.config.IllagerExpansionConfig;
 import me.sandbox.entity.EntityRegistry;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.item.potion.PotionRegistry;
@@ -21,7 +20,6 @@ public class IllagerExpansion implements ModInitializer {
     public void onInitialize() {
         PolymerModels.setup();
 
-        IllagerExpansionConfig.registerConfig();
         ItemRegistry.registerModItems();
         BlockRegistry.registerModBlocks();
         SoundRegistry.registerSounds();

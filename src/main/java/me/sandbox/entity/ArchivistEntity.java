@@ -3,8 +3,6 @@ package me.sandbox.entity;
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.api.utils.PolymerUtils;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
@@ -24,32 +22,32 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.*;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ArchivistEntity
-        extends SpellcastingIllagerEntity implements PlayerPolymerEntity {
+public class ArchivistEntity extends SpellcastingIllagerEntity implements PlayerPolymerEntity {
+    public float bookanimation;
+    public float bookanimation1;
     @Nullable
     private SheepEntity wololoTarget;
     private IllagerEntity enchantTarget;
     private int cooldown;
-    private int damagedelay = 60;
+    private final int damagedelay = 60;
     private boolean isLevitating;
-    public float bookanimation;
-    public float bookanimation1;
     private int buffcooldown;
+    private AttributeContainer attributeContainer;
 
     public ArchivistEntity(EntityType<? extends ArchivistEntity> entityType, World world) {
-        super((EntityType<? extends SpellcastingIllagerEntity>)entityType, world);
+        super(entityType, world);
         this.experiencePoints = 10;
+        this.onCreated(this);
     }
 
     @Override
@@ -63,19 +61,16 @@ public class ArchivistEntity
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(5, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 0.6, 1.0));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, false));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
     }
-    private AttributeContainer attributeContainer;
+
     @Override
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 22.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36D)
-                    .build());
+            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 22.0D).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36D).build());
         }
         return attributeContainer;
     }
@@ -107,6 +102,7 @@ public class ArchivistEntity
         --buffcooldown;
         super.mobTick();
     }
+
     @Override
     public boolean isTeammate(Entity other) {
         if (other == null) {
@@ -119,9 +115,9 @@ public class ArchivistEntity
             return true;
         }
         if (other instanceof VexEntity) {
-            return this.isTeammate(((VexEntity)other).getOwner());
+            return this.isTeammate(((VexEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
@@ -142,20 +138,20 @@ public class ArchivistEntity
         return SoundRegistry.ARCHIVIST_HURT;
     }
 
+    @Nullable SheepEntity getWololoTarget() {
+        return this.wololoTarget;
+    }
+
     void setWololoTarget(@Nullable SheepEntity sheep) {
         this.wololoTarget = sheep;
     }
-    void setEnchantTarget(@Nullable IllagerEntity entity) {
-        this.enchantTarget = entity;
+
+    @Nullable IllagerEntity getEnchantTarget() {
+        return this.enchantTarget;
     }
 
-    @Nullable
-    SheepEntity getWololoTarget() {
-        return this.wololoTarget;
-    }
-    @Nullable
-    IllagerEntity getEnchantTarget() {
-        return this.enchantTarget;
+    void setEnchantTarget(@Nullable IllagerEntity entity) {
+        this.enchantTarget = entity;
     }
 
     @Override
@@ -166,6 +162,7 @@ public class ArchivistEntity
     @Override
     public void addBonusForWave(int wave, boolean unused) {
     }
+
     @Override
     public IllagerEntity.State getState() {
         if (this.isSpellcasting()) {
@@ -174,9 +171,25 @@ public class ArchivistEntity
         return IllagerEntity.State.CROSSED;
     }
 
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        this.onStartedTrackingBy(player);
+        this.onTrackingStopped(player);
+    }
 
-    class LookAtTargetOrWololoTarget
-            extends SpellcastingIllagerEntity.LookAtTargetGoal {
+    @Override
+    public Property getSkin() {
+        return EntitySkins.ARCHIVIST;
+    }
+
+    @Override
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
+        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.WRITTEN_BOOK.getDefaultStack()));
+        return items;
+    }
+
+    class LookAtTargetOrWololoTarget extends SpellcastingIllagerEntity.LookAtTargetGoal {
 
         @Override
         public void tick() {
@@ -188,40 +201,40 @@ public class ArchivistEntity
         }
     }
 
-    public class LevitateTargetsGoal
-            extends SpellcastingIllagerEntity.CastSpellGoal {
+    public class LevitateTargetsGoal extends SpellcastingIllagerEntity.CastSpellGoal {
 
         @Override
         public boolean canStart() {
             if (ArchivistEntity.this.getTarget() == null) {
                 return false;
             }
-            if (ArchivistEntity.this.cooldown < 0 && getTargets().stream().anyMatch(entity -> !(entity instanceof HostileEntity))) {
-                return true;
-            }
-            return false;
+            return ArchivistEntity.this.cooldown < 0 && getTargets().stream().anyMatch(entity -> !(entity instanceof HostileEntity));
         }
+
         private void knockBack(Entity entity) {
             double d = entity.getX() - ArchivistEntity.this.getX();
             double e = entity.getZ() - ArchivistEntity.this.getZ();
             double f = Math.max(d * d + e * e, 0.001);
             entity.addVelocity(d / f * 5.0, 0.6, e / f * 5.0);
         }
+
         protected void knockback(LivingEntity target) {
-                    this.knockBack(target);
-                    target.velocityModified = true;
-            }
+            this.knockBack(target);
+            target.velocityModified = true;
+        }
 
         private List<LivingEntity> getTargets() {
-            return world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof HostileEntity));
+            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof HostileEntity));
         }
+
         @Override
         public void stop() {
             super.stop();
         }
+
         private void buff(LivingEntity entity) {
             knockback(entity);
-            entity.damage(DamageSource.MAGIC, 4.0f);
+            entity.damage(getDamageSources().magic(), 4.0f);
         }
 
         @Override
@@ -229,9 +242,9 @@ public class ArchivistEntity
             ArchivistEntity.this.cooldown = 220;
             getTargets().forEach(this::buff);
             double x = ArchivistEntity.this.getX();
-            double y = ArchivistEntity.this.getY()+1;
+            double y = ArchivistEntity.this.getY() + 1;
             double z = ArchivistEntity.this.getZ();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.ENCHANT,x, y,z,150,3.0D, 3.0D,3.0D,0.1D);
+            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 150, 3.0D, 3.0D, 3.0D, 0.1D);
         }
 
         @Override
@@ -260,10 +273,9 @@ public class ArchivistEntity
         }
     }
 
-    public class EnchantAllyGoal
-            extends SpellcastingIllagerEntity.CastSpellGoal {
-        EnchantToolUtil enchantToolUtil = new EnchantToolUtil();
+    public class EnchantAllyGoal extends SpellcastingIllagerEntity.CastSpellGoal {
         private final TargetPredicate closeEnchantableMobPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).setPredicate(livingEntity -> !(livingEntity instanceof ArchivistEntity));
+        EnchantToolUtil enchantToolUtil = new EnchantToolUtil();
         private int targetId;
 
         public boolean canEnchant() {
@@ -273,6 +285,7 @@ public class ArchivistEntity
             }
             return enchantToolUtil.eligibleForEnchant(hostileEntity);
         }
+
         @Override
         public boolean canStart() {
             if (ArchivistEntity.this.getTarget() == null) {
@@ -284,7 +297,7 @@ public class ArchivistEntity
             if (ArchivistEntity.this.isSpellcasting()) {
                 return false;
             }
-            List<IllagerEntity> list = ArchivistEntity.this.world.getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<IllagerEntity> list = ArchivistEntity.this.getWorld().getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }
@@ -295,6 +308,7 @@ public class ArchivistEntity
             }
             return this.canEnchant();
         }
+
         @Override
         public void stop() {
             super.stop();
@@ -311,8 +325,8 @@ public class ArchivistEntity
             double x = hostileEntity.getX();
             double y = hostileEntity.getY() + 1.5;
             double z = hostileEntity.getZ();
-            if (world instanceof ServerWorld) {
-                ((ServerWorld)world).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 50, 1.0D, 2.0D, 1.0D, 0.1D);
+            if (getWorld() instanceof ServerWorld) {
+                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 50, 1.0D, 2.0D, 1.0D, 0.1D);
             }
             ArchivistEntity.this.buffcooldown = 300;
         }
@@ -339,37 +353,8 @@ public class ArchivistEntity
 
         @Override
         protected SpellcastingIllagerEntity.Spell getSpell() {
-            return ClassTinkerers.getEnum(Spell.class, "ENCHANT");
+            return ClassTinkerers.getEnum(Spell.class, "IE_ENCHANT");
         }
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
-
-    @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        this.onStartedTrackingBy(player);
-        this.onTrackingStopped(player);
-    }
-
-    @Override
-    public Property getSkin() {
-        return EntitySkins.ARCHIVIST;
-    }
-
-    @Override
-    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items) {
-        items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
-        items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.WRITTEN_BOOK.getDefaultStack()));
-        return items;
     }
 }
 

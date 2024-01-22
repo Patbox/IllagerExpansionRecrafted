@@ -1,69 +1,58 @@
 package me.sandbox.entity;
 
 import com.mojang.authlib.properties.Property;
-import eu.pb4.polymer.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.api.utils.PolymerUtils;
+import me.sandbox.entity.goal.PotionBowAttackGoal;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.network.Packet;
-import net.minecraft.potion.Potions;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import java.util.List;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.potion.Potion;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.nbt.NbtCompound;
-import org.jetbrains.annotations.Nullable;
-import net.minecraft.entity.EntityData;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import me.sandbox.entity.goal.PotionBowAttackGoal;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.mob.IllagerEntity;
+import org.jetbrains.annotations.Nullable;
 
-public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity
-{
+import java.util.List;
+
+public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, PlayerPolymerEntity {
     private static final TrackedData<Boolean> POTION;
     private static final TrackedData<Boolean> BOW;
+
+    static {
+        POTION = DataTracker.registerData(AlchemistEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        BOW = DataTracker.registerData(AlchemistEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    }
+
     public boolean inPotionState;
     public boolean inBowState;
     public int potionCooldown;
@@ -75,19 +64,20 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         this.inBowState = false;
         this.potionCooldown = 160;
         this.experiencePoints = 10;
+        this.onCreated(this);
     }
 
     protected void initGoals() {
         super.initGoals();
-        this.goalSelector.add(0, (Goal)new SwimGoal((MobEntity)this));
-        this.goalSelector.add(4, (Goal)new PotionBowAttackGoal<AlchemistEntity>(this, 0.5, 20, 15.0f));
-        this.goalSelector.add(8, (Goal)new WanderAroundGoal((PathAwareEntity)this, 0.6));
-        this.goalSelector.add(9, (Goal)new LookAtEntityGoal((MobEntity)this, (Class)PlayerEntity.class, 3.0f, 1.0f));
-        this.goalSelector.add(10, (Goal)new LookAtEntityGoal((MobEntity)this, (Class)MobEntity.class, 8.0f));
-        this.targetSelector.add(1, (Goal)new RevengeGoal((PathAwareEntity)this, new Class[] { RaiderEntity.class }).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, (Goal)new ActiveTargetGoal((MobEntity)this, (Class)PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, (Goal)new ActiveTargetGoal((MobEntity)this, (Class)MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, false));
+        this.goalSelector.add(0, new SwimGoal(this));
+        this.goalSelector.add(4, new PotionBowAttackGoal<>(this, 0.5, 20, 15.0f));
+        this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
+        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
+        this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
+        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, false));
     }
 
     public AttributeContainer getAttributes() {
@@ -98,11 +88,11 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData, @Nullable final NbtCompound entityNbt) {
-        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack((ItemConvertible)Items.BOW));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    public void attack(final LivingEntity target, final float pullProgress) {
+    public void shootAt(final LivingEntity target, final float pullProgress) {
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isOf(Items.LINGERING_POTION)) {
             final Potion potion = PotionUtil.getPotion(this.getEquippedStack(EquipmentSlot.MAINHAND));
             final Vec3d vec3d = target.getVelocity();
@@ -110,26 +100,26 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             final double e = target.getEyeY() - 1.100000023841858 - this.getY();
             final double f = target.getZ() + vec3d.z - this.getZ();
             final double g = Math.sqrt(d * d + f * f);
-            final PotionEntity potionEntity = new PotionEntity(this.world, (LivingEntity)this);
-            potionEntity.setItem(PotionUtil.setPotion(new ItemStack((ItemConvertible)Items.LINGERING_POTION), potion));
+            final PotionEntity potionEntity = new PotionEntity(getWorld(), this);
+            potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.LINGERING_POTION), potion));
             potionEntity.setPitch(potionEntity.getPitch() + 20.0f);
             potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
             if (!this.isSilent()) {
-                this.world.playSound((PlayerEntity)null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
+                getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
             }
-            this.world.spawnEntity((Entity)potionEntity);
+            getWorld().spawnEntity(potionEntity);
             this.setBowState(true);
             return;
         }
-        final ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding((LivingEntity)this, Items.BOW)));
-        final PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile((LivingEntity)this, itemStack, pullProgress);
+        final ItemStack itemStack = this.getProjectileType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
+        final PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
         final double d = target.getX() - this.getX();
         final double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         final double f = target.getZ() - this.getZ();
         final double g = Math.sqrt(d * d + f * f);
-        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6f, (float)(14 - this.world.getDifficulty().getId() * 4));
+        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6f, (float) (14 - getWorld().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.world.spawnEntity((Entity)persistentProjectileEntity);
+        getWorld().spawnEntity(persistentProjectileEntity);
     }
 
     public void writeCustomDataToNbt(final NbtCompound nbt) {
@@ -139,12 +129,12 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     private List<AreaEffectCloudEntity> getNearbyClouds() {
-        return this.world.getEntitiesByClass(AreaEffectCloudEntity.class, this.getBoundingBox().expand(30.0), Entity::isAlive);
+        return getWorld().getEntitiesByClass(AreaEffectCloudEntity.class, this.getBoundingBox().expand(30.0), Entity::isAlive);
     }
 
     private void cancelEffect(final AreaEffectCloudEntity areaEffectCloudEntity, final LivingEntity entity) {
         final Potion potion = areaEffectCloudEntity.getPotion();
-        if (potion.getEffects().size() > 0) {
+        if (!potion.getEffects().isEmpty()) {
             final StatusEffectInstance statusEffectInstance = potion.getEffects().get(0);
             final StatusEffect statusEffect = statusEffectInstance.getEffectType();
             entity.removeStatusEffect(statusEffect);
@@ -152,9 +142,8 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     private void removeEffectsinCloud(final AreaEffectCloudEntity cloudEntity) {
-        final List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, cloudEntity.getBoundingBox().expand(0.3), Entity::isAlive);
-        for (int i = 0; i < list.size(); ++i) {
-            final LivingEntity entity = list.get(i);
+        final List<LivingEntity> list = getWorld().getEntitiesByClass(LivingEntity.class, cloudEntity.getBoundingBox().expand(0.3), Entity::isAlive);
+        for (final LivingEntity entity : list) {
             if (entity instanceof IllagerEntity) {
                 this.cancelEffect(cloudEntity, entity);
             }
@@ -168,25 +157,25 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     protected void initDataTracker() {
-        this.dataTracker.startTracking((TrackedData)AlchemistEntity.POTION, (Object)false);
-        this.dataTracker.startTracking((TrackedData)AlchemistEntity.BOW, (Object)true);
+        this.dataTracker.startTracking(AlchemistEntity.POTION, false);
+        this.dataTracker.startTracking(AlchemistEntity.BOW, true);
         super.initDataTracker();
+    }
+
+    public boolean getPotionState() {
+        return this.dataTracker.get(POTION);
     }
 
     public void setPotionState(final boolean potionState) {
         this.dataTracker.set(POTION, potionState);
     }
 
-    public boolean getPotionState() {
-        return (boolean)this.dataTracker.get(POTION);
+    public boolean getBowState() {
+        return (boolean) this.dataTracker.get(AlchemistEntity.BOW);
     }
 
     public void setBowState(final boolean bowState) {
-        this.dataTracker.set((TrackedData)AlchemistEntity.BOW, (Object)bowState);
-    }
-
-    public boolean getBowState() {
-        return (boolean)this.dataTracker.get((TrackedData)AlchemistEntity.BOW);
+        this.dataTracker.set(AlchemistEntity.BOW, bowState);
     }
 
     public SoundEvent getCelebratingSound() {
@@ -204,7 +193,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         }
         final ItemStack mainhand = this.getStackInHand(Hand.MAIN_HAND);
         if (this.getBowState() && mainhand.isOf(Items.LINGERING_POTION)) {
-            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack((ItemConvertible)Items.BOW));
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             this.setPotionState(false);
         }
         if (this.getPotionState() && mainhand.isOf(Items.BOW)) {
@@ -219,7 +208,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             if (randvalue == 2) {
                 potion = Potions.WEAKNESS;
             }
-            this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack((ItemConvertible)Items.LINGERING_POTION), potion));
+            this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.LINGERING_POTION), potion));
             this.setBowState(false);
         }
         super.mobTick();
@@ -236,9 +225,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             return true;
         }
         if (other instanceof VexEntity) {
-            return this.isTeammate((Entity)((VexEntity)other).getOwner());
+            return this.isTeammate(((VexEntity) other).getOwner());
         }
-        return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
+        return other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
     }
 
     protected SoundEvent getAmbientSound() {
@@ -267,17 +256,6 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
-        return PolymerEntityUtils.createPlayerSpawnPacket(this);
-    }
-
-    @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
-        this.onTrackingStarted(player);
-    }
-
-    @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         this.onStartedTrackingBy(player);
         this.onTrackingStopped(player);
@@ -286,10 +264,5 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     @Override
     public Property getSkin() {
         return EntitySkins.ALCHEMIST;
-    }
-
-    static {
-        POTION = DataTracker.registerData((Class)AlchemistEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-        BOW = DataTracker.registerData((Class)AlchemistEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     }
 }
