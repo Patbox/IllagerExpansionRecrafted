@@ -21,7 +21,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
-    public static final IntProperty AGE = Properties.AGE_15;
     public MagicFireBlock(Settings settings, float damage) {
         super(settings.nonOpaque(), 0.0f);
     }

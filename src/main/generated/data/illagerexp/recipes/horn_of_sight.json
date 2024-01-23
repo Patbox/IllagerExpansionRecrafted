@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "illagerexp:hallowed_gem"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "H": {
+      "item": "minecraft:goat_horn"
+    }
+  },
+  "pattern": [
+    "GAG",
+    "GHG",
+    "GGG"
+  ],
+  "result": {
+    "item": "illagerexp:horn_of_sight"
+  }
+}

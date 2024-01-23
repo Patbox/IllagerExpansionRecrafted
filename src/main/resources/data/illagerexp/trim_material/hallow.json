@@ -1,0 +1,9 @@
+{
+  "asset_name": "hallow",
+  "description": {
+    "translate": "trim_material.illagerexp.hallow",
+    "color": "#d53e6f"
+  },
+  "ingredient": "illagerexp:hallowed_gem",
+  "item_model_index": 0
+}

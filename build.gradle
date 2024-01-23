@@ -21,6 +21,27 @@ repositories {
 
 loom {
     accessWidenerPath = file("src/main/resources/illagerexp.accesswidener")
+
+    runs {
+        datagen {
+            server()
+            name = "Data Generation"
+            runDir = "build/datagen"
+            vmArg("-Dfabric-api.datagen")
+            vmArg("-Dfabric-api.datagen.output-dir=${file("src/main/generated")}")
+        }
+    }
+}
+
+
+sourceSets {
+    main {
+        resources {
+            srcDirs += [
+                    "src/main/generated"
+            ]
+        }
+    }
 }
 
 dependencies {

@@ -6,16 +6,18 @@ import me.sandbox.IllagerExpansion;
 import me.sandbox.entity.EntityRegistry;
 import me.sandbox.item.custom.*;
 import me.sandbox.poly.*;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+
+import static me.sandbox.IllagerExpansion.id;
 
 public class ItemRegistry {
     public static final List<Item> ITEMS = new ArrayList<>();
@@ -36,22 +38,24 @@ public class ItemRegistry {
     public static final Item PLATINUM_SHEET = registerItem("platinum_sheet",
             new SimplePolymerAutoItem(new Item.Settings(), Items.IRON_INGOT));
     public static final Item FIRECALLER_BELT = registerItem("firecaller_belt",
-            new SimplePolymerAutoItem(new Item.Settings().fireproof().maxCount(1), Items.LEATHER_HORSE_ARMOR));
+            new SimplePolymerAutoItem(new Item.Settings().fireproof().maxCount(1), Items.STICK));
 
 
     //TOOLS
     public static final Item HATCHET = registerItem("hatchet",
             new HatchetItem(new Item.Settings().maxDamage(250)));
+
+    public static final Item PLATINUM_UPGRADE_TEMPLATE = registerItem("platinum_upgrade_template", PolymerSmithingTemplate.createPlatinumUpgradeTemplate());
     public static final Item PLATINUM_INFUSED_NETHERITE_PICKAXE = registerItem("platinum_infused_netherite_pickaxe",
-            new ModPickaxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1, -2.8f, new Item.Settings().fireproof()));
+            new PlatinumPickaxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1, -2.8f, new Item.Settings().fireproof()));
     public static final Item PLATINUM_INFUSED_NETHERITE_AXE = registerItem("platinum_infused_netherite_axe",
-            new ModAxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 5, -3.0f, new Item.Settings().fireproof()));
+            new PlatinumAxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 5, -3.0f, new Item.Settings().fireproof()));
     public static final Item PLATINUM_INFUSED_NETHERITE_HOE = registerItem("platinum_infused_netherite_hoe",
-            new ModHoeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f, new Item.Settings().fireproof()));
+            new PlatinumHoeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f, new Item.Settings().fireproof()));
     public static final Item PLATINUM_INFUSED_NETHERITE_SWORD = registerItem("platinum_infused_netherite_sword",
-            new PolymerSwordItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 3, -2.4f, new Item.Settings().fireproof()));
+            new PlatinumSwordItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 3, -2.4f, new Item.Settings().fireproof()));
     public static final Item PLATINUM_INFUSED_NETHERITE_SHOVEL = registerItem("platinum_infused_netherite_shovel",
-            new PolymerShovelItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1.5f, -3.0f, new Item.Settings().fireproof()));
+            new PlatinumShovelItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1.5f, -3.0f, new Item.Settings().fireproof()));
 
     //ARMOR
     public static final Item PLATINUM_INFUSED_NETHERITE_HELMET = registerItem("platinum_infused_netherite_helmet",
@@ -83,7 +87,7 @@ public class ItemRegistry {
             new PolymerSpawnEggItem(EntityRegistry.ALCHEMIST, Items.VINDICATOR_SPAWN_EGG, new Item.Settings()));
     public static final Item FIRECALLER_SPAWN_EGG = registerItem("firecaller_spawn_egg",
             new PolymerSpawnEggItem(EntityRegistry.FIRECALLER, Items.VINDICATOR_SPAWN_EGG, new Item.Settings()));
-
+    public static final TagKey<Item> MAGIC_DAMAGE_BLOCKING_ARMOR = TagKey.of(RegistryKeys.ITEM, id("magic_damage_blocking_armor"));
 
     public static Item registerItem(String name, Item item) {
         ITEMS.add(item);

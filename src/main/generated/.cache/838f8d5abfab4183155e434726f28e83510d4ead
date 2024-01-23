@@ -1,0 +1,9 @@
+// 1.20.4	2024-01-23T22:22:12.020864135	Illager Expansion [Rematch]/Tags for minecraft:item
+848a848187fa13e18dedf79cd5fcfd235a20cf73 data/minecraft/tags/items/hoes.json
+fbe4b634e91e3a3526b896d180e99fd69fa0c064 data/minecraft/tags/items/trim_materials.json
+e2b23b06db05d379ee7c28e708989e4fc05f1256 data/illagerexp/tags/items/magic_damage_blocking_armor.json
+f87fb301b4144fbf0c0aa843fd7cc63cae620447 data/minecraft/tags/items/swords.json
+794986a5244ad43f184b550766fdb58b0d947839 data/minecraft/tags/items/pickaxes.json
+5afb92a0a002987725684a995e5a49784c5f6a58 data/minecraft/tags/items/shovels.json
+e2b23b06db05d379ee7c28e708989e4fc05f1256 data/minecraft/tags/items/trimmable_armor.json
+86246a4eb429e98802e44eef9dfe9703ffa4eab1 data/minecraft/tags/items/axes.json

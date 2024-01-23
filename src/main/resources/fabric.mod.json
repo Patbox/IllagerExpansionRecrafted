@@ -27,6 +27,9 @@
     ],
     "mm:early_risers": [
       "me.sandbox.EarlyRiser"
+    ],
+    "fabric-datagen": [
+      "me.sandbox.datagen.DataGenInit"
     ]
   },
   "mixins": [

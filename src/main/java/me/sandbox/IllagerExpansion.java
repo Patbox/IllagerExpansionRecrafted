@@ -9,12 +9,17 @@ import me.sandbox.sounds.SoundRegistry;
 import me.sandbox.world.ProcessorRegistry;
 import me.sandbox.world.features.StructureRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IllagerExpansion implements ModInitializer {
     public static final String MOD_ID = "illagerexp";
     public static final Logger LOGGER = LoggerFactory.getLogger("IllagerExpansion");
+
+    public static Identifier id(String path) {
+        return new Identifier(MOD_ID, path);
+    }
 
     @Override
     public void onInitialize() {

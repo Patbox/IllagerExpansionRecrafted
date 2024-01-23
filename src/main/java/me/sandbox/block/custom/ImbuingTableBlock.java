@@ -19,8 +19,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
-    private static final Text TITLE = Text.literal("Imbue");
-
     public ImbuingTableBlock(Settings settings) {
         super(settings);
     }

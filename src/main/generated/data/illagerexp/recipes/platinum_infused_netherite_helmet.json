@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "illagerexp:platinum_sheet"
+  },
+  "base": {
+    "item": "minecraft:netherite_helmet"
+  },
+  "result": {
+    "item": "illagerexp:platinum_infused_netherite_helmet"
+  },
+  "template": {
+    "item": "illagerexp:platinum_upgrade_template"
+  }
+}

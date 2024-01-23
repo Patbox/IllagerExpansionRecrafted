@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "illagerexp:platinum_sheet"
+  },
+  "base": {
+    "item": "minecraft:netherite_hoe"
+  },
+  "result": {
+    "item": "illagerexp:platinum_infused_netherite_hoe"
+  },
+  "template": {
+    "item": "illagerexp:platinum_upgrade_template"
+  }
+}

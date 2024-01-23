@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "illagerexp:platinum_infused_netherite_helmet",
+    "illagerexp:platinum_infused_netherite_chestplate",
+    "illagerexp:platinum_infused_netherite_leggings",
+    "illagerexp:platinum_infused_netherite_boots"
+  ]
+}

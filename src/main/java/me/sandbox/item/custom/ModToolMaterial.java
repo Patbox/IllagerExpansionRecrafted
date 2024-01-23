@@ -5,12 +5,12 @@ import net.fabricmc.yarn.constants.MiningLevels;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Lazy;
+import org.apache.commons.lang3.function.Suppliers;
 
 import java.util.function.Supplier;
 
 public enum ModToolMaterial implements ToolMaterial {
-    PLATINUM_INFUSED_NETHERITE(MiningLevels.NETHERITE, 2531, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
-
+    PLATINUM_INFUSED_NETHERITE(MiningLevels.NETHERITE, 2001, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
 
 
     private final int miningLevel;
@@ -18,7 +18,7 @@ public enum ModToolMaterial implements ToolMaterial {
     private final float miningSpeed;
     private final float attackDamage;
     private final int enchantability;
-    private final Lazy<Ingredient> repairIngredient;
+    private final Supplier<Ingredient> repairIngredient;
 
     private ModToolMaterial(int miningLevel, int itemDurability, float miningSpeed,
                             float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient) {
@@ -27,7 +27,7 @@ public enum ModToolMaterial implements ToolMaterial {
         this.miningSpeed = miningSpeed;
         this.attackDamage = attackDamage;
         this.enchantability = enchantability;
-        this.repairIngredient = new Lazy(repairIngredient);
+        this.repairIngredient = repairIngredient;
     }
 
     public int getDurability() {

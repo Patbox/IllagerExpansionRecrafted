@@ -7,7 +7,6 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import me.sandbox.IllagerExpansion;
 import me.sandbox.item.ItemRegistry;
 import me.sandbox.sounds.SoundRegistry;
-import me.sandbox.util.ImbueUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,13 +29,6 @@ import java.util.Map;
 
 public class ImbuingTableGui extends SimpleGui {
     protected final CraftingResultInventory output = new CraftingResultInventory();
-    final Inventory input = new SimpleInventory(3) {
-        @Override
-        public void markDirty() {
-            super.markDirty();
-            ImbuingTableGui.this.onContentChanged(this);
-        }
-    };
 
     public ImbuingTableGui(ServerPlayerEntity player) {
         super(PolymerResourcePackUtils.hasMainPack(player) ? ScreenHandlerType.GENERIC_9X3 : ScreenHandlerType.GENERIC_9X4, player, false);
@@ -118,7 +110,13 @@ public class ImbuingTableGui extends SimpleGui {
         }
 
         return super.onAnyClick(index, type, action);
-    }
+    }    final Inventory input = new SimpleInventory(3) {
+        @Override
+        public void markDirty() {
+            super.markDirty();
+            ImbuingTableGui.this.onContentChanged(this);
+        }
+    };
 
     @Override
     public void onClose() {
@@ -140,32 +138,35 @@ public class ImbuingTableGui extends SimpleGui {
         ItemStack book = this.input.getStack(0);
         ItemStack gem = this.input.getStack(2);
         ItemStack imbuingResult = imbuingItem.copy();
-        Map<Enchantment, Integer> bookmap = EnchantmentHelper.get(book);
-        if (!book.isEmpty() && !gem.isEmpty() && !imbuingItem.isEmpty()) {
-            for (Enchantment bookEnchantment : bookmap.keySet()) {
-                if (bookmap.size() > 1) {
-                    //bigBook = true;
-                } else if (ImbueUtil.getBadEnchants().contains(bookEnchantment.getTranslationKey())) {
-                    //badEnchant = true;
-                } else if (!bookEnchantment.isAcceptableItem(imbuingItem)) {
-                    //badItem = true;
-                } else {
-                    int imbueLevel = bookmap.get(bookEnchantment) + 1;
-                    Map<Enchantment, Integer> imbueMap = EnchantmentHelper.get(imbuingItem);
-                    for (Enchantment imbueEnchant : imbueMap.keySet()) {
-                        int level = imbueMap.getOrDefault(imbueEnchant, 0);
-                        bookmap.put(imbueEnchant, level);
-                    }
-                    bookmap.put(bookEnchantment, imbueLevel);
-                    EnchantmentHelper.set(bookmap, imbuingResult);
-                    this.output.setStack(0, imbuingResult);
-                    //updateBooleans(false);
-                    //this.sendContentUpdates();
-                }
+        Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.get(book);
+        if (!book.isEmpty() && bookEnchantments.size() == 1 && !gem.isEmpty() && !imbuingItem.isEmpty()) {
+            var bookEnchantment = bookEnchantments.keySet().stream().findAny().get();
+
+            if (bookEnchantment.getMaxLevel() == 1 || !bookEnchantment.isAcceptableItem(imbuingItem)) {
+                output.setStack(0, ItemStack.EMPTY);
+                return;
             }
+
+            int imbueLevel = bookEnchantments.get(bookEnchantment) + 1;
+            Map<Enchantment, Integer> imbueMap = EnchantmentHelper.get(imbuingItem);
+            for (Enchantment imbueEnchant : imbueMap.keySet()) {
+                if (!imbueEnchant.canCombine(bookEnchantment) || !bookEnchantment.canCombine(imbueEnchant)) {
+                    output.setStack(0, ItemStack.EMPTY);
+                    return;
+                }
+
+                int level = imbueMap.getOrDefault(imbueEnchant, 0);
+                bookEnchantments.put(imbueEnchant, level);
+            }
+            bookEnchantments.put(bookEnchantment, imbueLevel);
+            EnchantmentHelper.set(bookEnchantments, imbuingResult);
+            this.output.setStack(0, imbuingResult);
         } else {
             output.setStack(0, ItemStack.EMPTY);
         }
     }
+
+
+
 
 }

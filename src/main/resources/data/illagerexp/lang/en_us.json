@@ -31,6 +31,12 @@
   "item.minecraft.tipped_arrow.effect.berserking_strong": "Arrow of Berserking",
   "item.minecraft.tipped_arrow.effect.berserking_long": "Arrow of Berserking",
   "item.illagerexp.firecaller_belt": "Firecaller Belt",
+  "item.illagerexp.platinum_upgrade_template": "Smithing Template",
+  "upgrade.illagerexp.platinum_upgrade_template": "Platinum Upgrade",
+  "item.illagerexp.platinum_upgrade_template.applies_to": "Netherite Equipment",
+  "item.illagerexp.platinum_upgrade_template.ingredients": "Platinum Sheet",
+  "trim_material.illagerexp.platinum": "Platinum Material",
+  "trim_material.illagerexp.hallow": "Hallowed Material",
 
 
   "item.illagerexp.provoker_spawn_egg": "Provoker Spawn Egg",
@@ -75,9 +81,5 @@
   "advancements.adventure.horn_of_sight.description": "Obtain a Horn of Sight",
 
   "itemGroup.illagerexp.sandboxmisc" : "Illager Expansion Items",
-  "itemGroup.illagerexp.sandboxmobs" : "Illager Expansion Mobs",
-
-  "text.autoconfig.illager_expansion_config.title": "Illager Expansion Config",
-  "text.autoconfig.illager_expansion_config.option.addIllagersToRaids": "Add New Illagers To Raids"
-
+  "itemGroup.illagerexp.sandboxmobs" : "Illager Expansion Mobs"
 }

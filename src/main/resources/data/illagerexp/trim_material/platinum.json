@@ -1,0 +1,9 @@
+{
+  "asset_name": "platinum",
+  "description": {
+    "translate": "trim_material.illagerexp.platinum",
+    "color": "#789e9e"
+  },
+  "ingredient": "illagerexp:platinum_sheet",
+  "item_model_index": 0
+}
