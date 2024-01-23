@@ -1,6 +1,7 @@
 package me.sandbox.gui;
 
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
+import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import me.sandbox.IllagerExpansion;
@@ -17,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Style;
@@ -95,6 +97,27 @@ public class ImbuingTableGui extends SimpleGui {
         }
 
         this.open();
+    }
+
+    @Override
+    public boolean onAnyClick(int index, ClickType type, SlotActionType action) {
+        if (action == SlotActionType.QUICK_MOVE) {
+            var slot = this.getSlotRedirect(index);
+            if (slot != null && slot.inventory == output && slot.hasStack()) {
+                var firstEmpty = this.player.getInventory().getEmptySlot();
+                if (firstEmpty != -1) {
+                    var stack = slot.getStack();
+                    slot.onTakeItem(this.player, stack);
+                    slot.setStack(ItemStack.EMPTY);
+                    this.player.getInventory().setStack(firstEmpty, stack);
+                    return false;
+                }
+
+                return false;
+            }
+        }
+
+        return super.onAnyClick(index, type, action);
     }
 
     @Override
