@@ -2,18 +2,23 @@ package me.sandbox.poly;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.datafixers.util.Pair;
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.VirtualEntityUtils;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import me.sandbox.mixin.poly.PlayerEntityAccessor;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.particle.ParticleTypes;
@@ -23,12 +28,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public interface PlayerPolymerEntity extends PolymerEntity {
+    Map<EntityType<?>, ItemStack> HEADS = new HashMap<>();
+
     default void onCreated(LivingEntity entity) {
         var x = new ItemDisplayElement();
         var holder = new ElementHolder();
@@ -49,6 +54,15 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     }
 
     @Override
+    default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        if (PolymerResourcePackUtils.hasMainPack(player)) {
+            items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
+            items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.getOrDefault(((Entity) this).getType(), ItemStack.EMPTY)));
+        }
+        return PolymerEntity.super.getPolymerVisibleEquipment(items, player);
+    }
+
+    @Override
     default void onBeforeSpawnPacket(ServerPlayerEntity player, Consumer<Packet<?>> packetConsumer) {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER));
         var profile = new GameProfile(((Entity) this).getUuid(), "");
@@ -59,7 +73,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
 
     @Override
     default void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
-        data.add(DataTracker.SerializedEntry.of(PlayerEntityAccessor.getPLAYER_MODEL_PARTS(), (byte) 0xFF));
+        data.add(DataTracker.SerializedEntry.of(PlayerEntityAccessor.getPLAYER_MODEL_PARTS(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3F : 0xFF)));
     }
 
 

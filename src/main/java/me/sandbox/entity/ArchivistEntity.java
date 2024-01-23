@@ -3,6 +3,7 @@ package me.sandbox.entity;
 import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
+import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import me.sandbox.poly.EntitySkins;
 import me.sandbox.poly.PlayerPolymerEntity;
 import me.sandbox.sounds.SoundRegistry;
@@ -184,6 +185,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
 
     @Override
     public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        PlayerPolymerEntity.super.getPolymerVisibleEquipment(items, player);
         items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
         items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.WRITTEN_BOOK.getDefaultStack()));
         return items;

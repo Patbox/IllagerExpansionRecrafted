@@ -159,6 +159,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
 
     @Override
     public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        PlayerPolymerEntity.super.getPolymerVisibleEquipment(items, player);
         items.removeIf(x -> x.getFirst() == EquipmentSlot.MAINHAND);
         items.add(new Pair<>(EquipmentSlot.MAINHAND, Items.STICK.getDefaultStack()));
         return items;
