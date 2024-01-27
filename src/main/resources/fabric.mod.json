@@ -3,17 +3,18 @@
   "id": "illagerexp",
   "version": "1.1.0",
 
-  "name": "Illager Expansion [Rematch]",
+  "name": "Illager Expansion Recrafted",
   "description": "A Fabric Mod that focuses on expanding content surrounding the mysterious Illagers in Minecraft!",
   "authors": [
     "Dricky",
     "Safro",
     "Tabzlock",
-    "All other contributors :)"
+    "Patbox",
+    "Skajunia"
   ],
   "contact": {
-    "sources": "https://github.com/ZekeSmith/Illager-Expansion-Rematch",
-    "issues": "https://github.com/ZekeSmith/Illager-Expansion-Rematch/issues",
+    "sources": "https://github.com/Patbox/IllagerExpansionRecrafted",
+    "issues": "https://github.com/Patbox/IllagerExpansionRecrafted/issues",
     "homepage": "https://pb4.eu"
   },
 
@@ -23,13 +24,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.sandbox.IllagerExpansion"
+      "eu.pb4.illagerexpansion.IllagerExpansion"
     ],
     "mm:early_risers": [
-      "me.sandbox.EarlyRiser"
+      "eu.pb4.illagerexpansion.EarlyRiser"
     ],
     "fabric-datagen": [
-      "me.sandbox.datagen.DataGenInit"
+      "eu.pb4.illagerexpansion.datagen.DataGenInit"
     ]
   },
   "mixins": [
