@@ -53,7 +53,7 @@ public class HatchetEntity
     public void tick() {
         super.tick();
         if (!this.inGround) {
-            this.dataTracker.set(ROLL, (float) (this.dataTracker.get(ROLL) + MathHelper.RADIANS_PER_DEGREE * this.getVelocity().lengthSquared() * 15) % MathHelper.TAU);
+            this.dataTracker.set(ROLL, (float) (this.dataTracker.get(ROLL) - MathHelper.RADIANS_PER_DEGREE * this.getVelocity().lengthSquared() * 15) % MathHelper.TAU);
         }
     }
 

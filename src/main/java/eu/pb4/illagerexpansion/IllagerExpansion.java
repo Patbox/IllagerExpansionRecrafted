@@ -6,6 +6,7 @@ import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.item.potion.PotionRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerModels;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
+import eu.pb4.illagerexpansion.util.IEGameRules;
 import eu.pb4.illagerexpansion.world.ProcessorRegistry;
 import eu.pb4.illagerexpansion.world.features.StructureRegistry;
 import net.fabricmc.api.ModInitializer;
@@ -32,6 +33,7 @@ public class IllagerExpansion implements ModInitializer {
         StructureRegistry.registerStructureFeatures();
         ProcessorRegistry.registerProcessors();
         PotionRegistry.registerPotions();
+        IEGameRules.register();
 
         LOGGER.info("Why are there so many illagers?");
     }

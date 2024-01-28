@@ -18,7 +18,7 @@ public class PlayerEntityMixin {
     private void tickFirecallerBelt(CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         TrinketsApi.getTrinketComponent(player).ifPresent(c -> c.forEach((slotReference, stack) -> {
-            if (stack.isOf(ItemRegistry.FIRECALLER_BELT) || player.getInventory().containsAny(ImmutableSet.of(ItemRegistry.FIRECALLER_BELT))) {
+            if (stack.isOf(ItemRegistry.FIRECALLER_BELT)) {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 60, 0, true, false, true));
             }
         }));

@@ -1,5 +1,6 @@
 package eu.pb4.illagerexpansion.gui;
 
+import eu.pb4.illagerexpansion.util.IEGameRules;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -24,6 +25,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Map;
 
@@ -151,10 +153,15 @@ public class ImbuingTableGui extends SimpleGui {
                 return;
             }
 
+            var gamerules = this.player.getWorld().getGameRules();
 
             int imbueLevel = bookEnchantments.get(bookEnchantment) + 1;
 
-            int cost = Math.max(bookEnchantment.getMinPower(imbueLevel) / 3, 8);
+            var cost = Math.max(bookEnchantment.getMinPower(imbueLevel) * gamerules.get(IEGameRules.XP_COST_BOOK_MULTIPLIER).get(),
+                    gamerules.get(IEGameRules.XP_COST_BOOK_MIN).get());
+
+            var itemMin = gamerules.get(IEGameRules.XP_COST_ITEM_MIN).get();
+            var itemMul = gamerules.get(IEGameRules.XP_COST_ITEM_MULTIPLIER).get();
 
             Map<Enchantment, Integer> toolMap = EnchantmentHelper.get(imbuingItem);
             for (Enchantment imbueEnchant : toolMap.keySet()) {
@@ -165,21 +172,28 @@ public class ImbuingTableGui extends SimpleGui {
 
                 int level = toolMap.getOrDefault(imbueEnchant, 0);
                 bookEnchantments.put(imbueEnchant, level);
-                cost += Math.max(imbueEnchant.getMinPower(imbueLevel) / 5, 5);
+                cost += Math.max(imbueEnchant.getMinPower(imbueLevel) * itemMul, itemMin);
             }
+
             bookEnchantments.put(bookEnchantment, imbueLevel);
             EnchantmentHelper.set(bookEnchantments, imbuingResult);
-            if (cost > 35) {
+
+            if (cost > gamerules.getInt(IEGameRules.XP_COST_MAX) && !this.player.isCreative()) {
                 this.cost = 0;
                 output.setStack(0, ItemStack.EMPTY);
                 this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE)
-                        .setName(Text.translatable("container.repair.expensive", cost).formatted(Formatting.RED)));
+                        .setName(Text.translatable("container.repair.expensive").formatted(Formatting.RED)));
                 return;
             }
-            this.output.setStack(0, imbuingResult);
-            this.cost = cost;
+            this.cost = MathHelper.ceil(cost);
+            if (this.player.experienceLevel >= this.cost || this.player.isCreative()) {
+                this.output.setStack(0, imbuingResult);
+            } else {
+                output.setStack(0, ItemStack.EMPTY);
+            }
             this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE)
-                    .setName(Text.translatable("container.repair.cost", cost).formatted(Formatting.GREEN))
+                    .setName(Text.translatable("container.repair.cost", this.cost)
+                            .formatted(this.player.experienceLevel >= this.cost ? Formatting.GREEN : Formatting.RED))
             );
         } else {
             output.setStack(0, ItemStack.EMPTY);
