@@ -11,6 +11,7 @@ import eu.pb4.polymer.virtualentity.api.VirtualEntityUtils;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import eu.pb4.illagerexpansion.mixin.poly.PlayerEntityAccessor;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,10 +22,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.PlayerAssociatedNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -32,14 +35,19 @@ import java.util.function.Consumer;
 public interface PlayerPolymerEntity extends PolymerEntity {
     Map<EntityType<?>, ItemStack> HEADS = new HashMap<>();
 
+    WeakHashMap<LivingEntity, ItemDisplayElement> BANNER_ELEMENTS = new WeakHashMap<>();
+
     default void onCreated(LivingEntity entity) {
         var x = new ItemDisplayElement();
         var holder = new ElementHolder();
         x.setInvisible(true);
+        x.setModelTransformation(ModelTransformationMode.HEAD);
+        x.setTeleportDuration(3);
+        x.setScale(new Vector3f(0.5f));
         holder.addElement(x);
-
         EntityAttachment.of(holder, entity);
         VirtualEntityUtils.addVirtualPassenger(entity, x.getEntityId());
+        BANNER_ELEMENTS.put(entity, x);
     }
 
     @Override
@@ -90,10 +98,22 @@ public interface PlayerPolymerEntity extends PolymerEntity {
             }
         } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
             var packet = new ParticleS2CPacket(ParticleTypes.AMBIENT_ENTITY_EFFECT, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
-
             for (var p : listeners) {
                 p.sendPacket(packet);
             }
+        }
+
+        var b = BANNER_ELEMENTS.get(this);
+        var stack = e.getEquippedStack(EquipmentSlot.HEAD);
+        if (stack.isIn(ItemTags.BANNERS) && !e.isDead()) {
+            b.setItem(stack);
+            b.setYaw(e.getHeadYaw());
+            b.setPitch(e.getPitch());
+        } else {
+            b.setItem(ItemStack.EMPTY);
+        }
+        if (b.isDirty()) {
+            b.tick();
         }
     }
 
