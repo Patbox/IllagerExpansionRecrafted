@@ -61,8 +61,8 @@ public interface PlayerPolymerEntity extends PolymerEntity {
 
     @Override
     default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+        items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
         if (PolymerResourcePackUtils.hasMainPack(player)) {
-            items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
             items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.getOrDefault(((Entity) this).getType(), ItemStack.EMPTY)));
         }
         return PolymerEntity.super.getPolymerVisibleEquipment(items, player);

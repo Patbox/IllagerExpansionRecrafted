@@ -8,7 +8,7 @@ import net.minecraft.recipe.Ingredient;
 import java.util.function.Supplier;
 
 public enum ModToolMaterial implements ToolMaterial {
-    PLATINUM_INFUSED_NETHERITE(MiningLevels.NETHERITE, 2001, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
+    PLATINUM_INFUSED_NETHERITE(MiningLevels.NETHERITE, 2031, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
 
 
     private final int miningLevel;

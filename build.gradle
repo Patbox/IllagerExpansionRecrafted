@@ -90,6 +90,10 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
+
+    from("src/main/resources/data/illagerexp/lang") {
+        into("assets/illagerexp/lang")
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -103,6 +107,10 @@ java {
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
+    }
+
+    from("src/main/resources/data/illagerexp/lang") {
+        into("assets/illagerexp/lang")
     }
 }
 

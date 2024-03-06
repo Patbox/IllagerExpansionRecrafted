@@ -37,8 +37,6 @@
   "item.illagerexp.platinum_upgrade_template.ingredients": "Platinum Sheet",
   "trim_material.illagerexp.platinum": "Platinum Material",
   "trim_material.illagerexp.hallow": "Hallowed Material",
-
-
   "item.illagerexp.provoker_spawn_egg": "Provoker Spawn Egg",
   "item.illagerexp.surrendered_spawn_egg": "Surrendered Spawn Egg",
   "item.illagerexp.necromancer_spawn_egg": "Necromancer Spawn Egg",
@@ -49,12 +47,7 @@
   "item.illagerexp.marauder_spawn_egg": "Marauder Spawn Egg",
   "item.illagerexp.alchemist_spawn_egg": "Alchemist Spawn Egg",
   "item.illagerexp.firecaller_spawn_egg": "Firecaller Spawn Egg",
-
-
-
   "block.illagerexp.imbuing_table": "Imbuing Table",
-
-
   "entity.illagerexp.provoker": "Provoker",
   "entity.illagerexp.invoker": "Invoker",
   "entity.illagerexp.surrendered": "Surrendered",
@@ -66,7 +59,6 @@
   "entity.illagerexp.marauder": "Marauder",
   "entity.illagerexp.alchemist": "Alchemist",
   "entity.illagerexp.firecaller": "Firecaller",
-
   "advancements.husbandry.platinum_infused_netherite_hoe.title": "Why?",
   "advancements.husbandry.platinum_infused_netherite_hoe.description": "Use a platinum sheet to upgrade a hoe, and then definitely decide why you made this decision",
   "advancements.adventure_find_mansion.title": "Home Sweet Mansion",
@@ -79,7 +71,46 @@
   "advancements.nether.platinum_infused_netherite_armor.description": "Get a full suit of Platinum Infused Netherite armor",
   "advancements.adventure.horn_of_sight.title": "Don't Toot Your Own Horn",
   "advancements.adventure.horn_of_sight.description": "Obtain a Horn of Sight",
-
-  "itemGroup.illagerexp.sandboxmisc" : "Illager Expansion Items",
-  "itemGroup.illagerexp.sandboxmobs" : "Illager Expansion Mobs"
+  "itemGroup.illagerexp.sandboxmisc": "Illager Expansion Items",
+  "itemGroup.illagerexp.sandboxmobs": "Illager Expansion Mobs",
+  "subtitle.illagerexp.surrendered_hurt": "Surrendered hurts",
+  "subtitle.illagerexp.surrendered_ambient": "Surrendered idles",
+  "subtitle.illagerexp.surrendered_charge": "Surrendered charges",
+  "subtitle.illagerexp.surrendered_death": "Surrendered disappears",
+  "subtitle.illagerexp.archivist.ambient": "Archivist murmurs",
+  "subtitle.illagerexp.archivist.hurt": "Archivist hurts",
+  "subtitle.illagerexp.archivist.death": "Archivist dies",
+  "subtitle.illagerexp.sorcerer.cast": "Sorcerer cast",
+  "subtitle.illagerexp.sorcerer.complete_cast": "Sorcerer completes casting",
+  "subtitle.illagerexp.firecaller_cast": "Firecaller cast",
+  "subtitle.illagerexp.horn_of_sight": "Horn of Sight plays",
+  "subtitle.illagerexp.invoker_fangs": "Invoker fangs",
+  "subtitle.illagerexp.invoker_hurt": "Invoker hurts",
+  "subtitle.illagerexp.invoker_ambient": "Invoker murmurs",
+  "subtitle.illagerexp.invoker_death": "Invoker dies",
+  "subtitle.illagerexp.invoker_big_cast": "Invoker casts",
+  "subtitle.illagerexp.invoker_fangs_cast": "Invoker casts fangs",
+  "subtitle.illagerexp.invoker_teleport_cast": "Invoker casts teleport",
+  "subtitle.illagerexp.invoker_completecast": "Invoker completes casting",
+  "subtitle.illagerexp.invoker_summon_cast": "Invoker casts summon",
+  "subtitle.illagerexp.invoker_shield_create": "Invoker creates shield",
+  "subtitle.illagerexp.invoker_shield_break": "Invoker's shield breaks",
+  "subtitle.illagerexp.illager_brute_ambient": "Brute mutters",
+  "subtitle.illagerexp.illager_brute_hurt": "Brute hurts",
+  "subtitle.illagerexp.illager_brute_death": "Brute dies",
+  "subtitle.illagerexp.provoker_death": "Provoker dies",
+  "subtitle.illagerexp.provoker_hurt": "Provoker hurts",
+  "subtitle.illagerexp.provoker_idle": "Provoker murmurs",
+  "subtitle.illagerexp.provoker_celebrate": "Provoker celebrates",
+  "subtitle.illagerexp.basher_celebrate": "Basher celebrates",
+  "subtitle.illagerexp.basher_idle": "Basher murmurs",
+  "subtitle.illagerexp.basher_hurt": "Basher hurts",
+  "subtitle.illagerexp.basher_death": "Basher dies",
+  "subtitle.illagerexp.firecaller_death": "Firecaller dies",
+  "subtitle.illagerexp.firecaller_idle": "Firecaller murmurs",
+  "subtitle.illagerexp.firecaller_hurt": "Firecaller hurts",
+  "subtitle.illagerexp.sorcerer_hurt": "Sorcerer hurts",
+  "subtitle.illagerexp.sorcerer_idle": "Sorcerer murmurs",
+  "subtitle.illagerexp.sorcerer_death": "Sorcerer dies",
+  "subtitle.illagerexp.sorcerer_celebrate": "Sorcerer celebrates"
 }

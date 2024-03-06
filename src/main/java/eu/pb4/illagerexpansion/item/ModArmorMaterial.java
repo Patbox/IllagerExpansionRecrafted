@@ -10,7 +10,7 @@ import net.minecraft.sound.SoundEvents;
 import java.util.function.Supplier;
 
 public enum ModArmorMaterial implements ArmorMaterial {
-    PLATINUM_INFUSED_NETHERITE("platinum_infused_netherite", 36, new int[]{3, 6, 8, 3}, 17, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0f, 0.25f, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
+    PLATINUM_INFUSED_NETHERITE("platinum_infused_netherite", 37, new int[]{3, 6, 8, 3}, 17, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0f, 0.25f, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
 
     private static final int[] BASE_DURABILITY = new int[]{13, 15, 16, 11};
     private final String name;

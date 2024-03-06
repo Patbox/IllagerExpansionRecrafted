@@ -10,10 +10,12 @@
     "MarauderPatrolMixin",
     "PlayerEntityMixin",
     "PotionsAccessor",
+    "RaidMixin",
     "StructureProcessorAccessor",
     "StructureTemplateMixin",
     "SurrenderedChargeMixin",
     "WoodlandMansionPiecesMixin",
+    "ZombieVillagerEntityAccessor",
     "poly.EntityAccessor",
     "poly.PlayerEntityAccessor",
     "poly.ThrownItemEntityAccessor"

@@ -77,7 +77,7 @@ public class InvokerEntity
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new LookAtTargetOrWololoTarget());
-        this.goalSelector.add(3, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 0.6, 1.0));
+        this.goalSelector.add(3, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 0.7, 1.1));
         this.goalSelector.add(5, new AreaDamageGoal());
         this.goalSelector.add(4, new CastTeleportGoal());
         this.goalSelector.add(5, new SummonVexGoal());
@@ -85,12 +85,12 @@ public class InvokerEntity
         this.goalSelector.add(6, new ConjureFangsGoal());
         this.goalSelector.add(6, new WololoGoal());
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
-        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
+        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 5.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
         this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
-        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<>(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+        this.targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, false));
     }
 
     @Override
@@ -102,9 +102,9 @@ public class InvokerEntity
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
             attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 250.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36D)
-                    .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.3D)
+                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0D)
+                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D)
+                    .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.35D)
                     .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0D)
                     .build());
         }
@@ -349,12 +349,12 @@ public class InvokerEntity
 
         @Override
         protected int getSpellTicks() {
-            return 100;
+            return 80;
         }
 
         @Override
         protected int startTimeDelay() {
-            return 340;
+            return 300;
         }
 
         @Override
@@ -397,12 +397,12 @@ public class InvokerEntity
 
         @Override
         protected int getSpellTicks() {
-            return 40;
+            return 30;
         }
 
         @Override
         protected int startTimeDelay() {
-            return 100;
+            return 80;
         }
 
         @Override
@@ -610,7 +610,7 @@ public class InvokerEntity
 
         @Override
         protected int getInitialCooldown() {
-            return 50;
+            return 40;
         }
 
         @Override
@@ -620,7 +620,7 @@ public class InvokerEntity
 
         @Override
         protected int startTimeDelay() {
-            return 400;
+            return 360;
         }
 
         @Override
@@ -693,7 +693,7 @@ public class InvokerEntity
 
         @Override
         protected int startTimeDelay() {
-            return 400;
+            return 360;
         }
 
         @Override
@@ -773,7 +773,7 @@ public class InvokerEntity
 
         @Override
         protected int getSpellTicks() {
-            return 40;
+            return 30;
         }
 
         @Override
