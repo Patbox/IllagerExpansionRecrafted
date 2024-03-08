@@ -1,6 +1,0 @@
-- The Invoker (boss) now spawns on the last wave of level 5 raid.
-- Tweaked the strength of the Invoker boss
-- Tweaked Platinum Weapon/Tool effects.
-- Fix custom Illagers not showing the banner correctly.
-- Fixed model of Horn of Sight
-- Fixed subtitle translations
