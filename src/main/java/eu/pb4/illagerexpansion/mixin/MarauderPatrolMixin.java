@@ -35,7 +35,7 @@ public abstract class MarauderPatrolMixin
                     marauder.setRandomPatrolTarget();
                 }
                 marauder.setPosition(pos.getX(), pos.getY(), pos.getZ());
-                marauder.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null, null);
+                marauder.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null);
                 world.spawnEntityAndPassengers(marauder);
             }
         }

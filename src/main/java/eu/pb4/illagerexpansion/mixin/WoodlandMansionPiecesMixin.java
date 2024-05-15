@@ -36,7 +36,7 @@ public class WoodlandMansionPiecesMixin {
             basher = EntityRegistry.BASHER.create(world.toServerWorld());
             basher.setPersistent();
             basher.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            basher.initialize(world, world.getLocalDifficulty(basher.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+            basher.initialize(world, world.getLocalDifficulty(basher.getBlockPos()), SpawnReason.STRUCTURE, null);
             world.spawnEntityAndPassengers(basher);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
@@ -45,7 +45,7 @@ public class WoodlandMansionPiecesMixin {
             archivist = EntityRegistry.ARCHIVIST.create(world.toServerWorld());
             archivist.setPersistent();
             archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);
             world.spawnEntityAndPassengers(archivist);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
@@ -54,7 +54,7 @@ public class WoodlandMansionPiecesMixin {
             archivist = EntityRegistry.INVOKER.create(world.toServerWorld());
             archivist.setPersistent();
             archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);
             world.spawnEntityAndPassengers(archivist);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
         }

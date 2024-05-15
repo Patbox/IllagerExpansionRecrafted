@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -76,11 +77,6 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-    }
-
-    @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
     }
@@ -117,7 +113,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
         if (other instanceof VexEntity) {
             return this.isTeammate(((VexEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER)) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;

@@ -1,6 +1,8 @@
 package eu.pb4.illagerexpansion.util.spellutil;
 
 import com.google.common.collect.Maps;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -26,10 +28,10 @@ public class EnchantToolUtil {
     public void doEnchant(Enchantment enchantment, int enchantLevel, LivingEntity entity) {
         ItemStack mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND);
         ItemStack offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND);
-        HashMap<Enchantment, Integer> map = Maps.newHashMap();
-        map.put(enchantment, enchantLevel);
-        EnchantmentHelper.set(map, mainhanditem);
-        EnchantmentHelper.set(map, offhanditem);
+        var ench = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
+        ench.add(enchantment, enchantLevel);
+        mainhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
+        offhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
     }
 
     public void enchant(LivingEntity entity) {

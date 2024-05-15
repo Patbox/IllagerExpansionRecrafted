@@ -99,9 +99,9 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(VEX_FLAGS, (byte) 0);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(VEX_FLAGS, (byte) 0);
     }
 
     @Override
@@ -213,10 +213,10 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
         this.initEquipment(random, difficulty);
         this.updateEnchantments(random, difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData);
     }
 
     @Override
@@ -230,7 +230,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         for (int i = 0; i < data.size(); i++) {
             var e = data.get(i);
 
-            if (e.id() == Entity.FLAGS.getId()) {
+            if (e.id() == Entity.FLAGS.id()) {
                 data.set(i, DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) e.value()) | 0x1 << 5)));
             }
         }

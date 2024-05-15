@@ -7,7 +7,6 @@ import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.block.custom.ImbuingTableBlock;
 import eu.pb4.illagerexpansion.block.custom.MagicFireBlock;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -38,9 +37,9 @@ public class BlockRegistry {
     private static <T extends Block & PolymerHeadBlock> Item registerBlockItem(String name, Block block, boolean group) {
         Item x;
         if (block instanceof PolymerHeadBlock) {
-            x = ItemRegistry.registerItem(name, new PolymerHeadBlockItem((T) block, new FabricItemSettings()));
+            x = ItemRegistry.registerItem(name, new PolymerHeadBlockItem((T) block, new Item.Settings()));
         } else {
-            x = ItemRegistry.registerItem(name, new PolymerBlockItem(block, new FabricItemSettings(), Items.STRUCTURE_VOID));
+            x = ItemRegistry.registerItem(name, new PolymerBlockItem(block, new Item.Settings(), Items.STRUCTURE_VOID));
         }
         if (!group) {
             ItemRegistry.ITEMS.remove(x);

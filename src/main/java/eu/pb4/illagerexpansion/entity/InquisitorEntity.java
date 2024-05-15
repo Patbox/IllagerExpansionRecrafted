@@ -16,6 +16,7 @@ import net.minecraft.enchantment.Enchantment;
 import java.util.HashMap;
 
 import net.minecraft.entity.mob.*;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
@@ -29,7 +30,6 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -82,6 +82,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         this.isStunned = false;
         this.blockedCount = 0;
         this.experiencePoints = 25;
+        this.setPathfindingPenalty(PathNodeType.LEAVES, 0.0F);
         this.onCreated(this);
     }
 
@@ -153,10 +154,11 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         this.setFinalRoarState(nbt.getBoolean("FinalRoar"));
     }
 
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(STUNNED,false);
-        this.dataTracker.startTracking(FINAL_ROAR, false);
-        super.initDataTracker();
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(FINAL_ROAR, false);
+        builder.add(STUNNED, false);
     }
 
     public void setStunnedState(final boolean isStunned) {
@@ -190,7 +192,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
     }
     @Override
     protected EntityNavigation createNavigation(World world) {
-        return new InquisitorEntity.Navigation(this, world);
+        return new MobNavigation(this, world);
     }
 
     public void tick() {
@@ -225,8 +227,8 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
     }
 
     @Nullable
-    public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData, @Nullable final NbtCompound entityNbt) {
-        final EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData) {
+        final EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(random, difficulty);
         this.updateEnchantments(random, difficulty);
@@ -241,7 +243,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
     }
 
     public boolean isTeammate(final Entity other) {
-        return super.isTeammate(other) || (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null);
+        return super.isTeammate(other) || (other instanceof LivingEntity && ((LivingEntity)other).getType().isIn(EntityTypeTags.ILLAGER) && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null);
     }
 
     public boolean damage(final DamageSource source, final float amount) {
@@ -312,11 +314,11 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         }
         final boolean bl2;
         final boolean bl = bl2 = (this.random.nextFloat() <= raid.getEnchantmentChance());
-        if (bl) {
+        /*if (bl) {
             HashMap<Enchantment, Integer> map = Maps.newHashMap();
             map.put(Enchantments.SHARPNESS, i);
             EnchantmentHelper.set(map, itemStack);
-        }
+        }*/
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
         this.equipStack(EquipmentSlot.OFFHAND, itemstack1);
     }
@@ -327,24 +329,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
 
         }
     }
-    class Navigation extends MobNavigation {
-        public Navigation(final MobEntity mobEntity, final World world) {
-            super(mobEntity, world);
-        }
 
-        protected PathNodeNavigator createPathNodeNavigator(final int range) {
-            this.nodeMaker = new PathNodeMaker();
-            return new PathNodeNavigator(this.nodeMaker, range);
-        }
-    }
-    static class PathNodeMaker extends LandPathNodeMaker {
-        protected PathNodeType adjustNodeType(final BlockView world, final BlockPos pos, final PathNodeType type) {
-            if (type == PathNodeType.LEAVES) {
-                return PathNodeType.OPEN;
-            }
-            return super.adjustNodeType(world, pos, type);
-        }
-    }
 
 
 

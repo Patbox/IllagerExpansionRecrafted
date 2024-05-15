@@ -2,8 +2,11 @@ package eu.pb4.illagerexpansion.entity;
 
 import com.mojang.authlib.properties.Property;
 import eu.pb4.illagerexpansion.entity.goal.PotionBowAttackGoal;
+import eu.pb4.illagerexpansion.mixin.AreaEffectCloudEntityAccessor;
 import eu.pb4.illagerexpansion.poly.EntitySkins;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
@@ -30,8 +33,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -87,21 +91,23 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         return this.attributeContainer;
     }
 
-    public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData, @Nullable final NbtCompound entityNbt) {
+    public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData);
     }
 
     public void shootAt(final LivingEntity target, final float pullProgress) {
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isOf(Items.LINGERING_POTION)) {
-            final Potion potion = PotionUtil.getPotion(this.getEquippedStack(EquipmentSlot.MAINHAND));
+            var potion = this.getEquippedStack(EquipmentSlot.MAINHAND).getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
             final Vec3d vec3d = target.getVelocity();
             final double d = target.getX() + vec3d.x - this.getX();
             final double e = target.getEyeY() - 1.100000023841858 - this.getY();
             final double f = target.getZ() + vec3d.z - this.getZ();
             final double g = Math.sqrt(d * d + f * f);
             final PotionEntity potionEntity = new PotionEntity(getWorld(), this);
-            potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.LINGERING_POTION), potion));
+            var throwed = new ItemStack(Items.LINGERING_POTION);
+            throwed.set(DataComponentTypes.POTION_CONTENTS, potion);
+            potionEntity.setItem(throwed);
             potionEntity.setPitch(potionEntity.getPitch() + 20.0f);
             potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
             if (!this.isSilent()) {
@@ -133,11 +139,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     private void cancelEffect(final AreaEffectCloudEntity areaEffectCloudEntity, final LivingEntity entity) {
-        final Potion potion = areaEffectCloudEntity.getPotion();
-        if (!potion.getEffects().isEmpty()) {
-            final StatusEffectInstance statusEffectInstance = potion.getEffects().get(0);
-            final StatusEffect statusEffect = statusEffectInstance.getEffectType();
-            entity.removeStatusEffect(statusEffect);
+        var potion = ((AreaEffectCloudEntityAccessor) areaEffectCloudEntity).getPotionContentsComponent();
+        for (var effect : potion.getEffects()) {
+            entity.removeStatusEffect(effect.getEffectType());
         }
     }
 
@@ -156,10 +160,10 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         this.setBowState(nbt.getBoolean("BowState"));
     }
 
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(AlchemistEntity.POTION, false);
-        this.dataTracker.startTracking(AlchemistEntity.BOW, true);
-        super.initDataTracker();
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(AlchemistEntity.POTION, false);
+        builder.add(AlchemistEntity.BOW, true);
     }
 
     public boolean getPotionState() {
@@ -197,18 +201,17 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             this.setPotionState(false);
         }
         if (this.getPotionState() && mainhand.isOf(Items.BOW)) {
-            Potion potion = null;
+            RegistryEntry<Potion> potion = Potions.POISON;
             final int randvalue = this.random.nextInt(3);
-            if (randvalue == 0) {
-                potion = Potions.POISON;
-            }
             if (randvalue == 1) {
                 potion = Potions.SLOWNESS;
             }
             if (randvalue == 2) {
                 potion = Potions.WEAKNESS;
             }
-            this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.LINGERING_POTION), potion));
+            var throwed = new ItemStack(Items.LINGERING_POTION);
+            throwed.set(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT.with(potion));
+            this.equipStack(EquipmentSlot.MAINHAND, throwed);
             this.setBowState(false);
         }
         super.mobTick();
@@ -227,7 +230,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         if (other instanceof VexEntity) {
             return this.isTeammate(((VexEntity) other).getOwner());
         }
-        return other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
+        return other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER) && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
     }
 
     protected SoundEvent getAmbientSound() {

@@ -8,7 +8,6 @@ import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import eu.pb4.illagerexpansion.util.spellutil.SetMagicFireUtil;
 import eu.pb4.illagerexpansion.util.spellutil.TeleportUtil;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
@@ -23,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -70,10 +70,6 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
         return attributeContainer;
     }
 
-    @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-    }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
@@ -111,7 +107,7 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
         if (other instanceof VexEntity) {
             return this.isTeammate(((VexEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER)) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;

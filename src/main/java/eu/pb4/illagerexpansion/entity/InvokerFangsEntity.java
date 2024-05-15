@@ -8,6 +8,7 @@ import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,10 +39,6 @@ public class InvokerFangsEntity
         this.setPosition(x, y, z);
     }
 
-    @Override
-    protected void initDataTracker() {
-    }
-
     public void setOwner(@Nullable LivingEntity owner) {
         this.owner = owner;
         this.ownerUuid = owner == null ? null : owner.getUuid();
@@ -70,6 +67,11 @@ public class InvokerFangsEntity
         if (this.ownerUuid != null) {
             nbt.putUuid("Owner", this.ownerUuid);
         }
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+
     }
 
     @Override

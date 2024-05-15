@@ -4,6 +4,7 @@
   "package": "eu.pb4.illagerexpansion.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AreaEffectCloudEntityAccessor",
     "BrewingRecipeRegistryMixin",
     "CreeperEntityAccessor",
     "LivingEntityMixin",

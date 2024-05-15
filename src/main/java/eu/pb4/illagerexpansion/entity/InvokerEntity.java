@@ -31,6 +31,7 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -123,9 +124,9 @@ public class InvokerEntity
     }
 
     @Override
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(SHIELDED, false);
-        super.initDataTracker();
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(SHIELDED, false);
     }
 
     @Override
@@ -227,7 +228,7 @@ public class InvokerEntity
         if (other instanceof SurrenderedEntity) {
             return this.isTeammate(((SurrenderedEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER)) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
@@ -364,7 +365,7 @@ public class InvokerEntity
                 BlockPos blockPos = InvokerEntity.this.getBlockPos().add(-2 + InvokerEntity.this.random.nextInt(5), 1, -2 + InvokerEntity.this.random.nextInt(5));
                 SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getWorld());
                 surrenderedEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
+                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
                 surrenderedEntity.setOwner(InvokerEntity.this);
                 surrenderedEntity.setBounds(blockPos);
                 surrenderedEntity.setLifeTicks(20 * (30 + InvokerEntity.this.random.nextInt(90)));

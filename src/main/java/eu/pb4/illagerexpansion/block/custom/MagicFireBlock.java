@@ -70,8 +70,8 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     }
 
     @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.SOUL_FIRE;
+    public BlockState getPolymerBlockState(BlockState state) {
+        return Blocks.SOUL_FIRE.getDefaultState();
     }
 }
 

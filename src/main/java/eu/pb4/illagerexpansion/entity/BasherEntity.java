@@ -8,6 +8,7 @@ import eu.pb4.illagerexpansion.poly.EntitySkins;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
 import eu.pb4.illagerexpansion.poly.Stunnable;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -37,6 +38,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -118,9 +120,9 @@ public class BasherEntity
     }
 
     @Override
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(STUNNED, false);
-        super.initDataTracker();
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(STUNNED, false);
     }
 
     public boolean getStunnedState() {
@@ -216,8 +218,8 @@ public class BasherEntity
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+        EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
         ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(random, difficulty);
         this.updateEnchantments(random, difficulty);
@@ -236,7 +238,7 @@ public class BasherEntity
         if (super.isTeammate(other)) {
             return true;
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER)) {
             return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
@@ -268,11 +270,7 @@ public class BasherEntity
             i = 2;
         }
         boolean bl2 = bl = this.random.nextFloat() <= raid.getEnchantmentChance();
-        if (bl) {
-            HashMap<Enchantment, Integer> map = Maps.newHashMap();
-            map.put(Enchantments.UNBREAKING, i);
-            EnchantmentHelper.set(map, itemStack);
-        }
+
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 

@@ -8,6 +8,8 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +18,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -144,9 +147,9 @@ public class ImbuingTableGui extends SimpleGui {
         ItemStack book = this.input.getStack(0);
         ItemStack gem = this.input.getStack(2);
         ItemStack imbuingResult = imbuingItem.copy();
-        Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.get(book);
-        if (!book.isEmpty() && bookEnchantments.size() == 1 && !gem.isEmpty() && !imbuingItem.isEmpty()) {
-            var bookEnchantment = bookEnchantments.keySet().stream().findAny().get();
+        var bookEnchantments = book.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
+        if (!book.isEmpty() && bookEnchantments.getSize() == 1 && !gem.isEmpty() && !imbuingItem.isEmpty()) {
+            var bookEnchantment = bookEnchantments.getEnchantments().stream().findAny().get().value();
 
             if (bookEnchantment.getMaxLevel() == 1 || !bookEnchantment.isAcceptableItem(imbuingItem)) {
                 output.setStack(0, ItemStack.EMPTY);
@@ -155,7 +158,7 @@ public class ImbuingTableGui extends SimpleGui {
 
             var gamerules = this.player.getWorld().getGameRules();
 
-            int imbueLevel = bookEnchantments.get(bookEnchantment) + 1;
+            int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 
             var cost = Math.max(bookEnchantment.getMinPower(imbueLevel) * gamerules.get(IEGameRules.XP_COST_BOOK_MULTIPLIER).get(),
                     gamerules.get(IEGameRules.XP_COST_BOOK_MIN).get());
@@ -163,25 +166,25 @@ public class ImbuingTableGui extends SimpleGui {
             var itemMin = gamerules.get(IEGameRules.XP_COST_ITEM_MIN).get();
             var itemMul = gamerules.get(IEGameRules.XP_COST_ITEM_MULTIPLIER).get();
 
-            Map<Enchantment, Integer> toolMap = EnchantmentHelper.get(imbuingItem);
-            for (Enchantment imbueEnchant : toolMap.keySet()) {
-                if (!imbueEnchant.canCombine(bookEnchantment) || !bookEnchantment.canCombine(imbueEnchant)) {
+            var toolMap = imbuingItem.getEnchantments();
+            var newEnch = new ItemEnchantmentsComponent.Builder(bookEnchantments);
+            for (var imbueEnchant : toolMap.getEnchantments()) {
+                if (!imbueEnchant.value().canCombine(bookEnchantment) || !bookEnchantment.canCombine(imbueEnchant.value())) {
                     output.setStack(0, ItemStack.EMPTY);
                     return;
                 }
 
-                int level = toolMap.getOrDefault(imbueEnchant, 0);
-                bookEnchantments.put(imbueEnchant, level);
-                cost += Math.max(imbueEnchant.getMinPower(imbueLevel) * itemMul, itemMin);
+                int level = toolMap.getLevel(imbueEnchant.value());
+                newEnch.add(imbueEnchant.value(), level);
+                cost += Math.max(imbueEnchant.value().getMinPower(imbueLevel) * itemMul, itemMin);
             }
 
-            bookEnchantments.put(bookEnchantment, imbueLevel);
-            EnchantmentHelper.set(bookEnchantments, imbuingResult);
-
+            newEnch.add(bookEnchantment, imbueLevel);
+            imbuingResult.set(DataComponentTypes.ENCHANTMENTS, newEnch.build());
             if (cost > gamerules.getInt(IEGameRules.XP_COST_MAX) && !this.player.isCreative()) {
                 this.cost = 0;
                 output.setStack(0, ItemStack.EMPTY);
-                this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE)
+                this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE).hideDefaultTooltip()
                         .setName(Text.translatable("container.repair.expensive").formatted(Formatting.RED)));
                 return;
             }
@@ -191,7 +194,7 @@ public class ImbuingTableGui extends SimpleGui {
             } else {
                 output.setStack(0, ItemStack.EMPTY);
             }
-            this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE)
+            this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE).hideDefaultTooltip()
                     .setName(Text.translatable("container.repair.cost", this.cost)
                             .formatted(this.player.experienceLevel >= this.cost ? Formatting.GREEN : Formatting.RED))
             );

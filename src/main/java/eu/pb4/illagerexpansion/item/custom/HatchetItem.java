@@ -1,15 +1,14 @@
 package eu.pb4.illagerexpansion.item.custom;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +16,6 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.Vanishable;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -29,15 +27,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class HatchetItem extends Item implements Vanishable, PolymerAutoItem {
+public class HatchetItem extends Item implements PolymerAutoItem {
 
-    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
+    private final AttributeModifiersComponent attributeModifiers;
 
     public HatchetItem(Item.Settings settings) {
         super(settings);
-        ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 6.0, EntityAttributeModifier.Operation.ADDITION));
-        builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -1.9f, EntityAttributeModifier.Operation.ADDITION));
+        var builder = AttributeModifiersComponent.builder();
+        builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
+        builder.add(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -1.9f, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
         this.attributeModifiers = builder.build();
     }
 
@@ -65,7 +63,7 @@ public class HatchetItem extends Item implements Vanishable, PolymerAutoItem {
         if (i < 10) {
             return;
         }
-        stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
+        stack.damage(1, playerEntity, EquipmentSlot.MAINHAND);
         HatchetEntity hatchetentity = new HatchetEntity(world, playerEntity, stack);
         hatchetentity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, 1.0f + 0.5f, 1.0f);
         if (playerEntity.getAbilities().creativeMode) {
@@ -94,7 +92,7 @@ public class HatchetItem extends Item implements Vanishable, PolymerAutoItem {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+        stack.damage(1, attacker, EquipmentSlot.MAINHAND);
         return true;
     }
 
@@ -106,17 +104,14 @@ public class HatchetItem extends Item implements Vanishable, PolymerAutoItem {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if ((double) state.getHardness(world, pos) != 0.0) {
-            stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            stack.damage(2, miner, EquipmentSlot.MAINHAND);
         }
         return true;
     }
 
     @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        if (slot == EquipmentSlot.MAINHAND) {
-            return this.attributeModifiers;
-        }
-        return super.getAttributeModifiers(slot);
+    public AttributeModifiersComponent getAttributeModifiers() {
+        return this.attributeModifiers;
     }
 
     @Override

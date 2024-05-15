@@ -71,7 +71,7 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     }
 
     @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.PLAYER_HEAD;
+    public BlockState getPolymerBlockState(BlockState state) {
+        return Blocks.PLAYER_HEAD.getDefaultState();
     }
 }

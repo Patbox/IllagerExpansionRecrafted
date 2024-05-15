@@ -18,7 +18,7 @@ public class SurrenderedChargeMixin<T extends MobEntity> extends BipedEntityMode
         super(root);
     }
 
-    @Inject(at = @At("TAIL"), cancellable = true, method = "setAngles(Lnet/minecraft/entity/mob/MobEntity;FFFFF)V")
+    @Inject(at = @At("TAIL"), method = "setAngles(Lnet/minecraft/entity/mob/MobEntity;FFFFF)V")
     public void chargingAnimation(T mobEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
         if (mobEntity instanceof SurrenderedEntity) {
             if (((SurrenderedEntity)mobEntity).isCharging()) {

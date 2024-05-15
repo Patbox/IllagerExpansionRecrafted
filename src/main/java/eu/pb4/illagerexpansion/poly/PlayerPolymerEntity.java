@@ -97,7 +97,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
                 p.sendPacket(packet);
             }
         } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
-            var packet = new ParticleS2CPacket(ParticleTypes.AMBIENT_ENTITY_EFFECT, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
+            var packet = new ParticleS2CPacket(ParticleTypes.EFFECT, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
             for (var p : listeners) {
                 p.sendPacket(packet);
             }

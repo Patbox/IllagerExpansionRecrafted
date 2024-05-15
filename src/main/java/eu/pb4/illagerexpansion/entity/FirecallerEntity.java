@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -71,11 +72,6 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         return this.attributeContainer;
     }
 
-    protected void initDataTracker() {
-        super.initDataTracker();
-    }
-
-
     public void readCustomDataFromNbt(final NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
     }
@@ -112,7 +108,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         if (other instanceof VexEntity) {
             return this.isTeammate(((VexEntity) other).getOwner());
         }
-        return other instanceof LivingEntity && ((LivingEntity) other).getGroup() == EntityGroup.ILLAGER && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
+        return other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER) && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
     }
 
     protected SoundEvent getAmbientSound() {

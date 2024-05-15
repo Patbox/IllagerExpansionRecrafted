@@ -42,11 +42,10 @@ public class HatchetEntity
         super(EntityRegistry.HATCHET, owner, world, stack);
     }
 
-
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(ROLL, 0f);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ROLL, 0f);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class HatchetEntity
         float f = 8.0f;
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
-            f += EnchantmentHelper.getAttackDamage(this.getStack(), livingEntity.getGroup());
+            f += EnchantmentHelper.getAttackDamage(this.getStack(), livingEntity.getType());
         }
         DamageSource damageSource = this.getDamageSources().trident(this, (entity2 = this.getOwner()) == null ? this : entity2);
         this.dealtDamage = true;
@@ -100,6 +99,11 @@ public class HatchetEntity
     @Override
     protected boolean tryPickup(PlayerEntity player) {
         return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
+    }
+
+    @Override
+    protected ItemStack getDefaultItemStack() {
+        return ItemRegistry.HATCHET.getDefaultStack();
     }
 
     @Override
@@ -142,7 +146,7 @@ public class HatchetEntity
         var sendBase = true;
         for (int i = 0; i < data.size(); i++) {
             var roll = data.get(i);
-            if (roll.id() == ROLL.getId() && roll.handler() == ROLL.getType()) {
+            if (roll.id() == ROLL.id() && roll.handler() == ROLL.dataType()) {
                 data.set(i, DataTracker.SerializedEntry.of(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(MathHelper.HALF_PI).rotateZ((float) roll.value())));
                 sendBase = false;
                 break;
