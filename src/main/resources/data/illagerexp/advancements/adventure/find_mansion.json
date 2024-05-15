@@ -2,7 +2,7 @@
   "parent": "minecraft:adventure/root",
   "display": {
     "icon": {
-      "item": "minecraft:dark_oak_planks"
+      "id": "minecraft:dark_oak_planks"
     },
     "title": {
       "translate": "advancements.adventure_find_mansion.title"

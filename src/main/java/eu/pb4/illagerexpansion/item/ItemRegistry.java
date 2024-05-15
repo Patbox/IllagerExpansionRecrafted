@@ -6,6 +6,7 @@ import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import eu.pb4.illagerexpansion.item.custom.*;
 import eu.pb4.illagerexpansion.poly.*;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -47,25 +48,34 @@ public class ItemRegistry {
 
     public static final Item PLATINUM_UPGRADE_TEMPLATE = registerItem("platinum_upgrade_template", PolymerSmithingTemplate.createPlatinumUpgradeTemplate());
     public static final Item PLATINUM_INFUSED_NETHERITE_PICKAXE = registerItem("platinum_infused_netherite_pickaxe",
-            new PlatinumPickaxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1, -2.8f, new Item.Settings().fireproof()));
+            new PlatinumPickaxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1, -2.8f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_AXE = registerItem("platinum_infused_netherite_axe",
-            new PlatinumAxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 5, -3.0f, new Item.Settings().fireproof()));
+            new PlatinumAxeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 5, -3.0f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_HOE = registerItem("platinum_infused_netherite_hoe",
-            new PlatinumHoeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f, new Item.Settings().fireproof()));
+            new PlatinumHoeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_SWORD = registerItem("platinum_infused_netherite_sword",
-            new PlatinumSwordItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 3, -2.4f, new Item.Settings().fireproof()));
+            new PlatinumSwordItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 3, -2.4f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_SHOVEL = registerItem("platinum_infused_netherite_shovel",
-            new PlatinumShovelItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1.5f, -3.0f, new Item.Settings().fireproof()));
+            new PlatinumShovelItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1.5f, -3.0f))));
 
     //ARMOR
     public static final Item PLATINUM_INFUSED_NETHERITE_HELMET = registerItem("platinum_infused_netherite_helmet",
-            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof()));
+            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_CHESTPLATE = registerItem("platinum_infused_netherite_chestplate",
-            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof()));
+            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_LEGGINGS = registerItem("platinum_infused_netherite_leggings",
-            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof()));
+            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
     public static final Item PLATINUM_INFUSED_NETHERITE_BOOTS = registerItem("platinum_infused_netherite_boots",
-            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof()));
+            new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof()
+                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
 
 
     //SPAWN EGGS

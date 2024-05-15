@@ -1,6 +1,7 @@
 package eu.pb4.illagerexpansion.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.structure.StructurePlacementData;
@@ -15,7 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 //Credit to TelepathicGrunt for providing the anti-waterlogging processor!!
 
 public class NoWaterlogProcessor extends StructureProcessor {
-    public static Codec<NoWaterlogProcessor> CODEC = Codec.unit(NoWaterlogProcessor::new);
+    public static MapCodec<NoWaterlogProcessor> CODEC = MapCodec.unit(NoWaterlogProcessor::new);
 
     @Override
     public StructureTemplate.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, StructureTemplate.StructureBlockInfo structureBlockInfo, StructureTemplate.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {

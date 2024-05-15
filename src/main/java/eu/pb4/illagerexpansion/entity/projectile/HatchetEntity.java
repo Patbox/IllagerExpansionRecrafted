@@ -27,11 +27,8 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class HatchetEntity
-        extends PersistentProjectileEntity implements FlyingItemEntity, PolymerEntity {
+public class HatchetEntity extends PersistentProjectileEntity implements FlyingItemEntity, PolymerEntity {
     private boolean dealtDamage;
-    public int returnTimer;
-
     private static final TrackedData<Float> ROLL = DataTracker.registerData(HatchetEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     public HatchetEntity(EntityType<? extends HatchetEntity> entityType, World world) {

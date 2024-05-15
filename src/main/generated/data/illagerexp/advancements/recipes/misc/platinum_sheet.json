@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "illagerexp:platinum_chunk"
-            ]
+            "items": "illagerexp:platinum_chunk"
           }
         ]
       },

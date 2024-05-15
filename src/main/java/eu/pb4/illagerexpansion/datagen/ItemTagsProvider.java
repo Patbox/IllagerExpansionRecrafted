@@ -34,6 +34,22 @@ class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
                 .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS)
         ;
 
+        this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR)
+                .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS)
+        ;
+
+        this.getOrCreateTagBuilder(ItemTags.LEG_ARMOR)
+                .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_LEGGINGS)
+        ;
+
+        this.getOrCreateTagBuilder(ItemTags.CHEST_ARMOR)
+                .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_CHESTPLATE)
+        ;
+
+        this.getOrCreateTagBuilder(ItemTags.HEAD_ARMOR)
+                .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_HELMET)
+        ;
+
         this.getOrCreateTagBuilder(ItemTags.TRIM_MATERIALS)
                 .add(ItemRegistry.PLATINUM_SHEET)
                 .add(ItemRegistry.HALLOWED_GEM);

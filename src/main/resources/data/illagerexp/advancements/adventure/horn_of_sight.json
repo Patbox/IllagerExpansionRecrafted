@@ -2,8 +2,7 @@
   "parent": "minecraft:adventure/voluntary_exile",
   "display": {
     "icon": {
-      "item": "illagerexp:horn_of_sight",
-      "nbt": "{Damage:0}"
+      "id": "illagerexp:horn_of_sight"
     },
     "title": {
       "translate": "advancements.adventure.horn_of_sight.title"

@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class PlatinumHoeItem extends HoeItem implements PolymerAutoItem {
-    public PlatinumHoeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
-        super(material, attackDamage, attackSpeed, settings);
+    public PlatinumHoeItem(ToolMaterial material, Settings settings) {
+        super(material, settings);
     }
 
     @Override

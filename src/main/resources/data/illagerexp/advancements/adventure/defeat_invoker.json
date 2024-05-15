@@ -2,8 +2,7 @@
   "parent": "illagerexp:adventure/find_mansion",
   "display": {
     "icon": {
-      "item": "illagerexp:primal_essence",
-      "nbt": "{Damage:0}"
+      "id": "illagerexp:primal_essence"
     },
     "title": {
       "translate": "advancements.adventure.defeat_invoker.title"

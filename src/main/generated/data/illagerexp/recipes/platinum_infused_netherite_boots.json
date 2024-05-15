@@ -7,7 +7,8 @@
     "item": "minecraft:netherite_boots"
   },
   "result": {
-    "item": "illagerexp:platinum_infused_netherite_boots"
+    "count": 1,
+    "id": "illagerexp:platinum_infused_netherite_boots"
   },
   "template": {
     "item": "illagerexp:platinum_upgrade_template"

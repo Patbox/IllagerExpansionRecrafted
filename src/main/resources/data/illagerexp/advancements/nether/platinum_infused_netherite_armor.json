@@ -2,8 +2,7 @@
   "parent": "minecraft:nether/netherite_armor",
   "display": {
     "icon": {
-      "item": "illagerexp:platinum_infused_netherite_chestplate",
-      "nbt": "{Damage:0}"
+      "id": "illagerexp:platinum_infused_netherite_chestplate"
     },
     "title": {
       "translate": "advancements.nether.platinum_infused_netherite_armor.title"

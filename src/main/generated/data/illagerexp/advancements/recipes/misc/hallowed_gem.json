@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "illagerexp:unusual_dust"
-            ]
+            "items": "illagerexp:unusual_dust"
           }
         ]
       },

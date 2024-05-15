@@ -18,15 +18,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
-    public PlatinumSwordItem(ToolMaterial toolMaterial, int attackDamage, float attackSpeed, Settings settings) {
-        super(toolMaterial, attackDamage, attackSpeed, settings);
+    public PlatinumSwordItem(ToolMaterial toolMaterial, Settings settings) {
+        super(toolMaterial, settings);
     }
 
     public static void applyEffects(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         for (var s : List.copyOf(target.getStatusEffects())) {
             target.removeStatusEffect(s.getEffectType());
             target.addStatusEffect(new StatusEffectInstance(s.getEffectType(), (int) Math.round(s.getDuration() * 0.8), s.getAmplifier(),
-                    s.isAmbient(), s.shouldShowParticles(), s.shouldShowIcon(), null, s.getFactorCalculationData()));
+                    s.isAmbient(), s.shouldShowParticles(), s.shouldShowIcon(), null));
         }
 
         if (target instanceof PhantomEntity) {

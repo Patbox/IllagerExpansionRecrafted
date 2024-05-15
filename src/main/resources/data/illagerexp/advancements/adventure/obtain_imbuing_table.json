@@ -2,8 +2,7 @@
   "parent": "illagerexp:adventure/defeat_invoker",
   "display": {
     "icon": {
-      "item": "illagerexp:imbuing_table",
-      "nbt": "{Damage:0}"
+      "id": "illagerexp:imbuing_table"
     },
     "title": {
       "translate": "advancements.adventure.imbuing_table.title"

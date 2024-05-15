@@ -1,26 +1,26 @@
 package eu.pb4.illagerexpansion.item.custom;
 
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.fabricmc.yarn.constants.MiningLevels;
+import net.minecraft.block.Block;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 
 import java.util.function.Supplier;
 
 public enum ModToolMaterial implements ToolMaterial {
-    PLATINUM_INFUSED_NETHERITE(MiningLevels.NETHERITE, 2031, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
-
-
-    private final int miningLevel;
+    PLATINUM_INFUSED_NETHERITE(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2031, 9.0f, 4.0f, 17, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET));
+    private final TagKey<Block> inverseToolMaterial;
     private final int itemDurability;
     private final float miningSpeed;
     private final float attackDamage;
     private final int enchantability;
     private final Supplier<Ingredient> repairIngredient;
 
-    private ModToolMaterial(int miningLevel, int itemDurability, float miningSpeed,
+    private ModToolMaterial(TagKey<Block> miningLevel, int itemDurability, float miningSpeed,
                             float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient) {
-        this.miningLevel = miningLevel;
+        this.inverseToolMaterial = miningLevel;
         this.itemDurability = itemDurability;
         this.miningSpeed = miningSpeed;
         this.attackDamage = attackDamage;
@@ -40,8 +40,9 @@ public enum ModToolMaterial implements ToolMaterial {
         return this.attackDamage;
     }
 
-    public int getMiningLevel() {
-        return this.miningLevel;
+    @Override
+    public TagKey<Block> getInverseTag() {
+        return this.inverseToolMaterial;
     }
 
     public int getEnchantability() {

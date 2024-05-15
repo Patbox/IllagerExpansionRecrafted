@@ -7,7 +7,8 @@
     "item": "minecraft:netherite_sword"
   },
   "result": {
-    "item": "illagerexp:platinum_infused_netherite_sword"
+    "count": 1,
+    "id": "illagerexp:platinum_infused_netherite_sword"
   },
   "template": {
     "item": "illagerexp:platinum_upgrade_template"

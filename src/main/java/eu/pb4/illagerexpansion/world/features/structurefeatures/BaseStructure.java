@@ -2,6 +2,7 @@ package eu.pb4.illagerexpansion.world.features.structurefeatures;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.illagerexpansion.world.features.StructureRegistry;
 import net.minecraft.registry.RegistryKeys;
@@ -25,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class BaseStructure extends Structure {
-    public static final Codec<BaseStructure> CODEC = RecordCodecBuilder.<BaseStructure>mapCodec((instance) -> {
+    public static final MapCodec<BaseStructure> CODEC = RecordCodecBuilder.<BaseStructure>mapCodec((instance) -> {
         return instance.group(configCodecBuilder(instance), StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter((structure) -> {
             return structure.startPool;
         }), Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((structure) -> {
@@ -39,7 +40,7 @@ public class BaseStructure extends Structure {
         }), Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter((structure) -> {
             return structure.maxDistanceFromCenter;
         })).apply(instance, BaseStructure::new);
-    }).flatXmap(createValidator(), createValidator()).codec();
+    }).flatXmap(createValidator(), createValidator());
     protected final RegistryEntry<StructurePool> startPool;
     protected final Optional<Identifier> startJigsawName;
     protected final int size;

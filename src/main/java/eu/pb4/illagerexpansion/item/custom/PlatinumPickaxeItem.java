@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class PlatinumPickaxeItem extends PickaxeItem implements PolymerAutoItem {
-    public PlatinumPickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
-        super(material, attackDamage, attackSpeed, settings);
+    public PlatinumPickaxeItem(ToolMaterial material, Settings settings) {
+        super(material, settings);
     }
 
     @Override

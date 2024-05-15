@@ -1,7 +1,7 @@
 package eu.pb4.illagerexpansion.mixin;
 
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import eu.pb4.illagerexpansion.util.IllagerUtil;
+import eu.pb4.illagerexpansion.util.TrinketsHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -22,7 +22,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickFirecallerBelt(CallbackInfo ci) {
-        IllagerUtil.ifWearing(this, ItemRegistry.FIRECALLER_BELT,
+        TrinketsHelper.ifWearing(this, ItemRegistry.FIRECALLER_BELT,
                 () -> this.addStatusEffect(new StatusEffectInstance(
                         StatusEffects.FIRE_RESISTANCE, 60, 0, true, false, true
                 )));

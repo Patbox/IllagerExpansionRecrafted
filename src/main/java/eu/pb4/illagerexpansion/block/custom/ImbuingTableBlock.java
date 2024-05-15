@@ -27,7 +27,7 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
         return BlockRenderType.MODEL;
     }
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (canActivate(pos, world)) {
             new ImbuingTableGui((ServerPlayerEntity) player);
             return ActionResult.SUCCESS;

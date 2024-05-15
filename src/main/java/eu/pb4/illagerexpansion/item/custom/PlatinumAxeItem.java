@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class PlatinumAxeItem extends AxeItem implements PolymerAutoItem {
-    public PlatinumAxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
-        super(material, attackDamage, attackSpeed, settings);
+    public PlatinumAxeItem(ToolMaterial material, Settings settings) {
+        super(material, settings);
     }
 
     @Override

@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
-    public PlatinumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
-        super(material, attackDamage, attackSpeed, settings);
+    public PlatinumShovelItem(ToolMaterial material, Settings settings) {
+        super(material, settings);
     }
 
     @Override

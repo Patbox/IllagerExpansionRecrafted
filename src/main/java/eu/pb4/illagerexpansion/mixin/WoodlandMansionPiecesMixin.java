@@ -26,7 +26,7 @@ public class WoodlandMansionPiecesMixin {
             provoker = EntityRegistry.PROVOKER.create(world.toServerWorld());
             provoker.setPersistent();
             provoker.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            provoker.initialize(world, world.getLocalDifficulty(provoker.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+            provoker.initialize(world, world.getLocalDifficulty(provoker.getBlockPos()), SpawnReason.STRUCTURE, null);
             world.spawnEntityAndPassengers(provoker);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
         }

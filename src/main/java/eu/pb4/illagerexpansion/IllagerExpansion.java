@@ -3,6 +3,7 @@ package eu.pb4.illagerexpansion;
 import eu.pb4.illagerexpansion.block.BlockRegistry;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
+import eu.pb4.illagerexpansion.item.ModArmorMaterial;
 import eu.pb4.illagerexpansion.item.potion.PotionRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerModels;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
@@ -25,8 +26,8 @@ public class IllagerExpansion implements ModInitializer {
     @Override
     public void onInitialize() {
         PolymerModels.setup();
-
         ItemRegistry.registerModItems();
+        ModArmorMaterial.register();
         BlockRegistry.registerModBlocks();
         SoundRegistry.registerSounds();
         EntityRegistry.registerEntities();

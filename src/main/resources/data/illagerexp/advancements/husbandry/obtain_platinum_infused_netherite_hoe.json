@@ -2,8 +2,7 @@
   "parent": "minecraft:husbandry/obtain_netherite_hoe",
   "display": {
     "icon": {
-      "item": "illagerexp:platinum_infused_netherite_hoe",
-      "nbt": "{Damage:0}"
+      "id": "illagerexp:platinum_infused_netherite_hoe"
     },
     "title": {
       "translate": "advancements.husbandry.platinum_infused_netherite_hoe.title"

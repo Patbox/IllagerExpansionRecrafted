@@ -7,6 +7,7 @@ import eu.pb4.polymer.resourcepack.api.PolymerModelData;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import net.minecraft.item.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class PolymerArmorItem extends ArmorItem implements PolymerItem {
     private final Item polymerItemBase;
     private final PolymerArmorModel armorModel;
 
-    public PolymerArmorItem(ArmorMaterial material, Type slot, Settings settings) {
+    public PolymerArmorItem(RegistryEntry<ArmorMaterial> material, Type slot, Settings settings) {
         super(material, slot, settings);
         this.polymerItemBase = switch (slot) {
             case HELMET -> Items.NETHERITE_HELMET;
@@ -35,7 +36,7 @@ public class PolymerArmorItem extends ArmorItem implements PolymerItem {
         };
 
         this.polymerTextured = PolymerResourcePackUtils.requestModel(item,
-                new Identifier(IllagerExpansion.MOD_ID, "item/" + material.getName() + "_" + (switch (slot) {
+                new Identifier(IllagerExpansion.MOD_ID, "item/" + material.getKey().get().getValue().getPath() + "_" + (switch (slot) {
                     case HELMET -> "helmet";
                     case CHESTPLATE -> "chestplate";
                     case LEGGINGS -> "leggings";
@@ -44,7 +45,7 @@ public class PolymerArmorItem extends ArmorItem implements PolymerItem {
                 })
                 ));
 
-        this.armorModel = PolymerResourcePackUtils.requestArmor(new Identifier(material.getName()));
+        this.armorModel = PolymerResourcePackUtils.requestArmor(material.getKey().get().getValue());
     }
 
     @Override

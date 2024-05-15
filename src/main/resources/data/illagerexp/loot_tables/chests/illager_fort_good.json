@@ -406,7 +406,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "illagerext:platinum_upgrade_smithing_template",
+          "name": "illagerexp:platinum_upgrade_template",
           "functions": [
             {
               "function": "minecraft:set_count",

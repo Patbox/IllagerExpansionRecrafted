@@ -227,12 +227,18 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
     @Override
     public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
+        var found = false;
         for (int i = 0; i < data.size(); i++) {
             var e = data.get(i);
 
             if (e.id() == Entity.FLAGS.id()) {
                 data.set(i, DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) e.value()) | 0x1 << 5)));
+                found = true;
             }
+        }
+
+        if (!found && initial) {
+            data.add(DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) 0x1 << 5))));
         }
     }
 

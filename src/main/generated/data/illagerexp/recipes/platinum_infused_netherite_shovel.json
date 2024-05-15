@@ -7,7 +7,8 @@
     "item": "minecraft:netherite_shovel"
   },
   "result": {
-    "item": "illagerexp:platinum_infused_netherite_shovel"
+    "count": 1,
+    "id": "illagerexp:platinum_infused_netherite_shovel"
   },
   "template": {
     "item": "illagerexp:platinum_upgrade_template"
