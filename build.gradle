@@ -74,7 +74,7 @@ dependencies {
     modImplementation 'com.github.chocohead:fabric-asm:v2.3'
     include 'com.github.chocohead:fabric-asm:v2.3'
 
-    modCompileOnly /*modRuntimeOnly*/("eu.pb4.polyport:trinkets:3.8.0+polymerport.2")
+    modCompileOnly /*modRuntimeOnly*/("eu.pb4.polyport:trinkets:3.9.0+polymerport.1")
 
     modImplementation include("eu.pb4:sgui:1.6.0+1.21")
     modImplementation "eu.pb4:polymer-autohost:0.9.0+1.21-rc1"
