@@ -37,6 +37,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -117,8 +118,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             this.setBowState(true);
             return;
         }
-        final ItemStack itemStack = this.getProjectileType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
-        final PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
+        var bow = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
+        final ItemStack itemStack = this.getProjectileType(bow);
+        final PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress, bow);
         final double d = target.getX() - this.getX();
         final double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         final double f = target.getZ() - this.getZ();
@@ -245,7 +247,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         return SoundEvents.ENTITY_ILLUSIONER_HURT;
     }
 
-    public void addBonusForWave(final int wave, final boolean unused) {
+    @Override
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     public IllagerEntity.State getState() {

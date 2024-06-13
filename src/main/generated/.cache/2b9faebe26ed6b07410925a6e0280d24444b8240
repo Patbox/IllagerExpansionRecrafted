@@ -1,13 +1,13 @@
-// 1.20.6	2024-05-15T20:18:29.378996787	Illager Expansion Recrafted/Tags for minecraft:item
-5de19cf8600fa9c37f5d6687321b44413f9f2885 data/minecraft/tags/items/trim_materials.json
-35ce808d22daa9310578b18739801986d821c782 data/minecraft/tags/items/chest_armor.json
-5e4620709626f13675b2f95407072c2aa12c429d data/minecraft/tags/items/leg_armor.json
-c343084512c89ce383b30aaa0ae705e88de87581 data/illagerexp/tags/items/magic_damage_blocking_armor.json
-cf2cd022cd216712bf8c02623af1ae7d077afe81 data/minecraft/tags/items/pickaxes.json
-c61d0c26ea663b884aa9cd3af02568dc60328098 data/minecraft/tags/items/foot_armor.json
-c343084512c89ce383b30aaa0ae705e88de87581 data/minecraft/tags/items/trimmable_armor.json
-18d58632642cf96bc94ce4564655b4d387aebaf5 data/minecraft/tags/items/hoes.json
-91fdf4f5dc87a3beda008fa12d744c69faf45740 data/minecraft/tags/items/swords.json
-a80dbf1bbffacfd9ba6f61579dbdd58d739a9a37 data/minecraft/tags/items/shovels.json
-21009d37f547c73af8d70b3888f58ebafbcd382c data/minecraft/tags/items/axes.json
-2f2f818b3d2664348a39cd887b1a48f74293dd9c data/minecraft/tags/items/head_armor.json
+// 1.21 Release Candidate 1	2024-06-13T09:16:46.389829614	Illager Expansion Recrafted/Tags for minecraft:item
+cf2cd022cd216712bf8c02623af1ae7d077afe81 data/minecraft/tags/item/pickaxes.json
+2f2f818b3d2664348a39cd887b1a48f74293dd9c data/minecraft/tags/item/head_armor.json
+18d58632642cf96bc94ce4564655b4d387aebaf5 data/minecraft/tags/item/hoes.json
+c343084512c89ce383b30aaa0ae705e88de87581 data/minecraft/tags/item/trimmable_armor.json
+21009d37f547c73af8d70b3888f58ebafbcd382c data/minecraft/tags/item/axes.json
+c61d0c26ea663b884aa9cd3af02568dc60328098 data/minecraft/tags/item/foot_armor.json
+5de19cf8600fa9c37f5d6687321b44413f9f2885 data/minecraft/tags/item/trim_materials.json
+91fdf4f5dc87a3beda008fa12d744c69faf45740 data/minecraft/tags/item/swords.json
+c343084512c89ce383b30aaa0ae705e88de87581 data/illagerexp/tags/item/magic_damage_blocking_armor.json
+35ce808d22daa9310578b18739801986d821c782 data/minecraft/tags/item/chest_armor.json
+a80dbf1bbffacfd9ba6f61579dbdd58d739a9a37 data/minecraft/tags/item/shovels.json
+5e4620709626f13675b2f95407072c2aa12c429d data/minecraft/tags/item/leg_armor.json

@@ -66,16 +66,16 @@ public class ItemRegistry {
     //ARMOR
     public static final Item PLATINUM_INFUSED_NETHERITE_HELMET = registerItem("platinum_infused_netherite_helmet",
             new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof()
-                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
+                    .maxDamage(ArmorItem.Type.HELMET.getMaxDamage(40))));
     public static final Item PLATINUM_INFUSED_NETHERITE_CHESTPLATE = registerItem("platinum_infused_netherite_chestplate",
             new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof()
-                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
+                    .maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(40))));
     public static final Item PLATINUM_INFUSED_NETHERITE_LEGGINGS = registerItem("platinum_infused_netherite_leggings",
             new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof()
-                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
+                    .maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(40))));
     public static final Item PLATINUM_INFUSED_NETHERITE_BOOTS = registerItem("platinum_infused_netherite_boots",
             new PolymerArmorItem(ModArmorMaterial.PLATINUM_INFUSED_NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof()
-                    .attributeModifiers(MiningToolItem.createAttributeModifiers(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f))));
+                    .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(40))));
 
 
     //SPAWN EGGS
@@ -101,15 +101,15 @@ public class ItemRegistry {
 
     public static Item registerItem(String name, Item item) {
         ITEMS.add(item);
-        Registry.register(Registries.ITEM, new Identifier(IllagerExpansion.MOD_ID, name), item);
+        Registry.register(Registries.ITEM, Identifier.of(IllagerExpansion.MOD_ID, name), item);
 
-        PolymerModels.requestModel(new Identifier(IllagerExpansion.MOD_ID, "item/" + name), item);
+        PolymerModels.requestModel(Identifier.of(IllagerExpansion.MOD_ID, "item/" + name), item);
         return item;
     }
 
 
     public static void registerModItems() {
-        PolymerItemGroupUtils.registerPolymerItemGroup(new Identifier(IllagerExpansion.MOD_ID, "main"),
+        PolymerItemGroupUtils.registerPolymerItemGroup(Identifier.of(IllagerExpansion.MOD_ID, "main"),
                 ItemGroup.create(null, -1)
                         .displayName(Text.translatable("itemGroup.illagerexp.sandboxmisc"))
                         .icon(() -> new ItemStack(ItemRegistry.HORN_OF_SIGHT))

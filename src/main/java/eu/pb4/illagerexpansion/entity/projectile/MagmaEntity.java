@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -23,7 +24,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     }
 
     public MagmaEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-        super(EntityRegistry.MAGMA, owner, directionX, directionY, directionZ, world);
+        super(EntityRegistry.MAGMA, owner, new Vec3d(directionX, directionY, directionZ), world);
     }
     @Override
     public void tick() {
@@ -47,9 +48,6 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
         entity.damage(this.getDamageSources().indirectMagic(this, entity2), 12.0f);
-        if (entity2 instanceof LivingEntity) {
-            this.applyDamageEffects((LivingEntity)entity2, entity);
-        }
         if (getWorld() instanceof ServerWorld) {
             ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
         }

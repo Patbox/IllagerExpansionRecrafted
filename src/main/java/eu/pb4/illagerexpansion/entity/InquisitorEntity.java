@@ -231,7 +231,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         final EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(random, difficulty);
-        this.updateEnchantments(random, difficulty);
+        this.updateEnchantments(world, random, difficulty);
         return entityData2;
     }
 
@@ -304,7 +304,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         return SoundRegistry.ILLAGER_BRUTE_HURT;
     }
 
-    public void addBonusForWave(final int wave, final boolean unused) {
+    public void addBonusForWave(ServerWorld world, final int wave, final boolean unused) {
         final ItemStack itemStack = new ItemStack((ItemConvertible)Items.STONE_SWORD);
         final ItemStack itemstack1 = new ItemStack((ItemConvertible)Items.SHIELD);
         final Raid raid = this.getRaid();

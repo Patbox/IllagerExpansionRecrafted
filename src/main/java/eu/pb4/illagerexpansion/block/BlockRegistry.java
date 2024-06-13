@@ -31,7 +31,7 @@ public class BlockRegistry {
 
     private static Block registerBlock(String name, Block block, boolean group) {
         registerBlockItem(name, block, group);
-        return Registry.register(Registries.BLOCK, new Identifier(IllagerExpansion.MOD_ID, name), block);
+        return Registry.register(Registries.BLOCK, Identifier.of(IllagerExpansion.MOD_ID, name), block);
     }
 
     private static <T extends Block & PolymerHeadBlock> Item registerBlockItem(String name, Block block, boolean group) {

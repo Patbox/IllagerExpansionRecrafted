@@ -41,7 +41,7 @@ public class ImbuingTableGui extends SimpleGui {
 
         this.setTitle(PolymerResourcePackUtils.hasMainPack(player)
                 ? Text.empty().append(Text.literal("-0.")
-                        .setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFont(new Identifier(IllagerExpansion.MOD_ID, "gui"))))
+                        .setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFont(Identifier.of(IllagerExpansion.MOD_ID, "gui"))))
                 .append(Text.literal("Imbue"))
                 : Text.literal("Imbue")
         );
@@ -149,9 +149,9 @@ public class ImbuingTableGui extends SimpleGui {
         ItemStack imbuingResult = imbuingItem.copy();
         var bookEnchantments = book.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
         if (!book.isEmpty() && bookEnchantments.getSize() == 1 && !gem.isEmpty() && !imbuingItem.isEmpty()) {
-            var bookEnchantment = bookEnchantments.getEnchantments().stream().findAny().get().value();
+            var bookEnchantment = bookEnchantments.getEnchantments().stream().findAny().get();
 
-            if (bookEnchantment.getMaxLevel() == 1 || !bookEnchantment.isAcceptableItem(imbuingItem)) {
+            if (bookEnchantment.value().getMaxLevel() == 1 || !bookEnchantment.value().isAcceptableItem(imbuingItem)) {
                 output.setStack(0, ItemStack.EMPTY);
                 return;
             }
@@ -160,7 +160,7 @@ public class ImbuingTableGui extends SimpleGui {
 
             int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 
-            var cost = Math.max(bookEnchantment.getMinPower(imbueLevel) * gamerules.get(IEGameRules.XP_COST_BOOK_MULTIPLIER).get(),
+            var cost = Math.max(bookEnchantment.value().getMinPower(imbueLevel) * gamerules.get(IEGameRules.XP_COST_BOOK_MULTIPLIER).get(),
                     gamerules.get(IEGameRules.XP_COST_BOOK_MIN).get());
 
             var itemMin = gamerules.get(IEGameRules.XP_COST_ITEM_MIN).get();
@@ -169,13 +169,13 @@ public class ImbuingTableGui extends SimpleGui {
             var toolMap = imbuingItem.getEnchantments();
             var newEnch = new ItemEnchantmentsComponent.Builder(bookEnchantments);
             for (var imbueEnchant : toolMap.getEnchantments()) {
-                if (!imbueEnchant.value().canCombine(bookEnchantment) || !bookEnchantment.canCombine(imbueEnchant.value())) {
+                if (!Enchantment.canBeCombined(bookEnchantment, imbueEnchant)) {
                     output.setStack(0, ItemStack.EMPTY);
                     return;
                 }
 
-                int level = toolMap.getLevel(imbueEnchant.value());
-                newEnch.add(imbueEnchant.value(), level);
+                int level = toolMap.getLevel(imbueEnchant);
+                newEnch.add(imbueEnchant, level);
                 cost += Math.max(imbueEnchant.value().getMinPower(imbueLevel) * itemMul, itemMin);
             }
 

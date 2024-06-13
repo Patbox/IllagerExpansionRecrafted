@@ -82,7 +82,7 @@ class RecipesProvider extends FabricRecipeProvider {
                 ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS, ItemRegistry.PLATINUM_INFUSED_NETHERITE_HELMET, ItemRegistry.PLATINUM_INFUSED_NETHERITE_LEGGINGS)) {
             SmithingTransformRecipeJsonBuilder.create(
                     Ingredient.ofItems(ItemRegistry.PLATINUM_UPGRADE_TEMPLATE),
-                    Ingredient.ofItems(Registries.ITEM.get(new Identifier(Registries.ITEM.getId(x).getPath().substring("platinum_infused_".length())))),
+                    Ingredient.ofItems(Registries.ITEM.get(Identifier.of(Registries.ITEM.getId(x).getPath().substring("platinum_infused_".length())))),
                     Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET),
                     RecipeCategory.TOOLS,
                     x

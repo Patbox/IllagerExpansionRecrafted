@@ -18,7 +18,8 @@
               "add": false
             },
             {
-              "function": "minecraft:looting_enchant",
+              "enchantment": "minecraft:looting",
+              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -52,7 +53,8 @@
               "add": false
             },
             {
-              "function": "minecraft:looting_enchant",
+              "enchantment": "minecraft:looting",
+              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -60,27 +62,7 @@
               }
             }
           ],
-          "name": "minecraft:book"
-        }
-      ]
-    },
-    {
-      "rolls": 1.0,
-      "bonus_rolls": 0.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "illagerexp:unusual_dust"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        },
-        {
-          "condition": "minecraft:random_chance_with_looting",
-          "chance": 40.0,
-          "looting_multiplier": 0.25
+          "name": "minecraft:arrow"
         }
       ]
     }

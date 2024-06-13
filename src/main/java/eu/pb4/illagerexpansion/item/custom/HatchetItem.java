@@ -4,6 +4,7 @@ import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -34,8 +35,8 @@ public class HatchetItem extends Item implements PolymerAutoItem {
     public HatchetItem(Item.Settings settings) {
         super(settings);
         var builder = AttributeModifiersComponent.builder();
-        builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
-        builder.add(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -1.9f, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
+        builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
+        builder.add(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -1.9f, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
         this.attributeModifiers = builder.build();
     }
 
@@ -50,7 +51,7 @@ public class HatchetItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 72000;
     }
 
@@ -59,7 +60,7 @@ public class HatchetItem extends Item implements PolymerAutoItem {
         if (!(user instanceof PlayerEntity playerEntity)) {
             return;
         }
-        int i = this.getMaxUseTime(stack) - remainingUseTicks;
+        int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
         if (i < 10) {
             return;
         }
@@ -70,7 +71,7 @@ public class HatchetItem extends Item implements PolymerAutoItem {
             hatchetentity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
         }
         world.spawnEntity(hatchetentity);
-        world.playSoundFromEntity(null, hatchetentity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        world.playSoundFromEntity(null, hatchetentity, SoundEvents.ITEM_TRIDENT_THROW.value(), SoundCategory.PLAYERS, 1.0f, 1.0f);
         if (!playerEntity.getAbilities().creativeMode) {
             playerEntity.getInventory().removeOne(stack);
         }
@@ -83,7 +84,7 @@ public class HatchetItem extends Item implements PolymerAutoItem {
         if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
             return TypedActionResult.fail(itemStack);
         }
-        if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isTouchingWaterOrRain()) {
+        if (EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH) && !user.isTouchingWaterOrRain()) {
             return TypedActionResult.fail(itemStack);
         }
         user.setCurrentHand(hand);

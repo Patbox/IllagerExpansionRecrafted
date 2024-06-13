@@ -9,6 +9,9 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 
 import java.util.*;
 
@@ -25,34 +28,35 @@ public class EnchantToolUtil {
         || offhanditem instanceof CrossbowItem || offhanditem instanceof SwordItem || offhanditem instanceof AxeItem);
     }
 
-    public void doEnchant(Enchantment enchantment, int enchantLevel, LivingEntity entity) {
+    public void doEnchant(RegistryWrapper.WrapperLookup lookup, RegistryKey<Enchantment> enchantment, int enchantLevel, LivingEntity entity) {
         ItemStack mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND);
         ItemStack offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND);
         var ench = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
-        ench.add(enchantment, enchantLevel);
+        ench.add(lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment), enchantLevel);
         mainhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
         offhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
     }
 
     public void enchant(LivingEntity entity) {
+        var lookup = entity.getWorld().getRegistryManager();
         mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND).getItem();
         offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND).getItem();
         mainStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
         offStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
         if (mainhanditem instanceof BowItem || offhanditem instanceof BowItem) {
-            doEnchant(Enchantments.POWER, 3, entity);
+            doEnchant(lookup, Enchantments.POWER, 3, entity);
             }
         if (mainhanditem instanceof AxeItem || mainhanditem instanceof SwordItem || offhanditem instanceof SwordItem || offhanditem instanceof AxeItem) {
-            doEnchant(Enchantments.SHARPNESS, 3, entity);
+            doEnchant(lookup, Enchantments.SHARPNESS, 3, entity);
         }
         if (mainhanditem instanceof CrossbowItem || offhanditem instanceof CrossbowItem) {
             Random random = new Random();
             int randvalue = random.nextInt(2);
             if (randvalue == 1) {
-                doEnchant(Enchantments.PIERCING, 4, entity);
+                doEnchant(lookup, Enchantments.PIERCING, 4, entity);
             }
             if (randvalue == 0) {
-                doEnchant(Enchantments.MULTISHOT, 1, entity);
+                doEnchant(lookup, Enchantments.MULTISHOT, 1, entity);
             }
         }
         entity.equipStack(EquipmentSlot.MAINHAND, mainStack);

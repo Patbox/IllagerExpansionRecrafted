@@ -1,6 +1,7 @@
 package eu.pb4.illagerexpansion.mixin;
 
 import eu.pb4.illagerexpansion.world.ProcessorRegistry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +23,7 @@ public class StructureTemplateMixin {
 
         if(placementData.getProcessors().stream().anyMatch(processor ->
                 ((StructureProcessorAccessor)processor).callGetType() == ProcessorRegistry.NO_WATERLOG_PROCESSOR)) {
-            placementData.setPlaceFluids(false);
+            placementData.setLiquidSettings(StructureLiquidSettings.IGNORE_WATERLOGGING);
         }
     }
 }

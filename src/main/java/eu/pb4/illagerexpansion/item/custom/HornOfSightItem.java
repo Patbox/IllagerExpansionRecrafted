@@ -37,7 +37,7 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
         if (itemStack.isEmpty()) {
             return;
         }
-        if ((double) (BowItem.getPullProgress(this.getMaxUseTime(stack) - remainingUseTicks)) < 0.1) {
+        if ((double) (BowItem.getPullProgress(this.getMaxUseTime(stack, user) - remainingUseTicks)) < 0.1) {
             return;
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -45,7 +45,7 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 60;
     }
 

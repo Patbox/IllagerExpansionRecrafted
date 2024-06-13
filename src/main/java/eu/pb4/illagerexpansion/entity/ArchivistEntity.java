@@ -156,7 +156,8 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
     }
 
     @Override
-    public void addBonusForWave(int wave, boolean unused) {
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     @Override

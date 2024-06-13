@@ -139,7 +139,8 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
     }
 
     @Override
-    public void addBonusForWave(int wave, boolean unused) {
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     @Override

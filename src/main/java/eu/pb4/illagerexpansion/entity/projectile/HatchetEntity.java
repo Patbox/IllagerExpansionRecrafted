@@ -15,6 +15,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
@@ -32,11 +33,11 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     private static final TrackedData<Float> ROLL = DataTracker.registerData(HatchetEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     public HatchetEntity(EntityType<? extends HatchetEntity> entityType, World world) {
-        super(entityType, world, ItemRegistry.HATCHET.getDefaultStack());
+        super(entityType, world);
     }
 
     public HatchetEntity(World world, LivingEntity owner, ItemStack stack) {
-        super(EntityRegistry.HATCHET, owner, world, stack);
+        super(EntityRegistry.HATCHET, owner, world, stack, stack);
     }
 
     @Override
@@ -64,27 +65,23 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        Entity entity2;
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
-        if (entity instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity)entity;
-            f += EnchantmentHelper.getAttackDamage(this.getStack(), livingEntity.getType());
+        DamageSource damageSource = this.getDamageSources().trident(this, this.getOwner());
+
+        if (entity instanceof LivingEntity livingEntity) {
+            f = EnchantmentHelper.getDamage((ServerWorld) this.getWorld(), this.getStack(), livingEntity, damageSource, f);
         }
-        DamageSource damageSource = this.getDamageSources().trident(this, (entity2 = this.getOwner()) == null ? this : entity2);
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
         if (entity.damage(damageSource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity2 = (LivingEntity)entity;
-                if (entity2 instanceof LivingEntity) {
-                    EnchantmentHelper.onUserDamaged(livingEntity2, entity2);
-                    EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity2);
-                }
-                this.onHit(livingEntity2);
+            if (entity instanceof LivingEntity livingEntity) {
+                    EnchantmentHelper.onTargetDamaged((ServerWorld) this.getWorld(), livingEntity, damageSource, this.getStack());
+
+                this.onHit(livingEntity);
             }
         }
         this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));

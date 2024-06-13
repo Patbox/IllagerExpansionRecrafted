@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.illagerexpansion.world.features.StructureRegistry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
+import net.minecraft.world.gen.structure.DimensionPadding;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
@@ -74,7 +76,7 @@ public class BaseStructure extends Structure {
         int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
         BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
 
-        return StructurePoolBasedGenerator.generate(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter, StructurePoolAliasLookup.EMPTY);
+        return StructurePoolBasedGenerator.generate(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter, StructurePoolAliasLookup.EMPTY, DimensionPadding.NONE, StructureLiquidSettings.APPLY_WATERLOGGING);
     }
 
     public StructureType<?> getType() {

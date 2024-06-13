@@ -7,7 +7,6 @@ import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import eu.pb4.illagerexpansion.util.spellutil.SpellParticleUtil;
 import eu.pb4.illagerexpansion.util.spellutil.TeleportUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
@@ -50,7 +49,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class InvokerEntity
-        extends SpellcastingIllagerEntity implements SkinOverlayOwner, PlayerPolymerEntity {
+        extends SpellcastingIllagerEntity implements PlayerPolymerEntity {
     private static final TrackedData<Boolean> SHIELDED = DataTracker.registerData(InvokerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(), BossBar.Color.YELLOW, BossBar.Style.PROGRESS).setDarkenSky(true);
     public boolean inSecondPhase = false;
@@ -95,11 +94,6 @@ public class InvokerEntity
     }
 
     @Override
-    public boolean shouldRenderOverlay() {
-        return this.getShieldedState();
-    }
-
-    @Override
     public AttributeContainer getAttributes() {
         if (attributeContainer == null) {
             attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
@@ -127,6 +121,11 @@ public class InvokerEntity
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(SHIELDED, false);
+    }
+
+    @Override
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     @Override
@@ -303,10 +302,6 @@ public class InvokerEntity
     @Override
     protected SoundEvent getCastSpellSound() {
         return SoundRegistry.INVOKER_COMPLETE_CAST;
-    }
-
-    @Override
-    public void addBonusForWave(int wave, boolean unused) {
     }
 
     @Override

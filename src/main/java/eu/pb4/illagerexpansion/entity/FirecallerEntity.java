@@ -132,7 +132,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         return SoundEvents.ITEM_FIRECHARGE_USE;
     }
 
-    public void addBonusForWave(final int wave, final boolean unused) {
+    public void addBonusForWave(ServerWorld world, final int wave, final boolean unused) {
     }
 
     public IllagerEntity.State getState() {

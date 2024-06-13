@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class StructureRegistry {
-    public static final StructureType<BaseStructure> BASE_STRUCTURE = Registry.register(Registries.STRUCTURE_TYPE, new Identifier(IllagerExpansion.MOD_ID, "base_structure"), () -> BaseStructure.CODEC);
+    public static final StructureType<BaseStructure> BASE_STRUCTURE = Registry.register(Registries.STRUCTURE_TYPE, Identifier.of(IllagerExpansion.MOD_ID, "base_structure"), () -> BaseStructure.CODEC);
 
 
     public static void registerStructureFeatures() {

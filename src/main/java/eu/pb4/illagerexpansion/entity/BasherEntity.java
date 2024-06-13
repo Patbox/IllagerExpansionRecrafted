@@ -125,6 +125,21 @@ public class BasherEntity
         builder.add(STUNNED, false);
     }
 
+    @Override
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+        boolean bl;
+        ItemStack itemStack = new ItemStack(Items.SHIELD);
+        Raid raid = this.getRaid();
+        int i = 1;
+        if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
+            i = 2;
+        }
+        boolean bl2 = bl = this.random.nextFloat() <= raid.getEnchantmentChance();
+
+
+        this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+    }
+
     public boolean getStunnedState() {
         return this.dataTracker.get(STUNNED);
     }
@@ -222,9 +237,11 @@ public class BasherEntity
         EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
         ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(random, difficulty);
-        this.updateEnchantments(random, difficulty);
+        this.updateEnchantments(world, random, difficulty);
         return entityData2;
     }
+
+
 
     @Override
     protected void initEquipment(Random random, LocalDifficulty difficulty) {
@@ -258,20 +275,6 @@ public class BasherEntity
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
         return SoundRegistry.BASHER_HURT;
-    }
-
-    @Override
-    public void addBonusForWave(int wave, boolean unused) {
-        boolean bl;
-        ItemStack itemStack = new ItemStack(Items.SHIELD);
-        Raid raid = this.getRaid();
-        int i = 1;
-        if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
-            i = 2;
-        }
-        boolean bl2 = bl = this.random.nextFloat() <= raid.getEnchantmentChance();
-
-        this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
     @Override

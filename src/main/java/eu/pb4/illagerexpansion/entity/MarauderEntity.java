@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.LocalDifficulty;
@@ -96,7 +97,7 @@ public class MarauderEntity extends IllagerEntity implements RangedAttackMob, Pl
         double f = target.getZ() - this.getZ();
         double g = Math.sqrt(d * d + f * f);
         hatchetEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.2f, 14 - this.getWorld().getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ITEM_TRIDENT_THROW, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ITEM_TRIDENT_THROW.value(), 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.getWorld().spawnEntity(hatchetEntity);
     }
 
@@ -164,7 +165,8 @@ public class MarauderEntity extends IllagerEntity implements RangedAttackMob, Pl
     }
 
     @Override
-    public void addBonusForWave(int wave, boolean unused) {
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     @Override

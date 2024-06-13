@@ -48,7 +48,7 @@ public class SoundRegistry {
     public static SoundEvent SORCERER_CELEBRATE = registerSoundEvent("sorcerer_celebrate", SoundEvents.ENTITY_EVOKER_CELEBRATE);
 
     private static SoundEvent registerSoundEvent(String name, SoundEvent soundEvent) {
-        Identifier id = new Identifier(IllagerExpansion.MOD_ID, name);
+        Identifier id = Identifier.of(IllagerExpansion.MOD_ID, name);
         return PolymerSoundEvent.of(id, soundEvent);
     }
     public static void registerSounds() {

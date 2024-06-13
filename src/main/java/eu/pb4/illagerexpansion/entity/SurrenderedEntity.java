@@ -215,7 +215,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
         this.initEquipment(random, difficulty);
-        this.updateEnchantments(random, difficulty);
+        this.updateEnchantments(world, random, difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData);
     }
 

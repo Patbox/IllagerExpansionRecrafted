@@ -36,7 +36,7 @@ public class PolymerArmorItem extends ArmorItem implements PolymerItem {
         };
 
         this.polymerTextured = PolymerResourcePackUtils.requestModel(item,
-                new Identifier(IllagerExpansion.MOD_ID, "item/" + material.getKey().get().getValue().getPath() + "_" + (switch (slot) {
+                Identifier.of(IllagerExpansion.MOD_ID, "item/" + material.getKey().get().getValue().getPath() + "_" + (switch (slot) {
                     case HELMET -> "helmet";
                     case CHESTPLATE -> "chestplate";
                     case LEGGINGS -> "leggings";

@@ -21,7 +21,7 @@ public class PotionRegistry {
     public static RegistryEntry<Potion> BERSERKING_STRONG = register("berserking_strong", new SimplePolymerPotion("berserking_strong", new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2), new StatusEffectInstance(StatusEffects.SPEED, 300, 2)));;
 
     static RegistryEntry<Potion> register(String name, Potion item) {
-        return Registry.registerReference(Registries.POTION, new Identifier(IllagerExpansion.MOD_ID, name), item);
+        return Registry.registerReference(Registries.POTION, Identifier.of(IllagerExpansion.MOD_ID, name), item);
     }
 
     public static void registerPotions() {

@@ -80,8 +80,9 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
     }
     @Override
     public void shootAt(LivingEntity target, float pullProgress) {
-        ItemStack itemStack = this.getProjectileType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
-        PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
+        var bow = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
+        ItemStack itemStack = this.getProjectileType(bow);
+        PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress, bow);
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         double f = target.getZ() - this.getZ();
@@ -161,7 +162,8 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
     }
 
     @Override
-    public void addBonusForWave(int wave, boolean unused) {
+    public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
+
     }
 
     @Override

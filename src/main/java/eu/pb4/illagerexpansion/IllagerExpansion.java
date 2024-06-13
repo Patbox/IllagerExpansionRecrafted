@@ -20,7 +20,7 @@ public class IllagerExpansion implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("IllagerExpansion");
 
     public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 
     @Override
