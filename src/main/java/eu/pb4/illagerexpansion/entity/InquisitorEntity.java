@@ -9,6 +9,7 @@ import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.*;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import com.google.common.collect.Sets;
@@ -107,11 +108,12 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         super.mobTick();
     }
 
-    public AttributeContainer getAttributes() {
-        if (this.attributeContainer == null) {
-            this.attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.33).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.6).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.8).build());
-        }
-        return this.attributeContainer;
+    public static DefaultAttributeContainer.Builder createInquisitorAttributes() {
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.33)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.6)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.8);
     }
 
     public void tickMovement() {

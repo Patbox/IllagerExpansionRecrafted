@@ -11,6 +11,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.*;
@@ -68,12 +69,8 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
         this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
     }
 
-    @Override
-    public AttributeContainer getAttributes() {
-        if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 22.0D).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36D).build());
-        }
-        return attributeContainer;
+    public static DefaultAttributeContainer.Builder createArchivistAttributes() {
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 22.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36);
     }
 
     @Override

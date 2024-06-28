@@ -1,6 +1,5 @@
 package eu.pb4.illagerexpansion.entity;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.properties.Property;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
@@ -8,15 +7,12 @@ import eu.pb4.illagerexpansion.poly.EntitySkins;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
 import eu.pb4.illagerexpansion.poly.Stunnable;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -51,7 +47,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Set;
 
 public class BasherEntity
@@ -167,17 +162,12 @@ public class BasherEntity
         return super.isImmobile() || this.getStunnedState();
     }
 
-    @Override
-    public AttributeContainer getAttributes() {
-        if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 28.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.31D)
-                    .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D)
-                    .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.2D)
-                    .build());
-        }
-        return attributeContainer;
+    public static DefaultAttributeContainer.Builder createBasherAttributes() {
+        return HostileEntity.createHostileAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 28.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.31D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.2D);
     }
 
 

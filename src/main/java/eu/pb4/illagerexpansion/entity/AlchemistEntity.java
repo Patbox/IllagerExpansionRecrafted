@@ -11,13 +11,12 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -85,11 +84,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, false));
     }
 
-    public AttributeContainer getAttributes() {
-        if (this.attributeContainer == null) {
-            this.attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38).build());
-        }
-        return this.attributeContainer;
+    public static DefaultAttributeContainer.Builder createAlchemistAttributes() {
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38);
     }
 
     public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData) {

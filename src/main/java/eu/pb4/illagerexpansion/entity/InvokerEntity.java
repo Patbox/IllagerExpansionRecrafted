@@ -11,6 +11,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
@@ -93,17 +94,12 @@ public class InvokerEntity
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, false));
     }
 
-    @Override
-    public AttributeContainer getAttributes() {
-        if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes()
-                    .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0D)
-                    .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D)
-                    .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.35D)
-                    .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0D)
-                    .build());
-        }
-        return attributeContainer;
+    public static DefaultAttributeContainer.Builder createInvokerAttributes() {
+        return HostileEntity.createHostileAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.35D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0D);
     }
 
     @Override

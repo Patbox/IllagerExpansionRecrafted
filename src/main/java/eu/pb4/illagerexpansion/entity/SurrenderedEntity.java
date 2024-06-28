@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -85,12 +86,9 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
 
-    @Override
-    public AttributeContainer getAttributes() {
-        if (attributeContainer == null) {
-            attributeContainer = new AttributeContainer(HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 18.0D).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D).build());
-        }
-        return attributeContainer;
+    public static DefaultAttributeContainer.Builder createSurrenderedAttributes() {
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 18.0D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D);
     }
 
     @Override

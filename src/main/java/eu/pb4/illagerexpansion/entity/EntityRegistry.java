@@ -6,6 +6,7 @@ import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.entity.projectile.MagmaEntity;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
@@ -78,6 +79,16 @@ public class EntityRegistry {
     }
 
     public static void registerEntities() {
+        FabricDefaultAttributeRegistry.register(ALCHEMIST, AlchemistEntity.createAlchemistAttributes());
+        FabricDefaultAttributeRegistry.register(ARCHIVIST, ArchivistEntity.createArchivistAttributes());
+        FabricDefaultAttributeRegistry.register(BASHER, BasherEntity.createBasherAttributes());
+        FabricDefaultAttributeRegistry.register(FIRECALLER, FirecallerEntity.createFirecallerAttributes());
+        FabricDefaultAttributeRegistry.register(INQUISITOR, InquisitorEntity.createInquisitorAttributes());
+        FabricDefaultAttributeRegistry.register(INVOKER, InvokerEntity.createInvokerAttributes());
+        FabricDefaultAttributeRegistry.register(MARAUDER, MarauderEntity.createMarauderAttributes());
+        FabricDefaultAttributeRegistry.register(PROVOKER, ProvokerEntity.createProvokerAttributes());
+        FabricDefaultAttributeRegistry.register(SORCERER, SorcererEntity.createSorcererAttributes());
+        FabricDefaultAttributeRegistry.register(SURRENDERED, SurrenderedEntity.createSurrenderedAttributes());
     }
 
 }
