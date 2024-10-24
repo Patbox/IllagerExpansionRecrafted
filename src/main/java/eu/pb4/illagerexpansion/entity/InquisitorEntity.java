@@ -100,24 +100,24 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         this.goalSelector.add(10, new LookAtEntityGoal((MobEntity)this, MobEntity.class, 8.0f));
     }
 
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
             boolean bl = ((ServerWorld) this.getWorld()).hasRaidAt(this.getBlockPos());
             ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(bl);
         }
-        super.mobTick();
+        super.mobTick(world);
     }
 
     public static DefaultAttributeContainer.Builder createInquisitorAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.33)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0)
-                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.6)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.8);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 80.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.33)
+                .add(EntityAttributes.ATTACK_DAMAGE, 10.0)
+                .add(EntityAttributes.ATTACK_KNOCKBACK, 1.6)
+                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.8);
     }
 
     public void tickMovement() {
-        if (this.horizontalCollision && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (this.horizontalCollision && ((ServerWorld) this.getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             boolean bl = false;
             final Box box = this.getBoundingBox().expand(1.0);
             for (final BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
@@ -244,11 +244,11 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
         }
     }
 
-    public boolean isTeammate(final Entity other) {
-        return super.isTeammate(other) || (other instanceof LivingEntity && ((LivingEntity)other).getType().isIn(EntityTypeTags.ILLAGER) && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null);
+    public boolean isInSameTeam(final Entity other) {
+        return super.isInSameTeam(other) || (other instanceof LivingEntity && ((LivingEntity)other).getType().isIn(EntityTypeTags.ILLAGER) && this.getScoreboardTeam() == null && other.getScoreboardTeam() == null);
     }
 
-    public boolean damage(final DamageSource source, final float amount) {
+    public boolean damage(ServerWorld world, final DamageSource source, final float amount) {
         final Entity attacker = source.getAttacker();
         final boolean hasShield = this.getOffHandStack().isOf(Items.SHIELD);
         if (this.isAttacking()) {
@@ -266,7 +266,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
                         this.equipStack(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                     }
                     this.getTargets().forEach(this::knockback);
-                    return super.damage(source, amount);
+                    return super.damage(world, source, amount);
                 }
             }
             if (source.getSource() instanceof PersistentProjectileEntity && hasShield) {
@@ -280,7 +280,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
                 return false;
             }
         }
-        final boolean bl2 = super.damage(source, amount);
+        final boolean bl2 = super.damage(world, source, amount);
         return bl2;
     }
 

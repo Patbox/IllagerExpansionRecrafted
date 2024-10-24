@@ -84,11 +84,11 @@ public class BasherEntity
     }
 
     @Override
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
             boolean bl = ((ServerWorld) getWorld()).hasRaidAt(this.getBlockPos());
             ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(bl);
-            super.mobTick();
+            super.mobTick(world);
         }
         if (!this.isAlive()) {
         }
@@ -164,10 +164,10 @@ public class BasherEntity
 
     public static DefaultAttributeContainer.Builder createBasherAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 28.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.31D)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D)
-                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.2D);
+                .add(EntityAttributes.MAX_HEALTH, 28.0D)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.31D)
+                .add(EntityAttributes.ATTACK_DAMAGE, 3.0D)
+                .add(EntityAttributes.ATTACK_KNOCKBACK, 0.2D);
     }
 
 
@@ -188,7 +188,7 @@ public class BasherEntity
     }
 
     @Override
-    public boolean damage(final DamageSource source, final float amount) {
+    public boolean damage(ServerWorld world, final DamageSource source, final float amount) {
         final Entity attacker = source.getAttacker();
         final boolean hasShield = this.getMainHandStack().isOf(Items.SHIELD);
         if (this.isAttacking()) {
@@ -203,7 +203,7 @@ public class BasherEntity
                         ((ServerWorld) getWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
                         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_AXE));
                     }
-                    return super.damage(source, amount);
+                    return super.damage(world, source, amount);
                 }
             }
             if (source.getSource() instanceof PersistentProjectileEntity && hasShield) {
@@ -217,7 +217,7 @@ public class BasherEntity
                 return false;
             }
         }
-        boolean bl2 = super.damage(source, amount);
+        boolean bl2 = super.damage(world, source, amount);
         return bl2;
     }
 
@@ -241,8 +241,8 @@ public class BasherEntity
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
-        if (super.isTeammate(other)) {
+    public boolean isInSameTeam(Entity other) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof LivingEntity && ((LivingEntity) other).getType().isIn(EntityTypeTags.ILLAGER)) {

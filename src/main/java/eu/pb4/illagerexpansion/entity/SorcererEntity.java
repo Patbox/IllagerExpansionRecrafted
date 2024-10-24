@@ -64,8 +64,8 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
     }
 
     public static DefaultAttributeContainer.Builder createSorcererAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 26.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 26.0D)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.38D);
     }
 
 
@@ -85,21 +85,21 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
     }
 
     @Override
-    protected void mobTick() {
-        super.mobTick();
+    protected void mobTick(ServerWorld world) {
+        super.mobTick(world);
         --cooldown;
         --flamecooldown;
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
+    public boolean isInSameTeam(Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {
@@ -269,7 +269,7 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
             setMagicFireUtil.setFire(target, SorcererEntity.this.getWorld());
             SorcererEntity.this.flamecooldown = 100;
             offenseSpell = false;
-            target.damage(SorcererEntity.this.getDamageSources().magic(), 3.0f);
+            target.serverDamage(SorcererEntity.this.getDamageSources().magic(), 3.0f);
             if (getWorld() instanceof ServerWorld) {
                 ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.FLAME, target.getX(), target.getY() + 1, target.getZ(), 30, 0.3D, 0.5D, 0.3D, 0.08D);
             }

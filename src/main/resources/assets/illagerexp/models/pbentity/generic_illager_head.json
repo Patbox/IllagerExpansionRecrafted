@@ -1,8 +1,7 @@
 {
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "block/illusioner"
-	},
+		"0":"illagerexp:pbentity/sorcerer"	},
 	"elements": [
 		{
 			"name": "head",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:diamond"
-    },
-    "P": {
-      "item": "illagerexp:platinum_upgrade_template"
-    },
-    "S": {
-      "item": "minecraft:copper_block"
-    }
+    "#": "minecraft:diamond",
+    "P": "illagerexp:platinum_upgrade_template",
+    "S": "minecraft:copper_block"
   },
   "pattern": [
     "#P#",

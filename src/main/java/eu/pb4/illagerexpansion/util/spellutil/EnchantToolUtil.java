@@ -32,7 +32,7 @@ public class EnchantToolUtil {
         ItemStack mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND);
         ItemStack offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND);
         var ench = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
-        ench.add(lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment), enchantLevel);
+        ench.add(lookup.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment), enchantLevel);
         mainhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
         offhanditem.set(DataComponentTypes.ENCHANTMENTS, ench.build());
     }

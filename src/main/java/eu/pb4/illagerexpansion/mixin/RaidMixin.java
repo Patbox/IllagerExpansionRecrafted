@@ -2,6 +2,7 @@ package eu.pb4.illagerexpansion.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +28,7 @@ public abstract class RaidMixin {
     @Inject(method = "spawnNextWave", at = @At(value = "INVOKE", target = "Lnet/minecraft/village/raid/Raid;isSpawningExtraWave()Z", shift = At.Shift.AFTER))
     private void spawnTheBoss(BlockPos pos, CallbackInfo ci, @Local(ordinal = 0) int wave) {
         if (wave == this.waveCount + 1 && this.badOmenLevel > 4) {
-            var raiderEntity = EntityRegistry.INVOKER.create(world);
+            var raiderEntity = EntityRegistry.INVOKER.create(world, SpawnReason.PATROL);
             this.addRaider(wave, raiderEntity, pos, false);
         }
     }

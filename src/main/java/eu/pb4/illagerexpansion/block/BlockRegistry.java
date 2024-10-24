@@ -14,8 +14,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Function;
 
 
 public class BlockRegistry {
@@ -23,28 +27,25 @@ public class BlockRegistry {
 
     //Decoration Blocks
     public static final Block IMBUING_TABLE = registerBlock("imbuing_table",
-            new ImbuingTableBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).sounds(BlockSoundGroup.COPPER).strength(4f).requiresTool()), true);
+            (s) -> new ImbuingTableBlock(s.mapColor(MapColor.ORANGE).sounds(BlockSoundGroup.COPPER).strength(4f).requiresTool()), true);
 
 
     public static final Block MAGIC_FIRE = registerBlock("magic_fire",
-            new MagicFireBlock(AbstractBlock.Settings.create().dropsNothing().nonOpaque().mapColor(MapColor.PURPLE).noCollision().luminance(state -> 10), 0.0f), false);
+            (s) -> new MagicFireBlock(s.dropsNothing().nonOpaque().mapColor(MapColor.PURPLE).noCollision().luminance(state -> 10), 0.0f), false);
 
-    private static Block registerBlock(String name, Block block, boolean group) {
-        registerBlockItem(name, block, group);
-        return Registry.register(Registries.BLOCK, Identifier.of(IllagerExpansion.MOD_ID, name), block);
-    }
-
-    private static <T extends Block & PolymerHeadBlock> Item registerBlockItem(String name, Block block, boolean group) {
+    private static Block registerBlock(String name, Function<AbstractBlock.Settings, Block> f, boolean group) {
         Item x;
+        var id = Identifier.of(IllagerExpansion.MOD_ID, name);
+        var block = f.apply(AbstractBlock.Settings.create().registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         if (block instanceof PolymerHeadBlock) {
-            x = ItemRegistry.registerItem(name, new PolymerHeadBlockItem((T) block, new Item.Settings()));
+            x = ItemRegistry.registerItem(name, (s) -> new PolymerHeadBlockItem((Block & PolymerHeadBlock) block, s));
         } else {
-            x = ItemRegistry.registerItem(name, new PolymerBlockItem(block, new Item.Settings(), Items.STRUCTURE_VOID));
+            x = ItemRegistry.registerItem(name, (s) -> new PolymerBlockItem(block, s, Items.STRUCTURE_VOID));
         }
         if (!group) {
             ItemRegistry.ITEMS.remove(x);
         }
-        return x;
+        return Registry.register(Registries.BLOCK, id, block);
     }
 
     public static void registerModBlocks() {

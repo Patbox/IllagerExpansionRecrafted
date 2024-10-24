@@ -16,6 +16,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     public ImbuingTableBlock(Settings settings) {
@@ -66,12 +67,12 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     }
 
     @Override
-    public String getPolymerSkinValue(BlockState state, BlockPos pos, ServerPlayerEntity player) {
+    public String getPolymerSkinValue(BlockState state, BlockPos pos, PacketContext context) {
         return "ewogICJ0aW1lc3RhbXAiIDogMTY1NjgyODY5NjAzMiwKICAicHJvZmlsZUlkIiA6ICIxNzU1N2FjNTEzMWE0YTUzODAwODg3Y2E4ZTQ4YWQyNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJQZW50YXRpbCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9hYzE4YjFiN2NlM2Y3YmNiZmUxM2UzZWY5NTY1NTk5OWQ5MWY3OTNjMDFmYWFlOTI0ZDI3ZjlmZTY0NjA5MjAxIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0";
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state) {
+    public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
         return Blocks.PLAYER_HEAD.getDefaultState();
     }
 }

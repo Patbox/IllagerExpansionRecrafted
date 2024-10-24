@@ -7,14 +7,15 @@ import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class PlatinumHoeItem extends HoeItem implements PolymerAutoItem {
-    public PlatinumHoeItem(ToolMaterial material, Settings settings) {
-        super(material, settings);
+    public PlatinumHoeItem(ToolMaterial material, float attackDamage, float attackSpeed,  Settings settings) {
+        super(material, attackDamage, attackSpeed, settings);
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.NETHERITE_HOE;
     }
 

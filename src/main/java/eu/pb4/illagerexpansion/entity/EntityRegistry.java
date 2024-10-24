@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class EntityRegistry {
@@ -25,57 +27,57 @@ public class EntityRegistry {
 
     //Register Entities
     public static final EntityType<ProvokerEntity> PROVOKER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "provoker"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ProvokerEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(ProvokerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
 
     public static final EntityType<InvokerEntity> INVOKER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "invoker"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, InvokerEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(InvokerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<BasherEntity> BASHER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "basher"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BasherEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(BasherEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<SorcererEntity> SORCERER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "sorcerer"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SorcererEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(SorcererEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<ArchivistEntity> ARCHIVIST = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "archivist"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ArchivistEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(ArchivistEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<InquisitorEntity> INQUISITOR = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "inquisitor"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, InquisitorEntity::new).dimensions(EntityDimensions.fixed(0.5f, 2.48f)).build()
+            EntityType.Builder.create(InquisitorEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 2.48f)
     );
     public static final EntityType<MarauderEntity> MARAUDER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "marauder"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MarauderEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(MarauderEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<AlchemistEntity> ALCHEMIST = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "alchemist"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, AlchemistEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(AlchemistEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<FirecallerEntity> FIRECALLER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "firecaller"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, FirecallerEntity::new).dimensions(EntityDimensions.fixed(0.5f, 1.92f)).build()
+            EntityType.Builder.create(FirecallerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
     );
     public static final EntityType<SurrenderedEntity> SURRENDERED = register(Identifier.of(IllagerExpansion.MOD_ID, "surrendered"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SurrenderedEntity::new).fireImmune().dimensions(EntityDimensions.fixed(0.5f, 1.42f)).build()
+            EntityType.Builder.create(SurrenderedEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.42f).makeFireImmune()
     );
     public static final EntityType<HatchetEntity> HATCHET = register(Identifier.of(IllagerExpansion.MOD_ID, "hatchet"),
-            FabricEntityTypeBuilder.<HatchetEntity>create(SpawnGroup.MISC, (HatchetEntity::new)).dimensions(EntityDimensions.fixed(0.35f, 0.35f)).trackRangeBlocks(4).trackedUpdateRate(10).build()
+            EntityType.Builder.<HatchetEntity>create(HatchetEntity::new, SpawnGroup.MISC).dimensions(0.35f, 0.35f).maxTrackingRange(4).trackingTickInterval(10)
     );
     public static final EntityType<InvokerFangsEntity> INVOKER_FANGS = register(Identifier.of(IllagerExpansion.MOD_ID, "invoker_fangs"),
-            FabricEntityTypeBuilder.<InvokerFangsEntity>create(SpawnGroup.MISC, InvokerFangsEntity::new).dimensions(EntityDimensions.fixed(0.65f, 1.05f)).build()
+            EntityType.Builder.<InvokerFangsEntity>create(InvokerFangsEntity::new, SpawnGroup.MISC).dimensions(0.65f, 1.05f)
     );
     public static final EntityType<MagmaEntity> MAGMA = register(Identifier.of(IllagerExpansion.MOD_ID, "magma"),
-            FabricEntityTypeBuilder.<MagmaEntity>create(SpawnGroup.MISC, MagmaEntity::new).dimensions(EntityDimensions.fixed(0.95f, 1.05f)).build()
+            EntityType.Builder.<MagmaEntity>create(MagmaEntity::new, SpawnGroup.MISC).dimensions(0.95f, 1.05f)
     );
 
-    private static <T extends Entity> EntityType<T> registerIllager(Identifier provoker, EntityType<T> build) {
+    private static <T extends Entity> EntityType<T> registerIllager(Identifier provoker, EntityType.Builder<T> build) {
         var x = register(provoker, build);
         var stack = new ItemStack(Items.BIRCH_BUTTON);
-        stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(PolymerResourcePackUtils.requestModel(stack.getItem(), provoker.withPrefixedPath("pbentity/")).value()));
+        stack.set(DataComponentTypes.ITEM_MODEL, PolymerResourcePackUtils.getBridgedModelId(provoker.withPrefixedPath("pbentity/")));
         PlayerPolymerEntity.HEADS.put(x, stack);
         return x;
     }
-    private static <T extends Entity> EntityType<T> register(Identifier provoker, EntityType<T> build) {
-        Registry.register(Registries.ENTITY_TYPE, provoker, build);
-        PolymerEntityUtils.registerType(build);
-        return build;
+    private static <T extends Entity> EntityType<T> register(Identifier provoker, EntityType.Builder<T> build) {
+        var type = Registry.register(Registries.ENTITY_TYPE, provoker, build.build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, provoker)));
+        PolymerEntityUtils.registerType(type);
+        return type;
     }
 
     public static void registerEntities() {

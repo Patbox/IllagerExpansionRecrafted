@@ -28,7 +28,7 @@ public abstract class MarauderPatrolMixin
         }
         final int randvalue = random.nextInt(2);
         if (randvalue == 0) {
-            final PatrolEntity marauder = EntityRegistry.MARAUDER.create(world);
+            final PatrolEntity marauder = EntityRegistry.MARAUDER.create(world, SpawnReason.PATROL);
             if (marauder != null) {
                 if (captain) {
                     marauder.setPatrolLeader(true);

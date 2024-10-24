@@ -1,16 +1,10 @@
 {
   "type": "minecraft:smithing_transform",
-  "addition": {
-    "item": "illagerexp:platinum_sheet"
-  },
-  "base": {
-    "item": "minecraft:netherite_leggings"
-  },
+  "addition": "illagerexp:platinum_sheet",
+  "base": "minecraft:netherite_leggings",
   "result": {
     "count": 1,
     "id": "illagerexp:platinum_infused_netherite_leggings"
   },
-  "template": {
-    "item": "illagerexp:platinum_upgrade_template"
-  }
+  "template": "illagerexp:platinum_upgrade_template"
 }

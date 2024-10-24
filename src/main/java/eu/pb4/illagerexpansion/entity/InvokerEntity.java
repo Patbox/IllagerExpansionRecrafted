@@ -96,15 +96,15 @@ public class InvokerEntity
 
     public static DefaultAttributeContainer.Builder createInvokerAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.35D)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0D);
+                .add(EntityAttributes.MAX_HEALTH, 300.0D)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.38D)
+                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.35D)
+                .add(EntityAttributes.ATTACK_DAMAGE, 8.0D);
     }
 
     @Override
-    public boolean tryAttack(Entity target) {
-        if (!super.tryAttack(target)) {
+    public boolean tryAttack(ServerWorld world, Entity target) {
+        if (!super.tryAttack(world, target)) {
             return false;
         }
         if (target instanceof LivingEntity) {
@@ -159,12 +159,11 @@ public class InvokerEntity
     }
 
     @Override
-    protected void mobTick() {
-        var world = this.getWorld();
+    protected void mobTick(ServerWorld world) {
         --this.tpcooldown;
         --this.cooldown;
         --this.fangaoecooldown;
-        super.mobTick();
+        super.mobTick(world);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
         if (isAoeCasting && this.isSpellcasting()) {
             SpellParticleUtil spellParticleUtil = new SpellParticleUtil();
@@ -210,14 +209,14 @@ public class InvokerEntity
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
+    public boolean isInSameTeam(Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof SurrenderedEntity) {
@@ -244,7 +243,7 @@ public class InvokerEntity
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
         if ((source.getSource()) instanceof PersistentProjectileEntity) {
             if (getShieldedState()) {
                 return false;
@@ -267,7 +266,7 @@ public class InvokerEntity
             }
         }
 
-        boolean bl2 = super.damage(source, amount);
+        boolean bl2 = super.damage(world, source, amount);
         return bl2;
     }
 
@@ -335,7 +334,7 @@ public class InvokerEntity
             if (inSecondPhase) {
                 return false;
             }
-            int i = InvokerEntity.this.getWorld().getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
+            int i = ((ServerWorld) InvokerEntity.this.getWorld()).getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
             return 3 > i;
         }
 
@@ -354,7 +353,7 @@ public class InvokerEntity
             ServerWorld serverWorld = (ServerWorld) InvokerEntity.this.getWorld();
             for (int i = 0; i < 4; ++i) {
                 BlockPos blockPos = InvokerEntity.this.getBlockPos().add(-2 + InvokerEntity.this.random.nextInt(5), 1, -2 + InvokerEntity.this.random.nextInt(5));
-                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getWorld());
+                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getWorld(), SpawnReason.MOB_SUMMONED);
                 surrenderedEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
                 surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
                 surrenderedEntity.setOwner(InvokerEntity.this);
@@ -473,7 +472,7 @@ public class InvokerEntity
 
     public class WololoGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate convertibleSheepPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).setPredicate(livingEntity -> ((SheepEntity) livingEntity).getColor() == DyeColor.BLUE);
+        private final TargetPredicate convertibleSheepPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).setPredicate((livingEntity, world) -> ((SheepEntity) livingEntity).getColor() == DyeColor.BLUE);
 
         @Override
         public boolean canStart() {
@@ -486,10 +485,10 @@ public class InvokerEntity
             if (InvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!InvokerEntity.this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (!((ServerWorld) InvokerEntity.this.getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
-            List<SheepEntity> list = InvokerEntity.this.getWorld().getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<SheepEntity> list = ((ServerWorld) InvokerEntity.this.getWorld()).getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }
@@ -582,7 +581,7 @@ public class InvokerEntity
 
         private void buff(LivingEntity entity) {
             this.knockback(entity);
-            entity.damage(getDamageSources().magic(), 11.0f);
+            entity.serverDamage(getDamageSources().magic(), 11.0f);
             double x = entity.getX();
             double y = entity.getY() + 1;
             double z = entity.getZ();

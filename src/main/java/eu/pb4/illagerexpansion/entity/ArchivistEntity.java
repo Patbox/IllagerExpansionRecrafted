@@ -70,7 +70,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
     }
 
     public static DefaultAttributeContainer.Builder createArchivistAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 22.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.36);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 22.0).add(EntityAttributes.MOVEMENT_SPEED, 0.36);
     }
 
     @Override
@@ -90,21 +90,21 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
 
 
     @Override
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         --cooldown;
         --buffcooldown;
-        super.mobTick();
+        super.mobTick(world);
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
+    public boolean isInSameTeam(Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {
@@ -229,7 +229,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
 
         private void buff(LivingEntity entity) {
             knockback(entity);
-            entity.damage(getDamageSources().magic(), 4.0f);
+            entity.serverDamage(getDamageSources().magic(), 4.0f);
         }
 
         @Override
@@ -269,7 +269,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
     }
 
     public class EnchantAllyGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate closeEnchantableMobPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).setPredicate(livingEntity -> !(livingEntity instanceof ArchivistEntity));
+        private final TargetPredicate closeEnchantableMobPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).setPredicate((livingEntity, world) -> !(livingEntity instanceof ArchivistEntity));
         EnchantToolUtil enchantToolUtil = new EnchantToolUtil();
         private int targetId;
 
@@ -292,7 +292,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
             if (ArchivistEntity.this.isSpellcasting()) {
                 return false;
             }
-            List<IllagerEntity> list = ArchivistEntity.this.getWorld().getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<IllagerEntity> list = ((ServerWorld) ArchivistEntity.this.getWorld()).getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }

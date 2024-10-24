@@ -11,14 +11,14 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
@@ -29,19 +29,20 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (!(user instanceof PlayerEntity playerEntity)) {
-            return;
+            return false;
         }
         ItemStack itemStack = playerEntity.getProjectileType(stack);
         if (itemStack.isEmpty()) {
-            return;
+            return false;
         }
         if ((double) (BowItem.getPullProgress(this.getMaxUseTime(stack, user) - remainingUseTicks)) < 0.1) {
-            return;
+            return false;
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        playerEntity.getItemCooldownManager().set(this, 30);
+        playerEntity.getItemCooldownManager().set(stack, 30);
+        return false;
     }
 
     @Override
@@ -63,17 +64,17 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         world.playSound(null, user.getX(), user.getEyeY(), user.getZ(), SoundRegistry.HORN_OF_SIGHT, user.getSoundCategory(), 1.0f, 1.0f);
         ItemStack itemStack = user.getStackInHand(hand);
         getTargets(user).forEach(this::glow);
         user.setCurrentHand(hand);
-        user.getItemCooldownManager().set(this, 80);
-        return TypedActionResult.consume(itemStack);
+        user.getItemCooldownManager().set(itemStack, 80);
+        return ActionResult.CONSUME;
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.GOAT_HORN;
     }
 

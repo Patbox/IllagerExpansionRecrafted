@@ -37,6 +37,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -60,7 +61,6 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     @Override
     public void move(MovementType movementType, Vec3d movement) {
         super.move(movementType, movement);
-        this.checkBlockCollision();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.setNoGravity(true);
         if (this.alive && --this.lifeTicks <= 0) {
             this.lifeTicks = 20;
-            this.damage(this.getDamageSources().starve(), 1.0f);
+            this.serverDamage(this.getDamageSources().starve(), 1.0f);
         }
     }
 
@@ -87,8 +87,8 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     public static DefaultAttributeContainer.Builder createSurrenderedAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 18.0D)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 18.0D)
+                .add(EntityAttributes.ATTACK_DAMAGE, 5.0D);
     }
 
     @Override
@@ -169,8 +169,8 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public boolean tryAttack(Entity target) {
-        if (!super.tryAttack(target)) {
+    public boolean tryAttack(ServerWorld world, Entity target) {
+        if (!super.tryAttack(world, target)) {
             return false;
         }
         if (target instanceof LivingEntity) {
@@ -246,7 +246,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    public EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.STRAY;
     }
 
@@ -327,7 +327,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
                 return;
             }
             if (SurrenderedEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-                SurrenderedEntity.this.tryAttack(livingEntity);
+                SurrenderedEntity.this.tryAttack((ServerWorld) livingEntity.getWorld(), livingEntity);
                 SurrenderedEntity.this.setCharging(false);
             } else {
                 double d = SurrenderedEntity.this.squaredDistanceTo(livingEntity);

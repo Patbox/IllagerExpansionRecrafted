@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     @Override
     public void tick() {
         super.tick();
-        if (!this.inGround) {
+        if (!this.isInGround()) {
             this.dataTracker.set(ROLL, (float) (this.dataTracker.get(ROLL) - MathHelper.RADIANS_PER_DEGREE * this.getVelocity().lengthSquared() * 15) % MathHelper.TAU);
         }
     }
@@ -74,7 +75,7 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
         }
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage(damageSource, f)) {
+        if (entity.damage((ServerWorld) this.getWorld(), damageSource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
@@ -161,7 +162,7 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    public EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.ITEM_DISPLAY;
     }
 

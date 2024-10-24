@@ -16,6 +16,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEntity {
 
@@ -47,7 +48,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
         }
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
-        entity.damage(this.getDamageSources().indirectMagic(this, entity2), 12.0f);
+        entity.serverDamage(this.getDamageSources().indirectMagic(this, entity2), 12.0f);
         if (getWorld() instanceof ServerWorld) {
             ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
         }
@@ -57,7 +58,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         if (!getWorld().isClient) {
-            boolean bl = getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+            boolean bl = ((ServerWorld) getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
             getWorld().createExplosion(null, this.getX(), this.getY(), this.getZ(), 1, bl, World.ExplosionSourceType.MOB);
             this.discard();
         }
@@ -74,7 +75,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
         return false;
     }
 
@@ -84,7 +85,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    public EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.FIREBALL;
     }
 }

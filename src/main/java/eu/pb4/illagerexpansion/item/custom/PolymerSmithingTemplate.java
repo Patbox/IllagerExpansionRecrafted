@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
@@ -31,24 +32,24 @@ public class PolymerSmithingTemplate extends SmithingTemplateItem implements Pol
             .formatted(DESCRIPTION_FORMATTING);
 
 
-    public PolymerSmithingTemplate(Text appliesToText, Text ingredientsText, Text titleText, Text baseSlotDescriptionText, Text additionsSlotDescriptionText, List<Identifier> emptyBaseSlotTextures, List<Identifier> emptyAdditionsSlotTextures) {
-        super(appliesToText, ingredientsText, titleText, baseSlotDescriptionText, additionsSlotDescriptionText, emptyBaseSlotTextures, emptyAdditionsSlotTextures);
+    public PolymerSmithingTemplate(Text appliesToText, Text ingredientsText, Text baseSlotDescriptionText, Text additionsSlotDescriptionText, List<Identifier> emptyBaseSlotTextures, List<Identifier> emptyAdditionsSlotTextures, Item.Settings settings) {
+        super(appliesToText, ingredientsText, baseSlotDescriptionText, additionsSlotDescriptionText, emptyBaseSlotTextures, emptyAdditionsSlotTextures, settings);
     }
 
-    public static PolymerSmithingTemplate createPlatinumUpgradeTemplate() {
+    public static PolymerSmithingTemplate createPlatinumUpgradeTemplate(Item.Settings settings) {
         return new PolymerSmithingTemplate(
                 PLATINUM_UPGRADE_APPLIES_TO_TEXT,
                 PLATINUM_UPGRADE_INGREDIENTS_TEXT,
-                PLATINUM_UPGRADE_TEXT,
                 Text.empty(),
                 Text.empty(),
                 List.of(),
-                List.of()
+                List.of(),
+                settings
         );
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
     }
 }

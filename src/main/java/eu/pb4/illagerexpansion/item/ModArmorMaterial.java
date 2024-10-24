@@ -1,39 +1,25 @@
 package eu.pb4.illagerexpansion.item;
 
-
-import eu.pb4.illagerexpansion.IllagerExpansion;
-import eu.pb4.illagerexpansion.poly.PolymerModels;
-import eu.pb4.polymer.rsm.api.RegistrySyncUtils;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.Item;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 import java.util.EnumMap;
-import java.util.List;
-import java.util.function.Supplier;
+
+
+import static eu.pb4.illagerexpansion.IllagerExpansion.id;
 
 public interface ModArmorMaterial {
-    RegistryEntry<ArmorMaterial> PLATINUM_INFUSED_NETHERITE = register("platinum_infused_netherite", new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (map) -> {
-        map.put(ArmorItem.Type.BOOTS, 3);
-        map.put(ArmorItem.Type.LEGGINGS, 6);
-        map.put(ArmorItem.Type.CHESTPLATE, 8);
-        map.put(ArmorItem.Type.HELMET, 3);
-        map.put(ArmorItem.Type.BODY, 20);
-    }), 37, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, () -> Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET), List.of(), 3.0f, 0.25f));
-
-    static RegistryEntry<ArmorMaterial> register(String name, ArmorMaterial item) {
-        RegistrySyncUtils.setServerEntry(Registries.ARMOR_MATERIAL, item);
-        return  Registry.registerReference(Registries.ARMOR_MATERIAL, Identifier.of(IllagerExpansion.MOD_ID, name), item);
-    }
-
+    ArmorMaterial PLATINUM_INFUSED_NETHERITE = new ArmorMaterial(37, Util.make(new EnumMap<>(EquipmentType.class), (map) -> {
+        map.put(EquipmentType.BOOTS, 3);
+        map.put(EquipmentType.LEGGINGS, 6);
+        map.put(EquipmentType.CHESTPLATE, 8);
+        map.put(EquipmentType.HELMET, 3);
+        map.put(EquipmentType.BODY, 11);
+    }), 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0f, 0.25f, TagKey.of(RegistryKeys.ITEM, id("platinum_repair")), id("platinum"));
 
     static void register() {}
 }

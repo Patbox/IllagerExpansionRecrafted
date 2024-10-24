@@ -67,7 +67,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
     }
 
     public static DefaultAttributeContainer.Builder createFirecallerAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 32.0).add(EntityAttributes.MOVEMENT_SPEED, 0.38);
     }
 
     public void readCustomDataFromNbt(final NbtCompound nbt) {
@@ -82,25 +82,25 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         super.writeCustomDataToNbt(nbt);
     }
 
-    protected void mobTick() {
-        super.mobTick();
+    protected void mobTick(ServerWorld world) {
+        super.mobTick(world);
         --this.cooldown;
         --this.aoecooldown;
     }
 
-    public boolean damage(final DamageSource source, final float amount) {
-        final boolean bl2 = super.damage(source, amount);
+    public boolean damage(ServerWorld world, final DamageSource source, final float amount) {
+        final boolean bl2 = super.damage(world, source, amount);
         return bl2;
     }
 
-    public boolean isTeammate(final Entity other) {
+    public boolean isInSameTeam(final Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {
@@ -284,7 +284,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
 
         private void buff(LivingEntity entity) {
             entity.addVelocity(0.0f, 1.2f, 0.0f);
-            entity.damage(getDamageSources().magic(), 6.0f);
+            entity.serverDamage(getDamageSources().magic(), 6.0f);
             entity.setFireTicks(120);
             double x = entity.getX();
             double y = entity.getY() + 1;

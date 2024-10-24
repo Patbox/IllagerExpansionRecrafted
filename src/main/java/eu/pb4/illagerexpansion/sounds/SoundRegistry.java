@@ -1,6 +1,5 @@
 package eu.pb4.illagerexpansion.sounds;
 
-import eu.pb4.polymer.core.api.other.PolymerSoundEvent;
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -16,7 +15,7 @@ public class SoundRegistry {
     public static SoundEvent ARCHIVIST_DEATH = registerSoundEvent("archivist_death", SoundEvents.ENTITY_ILLUSIONER_DEATH);
     public static SoundEvent SORCERER_CAST = registerSoundEvent("sorcerer_cast", SoundEvents.ENTITY_EVOKER_CAST_SPELL);
     public static SoundEvent SORCERER_COMPLETE_CAST = registerSoundEvent("sorcerer_complete_cast", SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE);
-    public static SoundEvent HORN_OF_SIGHT = registerSoundEvent("horn_of_sight", SoundEvents.ITEM_GOAT_HORN_PLAY);
+    public static SoundEvent HORN_OF_SIGHT = registerSoundEvent("horn_of_sight", SoundEvents.INTENTIONALLY_EMPTY);
     public static SoundEvent INVOKER_FANGS = registerSoundEvent("invoker_fangs", SoundEvents.ENTITY_EVOKER_FANGS_ATTACK);
     public static SoundEvent INVOKER_HURT = registerSoundEvent("invoker_hurt", SoundEvents.ENTITY_EVOKER_HURT);
     public static SoundEvent INVOKER_DEATH = registerSoundEvent("invoker_death", SoundEvents.ENTITY_EVOKER_DEATH);
@@ -49,7 +48,7 @@ public class SoundRegistry {
 
     private static SoundEvent registerSoundEvent(String name, SoundEvent soundEvent) {
         Identifier id = Identifier.of(IllagerExpansion.MOD_ID, name);
-        return PolymerSoundEvent.of(id, soundEvent);
+        return soundEvent;//PolymerSoundEvent.of(id, soundEvent);
     }
     public static void registerSounds() {
     }

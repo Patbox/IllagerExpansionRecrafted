@@ -62,8 +62,8 @@ public class MarauderEntity extends IllagerEntity implements RangedAttackMob, Pl
 
     public static DefaultAttributeContainer.Builder createMarauderAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 21.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.30D);
+                .add(EntityAttributes.MAX_HEALTH, 21.0D)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.30D);
     }
 
     public boolean isCharging() {
@@ -117,26 +117,26 @@ public class MarauderEntity extends IllagerEntity implements RangedAttackMob, Pl
     }
 
     @Override
-    protected void mobTick() {
-        super.mobTick();
+    protected void mobTick(ServerWorld world) {
+        super.mobTick(world);
         double e = 0.30D;
         if (this.isCharging()) {
             double d = e * 0.8;
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(d);
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(d);
         } else {
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(e);
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(e);
         }
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
+    public boolean isInSameTeam(Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {

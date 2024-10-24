@@ -85,8 +85,8 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     public static DefaultAttributeContainer.Builder createAlchemistAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 23.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.38);
     }
 
     public EntityData initialize(final ServerWorldAccess world, final LocalDifficulty difficulty, final SpawnReason spawnReason, @Nullable final EntityData entityData) {
@@ -102,10 +102,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             final double e = target.getEyeY() - 1.100000023841858 - this.getY();
             final double f = target.getZ() + vec3d.z - this.getZ();
             final double g = Math.sqrt(d * d + f * f);
-            final PotionEntity potionEntity = new PotionEntity(getWorld(), this);
             var throwed = new ItemStack(Items.LINGERING_POTION);
             throwed.set(DataComponentTypes.POTION_CONTENTS, potion);
-            potionEntity.setItem(throwed);
+            final PotionEntity potionEntity = new PotionEntity(getWorld(), this, throwed);
             potionEntity.setPitch(potionEntity.getPitch() + 20.0f);
             potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
             if (!this.isSilent()) {
@@ -185,7 +184,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         return SoundEvents.ENTITY_EVOKER_CELEBRATE;
     }
 
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         if (!this.getNearbyClouds().isEmpty()) {
             this.getNearbyClouds().forEach(this::removeEffectsinCloud);
         }
@@ -213,17 +212,17 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             this.equipStack(EquipmentSlot.MAINHAND, throwed);
             this.setBowState(false);
         }
-        super.mobTick();
+        super.mobTick(world);
     }
 
-    public boolean isTeammate(final Entity other) {
+    public boolean isInSameTeam(final Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {

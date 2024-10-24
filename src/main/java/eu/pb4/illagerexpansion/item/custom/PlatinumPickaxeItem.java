@@ -7,20 +7,16 @@ import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class PlatinumPickaxeItem extends PickaxeItem implements PolymerAutoItem {
-    public PlatinumPickaxeItem(ToolMaterial material, Settings settings) {
-        super(material, settings);
+    public PlatinumPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
+        super(material, attackDamage, attackSpeed, settings);
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.NETHERITE_PICKAXE;
-    }
-
-    @Override
-    public boolean handleMiningOnServer(ItemStack tool, BlockState targetBlock, BlockPos pos, ServerPlayerEntity player) {
-        return false;
     }
 
     @Override

@@ -16,6 +16,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     public MagicFireBlock(Settings settings, float damage) {
@@ -29,14 +31,14 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-            if (!(entity instanceof IllagerEntity || entity instanceof RavagerEntity) ) {
-                entity.damage(world.getDamageSources().magic(), 3.0f);
-            } else {
-                return;
-            }
-            if (entity.getFireTicks() == 0) {
-                entity.setFireTicks(0);
-            }
+        if (!(entity instanceof IllagerEntity || entity instanceof RavagerEntity) && world instanceof ServerWorld serverWorld ) {
+            entity.damage(serverWorld, world.getDamageSources().magic(), 3.0f);
+        } else {
+            return;
+        }
+        if (entity.getFireTicks() == 0) {
+            entity.setFireTicks(0);
+        }
         super.onEntityCollision(state, world, pos, entity);
     }
 
@@ -51,13 +53,15 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
         super.onBlockAdded(state, world, pos, oldState, notify);
         world.scheduleBlockTick(pos, this, 180);
     }
+
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (this.canPlaceAt(state, world, pos)) {
             return this.getDefaultState();
         }
         return Blocks.AIR.getDefaultState();
     }
+
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
@@ -70,7 +74,7 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state) {
+    public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
         return Blocks.SOUL_FIRE.getDefaultState();
     }
 }

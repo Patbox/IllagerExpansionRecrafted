@@ -23,7 +23,7 @@ public class WoodlandMansionPiecesMixin {
         int value = randomValue.nextInt(8);
         if (metadata.equals("Provoker")) {
             ProvokerEntity provoker;
-            provoker = EntityRegistry.PROVOKER.create(world.toServerWorld());
+            provoker = EntityRegistry.PROVOKER.create(world.toServerWorld(), SpawnReason.STRUCTURE);
             provoker.setPersistent();
             provoker.refreshPositionAndAngles(pos, 0.0f, 0.0f);
             provoker.initialize(world, world.getLocalDifficulty(provoker.getBlockPos()), SpawnReason.STRUCTURE, null);
@@ -33,7 +33,7 @@ public class WoodlandMansionPiecesMixin {
         int value2 = randomValue.nextInt(2);
         if (metadata.equals("Warrior") && value2 == 1) {
             BasherEntity basher;
-            basher = EntityRegistry.BASHER.create(world.toServerWorld());
+            basher = EntityRegistry.BASHER.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
             basher.setPersistent();
             basher.refreshPositionAndAngles(pos, 0.0f, 0.0f);
             basher.initialize(world, world.getLocalDifficulty(basher.getBlockPos()), SpawnReason.STRUCTURE, null);
@@ -42,7 +42,7 @@ public class WoodlandMansionPiecesMixin {
         }
         if (metadata.equals("Archivist")) {
             ArchivistEntity archivist;
-            archivist = EntityRegistry.ARCHIVIST.create(world.toServerWorld());
+            archivist = EntityRegistry.ARCHIVIST.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
             archivist.setPersistent();
             archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
             archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);
@@ -51,7 +51,7 @@ public class WoodlandMansionPiecesMixin {
         }
         if (metadata.equals("invoker")) {
             InvokerEntity archivist;
-            archivist = EntityRegistry.INVOKER.create(world.toServerWorld());
+            archivist = EntityRegistry.INVOKER.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
             archivist.setPersistent();
             archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
             archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);

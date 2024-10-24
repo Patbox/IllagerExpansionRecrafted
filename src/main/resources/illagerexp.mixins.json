@@ -12,7 +12,6 @@
     "RaidMixin",
     "StructureProcessorAccessor",
     "StructureTemplateMixin",
-    "SurrenderedChargeMixin",
     "WoodlandMansionPiecesMixin",
     "ZombieVillagerEntityAccessor",
     "datafixer.Schema1460Mixin",

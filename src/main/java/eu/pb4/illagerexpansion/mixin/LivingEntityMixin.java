@@ -7,6 +7,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.EquipmentType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +25,7 @@ public abstract class LivingEntityMixin {
 
         float mult = 1;
 
-        for (var armor : ArmorItem.Type.values()) {
+        for (var armor : EquipmentType.values()) {
             if (this.getEquippedStack(armor.getEquipmentSlot()).isIn(ItemRegistry.MAGIC_DAMAGE_BLOCKING_ARMOR)) {
                 mult -= 0.08f;
             }

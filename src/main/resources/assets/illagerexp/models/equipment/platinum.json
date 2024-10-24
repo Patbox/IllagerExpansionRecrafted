@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "illagerexp:platinum_infused_netherite"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "illagerexp:platinum_infused_netherite"
+      }
+    ]
+  }
+}

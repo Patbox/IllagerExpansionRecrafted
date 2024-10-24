@@ -8,6 +8,7 @@ import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -15,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class InvokerFangsEntity
         extends Entity implements PolymerEntity {
@@ -109,19 +111,24 @@ public class InvokerFangsEntity
         }
     }
 
+    @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return false;
+    }
+
     private void damage(LivingEntity target) {
         LivingEntity livingEntity = this.getOwner();
         if (!target.isAlive() || target.isInvulnerable() || target == livingEntity) {
             return;
         }
         if (livingEntity == null) {
-            target.damage(this.getDamageSources().magic(), 10.0f);
+            target.serverDamage(this.getDamageSources().magic(), 10.0f);
             target.addVelocity(0.0f, 1.7f, 0.0f);
         } else {
             if (livingEntity.isTeammate(target)) {
                 return;
             }
-            target.damage(this.getDamageSources().indirectMagic(this, livingEntity), 10.0f);
+            target.serverDamage(this.getDamageSources().indirectMagic(this, livingEntity), 10.0f);
             this.knockBack(target);
 
         }
@@ -157,7 +164,7 @@ public class InvokerFangsEntity
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    public EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.EVOKER_FANGS;
     }
 

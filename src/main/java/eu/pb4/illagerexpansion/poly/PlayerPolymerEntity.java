@@ -11,7 +11,6 @@ import eu.pb4.polymer.virtualentity.api.VirtualEntityUtils;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import eu.pb4.illagerexpansion.mixin.poly.PlayerEntityAccessor;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -19,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.particle.ParticleTypes;
@@ -26,8 +26,10 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.PlayerAssociatedNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.joml.Vector3f;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -55,7 +57,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
         PolymerEntity.super.onEntityPacketSent(consumer, packet);
         if (packet instanceof EntitySetHeadYawS2CPacket headYawS2CPacket) {
             var ent = (Entity) this;
-            consumer.accept(new EntityS2CPacket.Rotate(ent.getId(), headYawS2CPacket.getHeadYaw(), (byte) (ent.getPitch() * 256.0F / 360.0F), ent.isOnGround()));
+            consumer.accept(new EntityS2CPacket.Rotate(ent.getId(), MathHelper.packDegrees(headYawS2CPacket.getHeadYaw()), (byte) (ent.getPitch() * 256.0F / 360.0F), ent.isOnGround()));
         }
     }
 
@@ -73,7 +75,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER));
         var profile = new GameProfile(((Entity) this).getUuid(), "");
         profile.getProperties().put("textures", this.getSkin());
-        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.getId(), profile, false, Integer.MAX_VALUE, GameMode.ADVENTURE, Text.empty(), null));
+        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.getId(), profile, false, Integer.MAX_VALUE, GameMode.ADVENTURE, Text.empty(), 0, null));
         packetConsumer.accept(packet);
     }
 
@@ -118,7 +120,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     }
 
     @Override
-    default EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    default EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.PLAYER;
     }
 

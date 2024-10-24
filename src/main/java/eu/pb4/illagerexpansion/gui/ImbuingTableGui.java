@@ -23,6 +23,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -156,7 +157,7 @@ public class ImbuingTableGui extends SimpleGui {
                 return;
             }
 
-            var gamerules = this.player.getWorld().getGameRules();
+            var gamerules = ((ServerWorld) this.player.getWorld()).getGameRules();
 
             int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 

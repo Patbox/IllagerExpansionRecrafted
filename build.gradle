@@ -1,27 +1,8 @@
-buildscript {
-    dependencies {
-        classpath "de.guntram.mcmod:crowdin-translate:1.4+1.19.3"
-    }
-    repositories {
-        maven {
-            name = 'CrowdinTranslate source'
-            url = "https://minecraft.guntram.de/maven/"
-        }
-    }
-}
-
-
 plugins {
-    id 'fabric-loom' version '1.6.+'
+    id 'fabric-loom' version '1.7.+'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
-
-apply plugin: 'de.guntram.mcmod.crowdin-translate'
-crowdintranslate.crowdinProjectName = 'patbox-mods'
-crowdintranslate.jsonSourceName = 'illager_expansion_recrafted'
-crowdintranslate.minecraftProjectName = '../data/illagerexp'
-crowdintranslate.verbose = false
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -76,12 +57,12 @@ dependencies {
 
     modCompileOnly /*modRuntimeOnly*/("eu.pb4.polyport:trinkets:3.9.0+polymerport.1")
 
-    modImplementation include("eu.pb4:sgui:1.6.0+1.21")
-    modImplementation "eu.pb4:polymer-autohost:0.9.9+1.21"
-    modImplementation "eu.pb4:polymer-core:0.9.9+1.21"
-    modImplementation "eu.pb4:polymer-resource-pack:0.9.9+1.21"
-    modImplementation "eu.pb4:polymer-virtual-entity:0.9.9+1.21"
-    modImplementation include("xyz.nucleoid:server-translations-api:2.3.1+1.21-pre2")
+    modImplementation include("eu.pb4:sgui:1.7.2+1.21.2")
+    modImplementation "eu.pb4:polymer-autohost:0.10.0+1.21.2"
+    modImplementation "eu.pb4:polymer-core:0.10.0+1.21.2"
+    modImplementation "eu.pb4:polymer-resource-pack:0.10.0+1.21.2"
+    modImplementation "eu.pb4:polymer-virtual-entity:0.10.0+1.21.2"
+    modImplementation include("xyz.nucleoid:server-translations-api:2.4.0+1.21.2-rc1")
 }
 
 processResources {

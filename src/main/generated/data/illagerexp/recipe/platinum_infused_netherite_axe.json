@@ -1,16 +1,10 @@
 {
   "type": "minecraft:smithing_transform",
-  "addition": {
-    "item": "illagerexp:platinum_sheet"
-  },
-  "base": {
-    "item": "minecraft:netherite_axe"
-  },
+  "addition": "illagerexp:platinum_sheet",
+  "base": "minecraft:netherite_axe",
   "result": {
     "count": 1,
     "id": "illagerexp:platinum_infused_netherite_axe"
   },
-  "template": {
-    "item": "illagerexp:platinum_upgrade_template"
-  }
+  "template": "illagerexp:platinum_upgrade_template"
 }

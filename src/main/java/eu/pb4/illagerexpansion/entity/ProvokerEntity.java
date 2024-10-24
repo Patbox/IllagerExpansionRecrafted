@@ -68,8 +68,8 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
 
     public static DefaultAttributeContainer.Builder createProvokerAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 23.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38D);
+                .add(EntityAttributes.MAX_HEALTH, 23.0D)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.38D);
     }
 
     @Override
@@ -107,20 +107,20 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
     }
 
     @Override
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         --cooldown;
-        super.mobTick();
+        super.mobTick(world);
     }
 
     @Override
-    public boolean isTeammate(Entity other) {
+    public boolean isInSameTeam(Entity other) {
         if (other == null) {
             return false;
         }
         if (other == this) {
             return true;
         }
-        if (super.isTeammate(other)) {
+        if (super.isInSameTeam(other)) {
             return true;
         }
         if (other instanceof VexEntity) {

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "item": "illagerexp:hallowed_gem"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "H": {
-      "item": "minecraft:goat_horn"
-    }
+    "A": "illagerexp:hallowed_gem",
+    "G": "minecraft:gold_ingot",
+    "H": "minecraft:goat_horn"
   },
   "pattern": [
     "GAG",

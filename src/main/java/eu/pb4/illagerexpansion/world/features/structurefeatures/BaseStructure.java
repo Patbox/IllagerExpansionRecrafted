@@ -93,10 +93,10 @@ public class BaseStructure extends Structure {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !context.chunkGenerator().createStructurePlacementCalculator(context.dynamicRegistryManager().getWrapperOrThrow(RegistryKeys.STRUCTURE_SET),
+        return !context.chunkGenerator().createStructurePlacementCalculator(context.dynamicRegistryManager().getOrThrow(RegistryKeys.STRUCTURE_SET),
                 context.noiseConfig(),
                 context.seed()
-                ).canGenerate(context.dynamicRegistryManager().get(RegistryKeys.STRUCTURE_SET).entryOf(StructureSetKeys.VILLAGES), chunkPos.x, chunkPos.z, 10);
+                ).canGenerate(context.dynamicRegistryManager().getOrThrow(RegistryKeys.STRUCTURE_SET).getOrThrow(StructureSetKeys.VILLAGES), chunkPos.x, chunkPos.z, 10);
     }
 
     private static Function<BaseStructure, DataResult<BaseStructure>> createValidator() {

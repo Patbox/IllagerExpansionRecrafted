@@ -14,12 +14,13 @@ import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
 public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
-    public PlatinumSwordItem(ToolMaterial toolMaterial, Settings settings) {
-        super(toolMaterial, settings);
+    public PlatinumSwordItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Settings settings) {
+        super(toolMaterial, attackDamage, attackSpeed, settings);
     }
 
     public static void applyEffects(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -40,7 +41,7 @@ public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.NETHERITE_SWORD;
     }
 
@@ -48,10 +49,5 @@ public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
         return super.postHit(stack, target, attacker);
-    }
-
-    @Override
-    public boolean handleMiningOnServer(ItemStack tool, BlockState targetBlock, BlockPos pos, ServerPlayerEntity player) {
-        return false;
     }
 }
