@@ -6,6 +6,7 @@ import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.entity.projectile.MagmaEntity;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
+import eu.pb4.polymer.resourcepack.extras.api.ResourcePackExtras;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.component.DataComponentTypes;
@@ -70,7 +71,7 @@ public class EntityRegistry {
     private static <T extends Entity> EntityType<T> registerIllager(Identifier provoker, EntityType.Builder<T> build) {
         var x = register(provoker, build);
         var stack = new ItemStack(Items.BIRCH_BUTTON);
-        stack.set(DataComponentTypes.ITEM_MODEL, PolymerResourcePackUtils.getBridgedModelId(provoker.withPrefixedPath("pbentity/")));
+        stack.set(DataComponentTypes.ITEM_MODEL, ResourcePackExtras.bridgeModel(provoker.withPrefixedPath("pbentity/")));
         PlayerPolymerEntity.HEADS.put(x, stack);
         return x;
     }

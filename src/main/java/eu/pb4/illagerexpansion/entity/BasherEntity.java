@@ -61,7 +61,6 @@ public class BasherEntity
     public int stunTick = 60;
     public boolean isStunned = false;
     public int blockedCount;
-    private AttributeContainer attributeContainer;
 
     public BasherEntity(EntityType<? extends BasherEntity> entityType, World world) {
         super(entityType, world);

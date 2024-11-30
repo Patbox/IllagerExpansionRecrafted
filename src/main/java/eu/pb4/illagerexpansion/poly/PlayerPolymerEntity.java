@@ -75,7 +75,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER));
         var profile = new GameProfile(((Entity) this).getUuid(), "");
         profile.getProperties().put("textures", this.getSkin());
-        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.getId(), profile, false, Integer.MAX_VALUE, GameMode.ADVENTURE, Text.empty(), 0, null));
+        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.getId(), profile, false, Integer.MAX_VALUE,  GameMode.ADVENTURE, Text.empty(), true,0, null));
         packetConsumer.accept(packet);
     }
 
@@ -99,7 +99,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
                 p.sendPacket(packet);
             }
         } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
-            var packet = new ParticleS2CPacket(ParticleTypes.EFFECT, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
+            var packet = new ParticleS2CPacket(ParticleTypes.EFFECT, false, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
             for (var p : listeners) {
                 p.sendPacket(packet);
             }
