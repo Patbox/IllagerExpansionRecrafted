@@ -172,7 +172,7 @@
                 "min": 0,
                 "max": 3
               },
-              "treasure": true
+              "options": "#minecraft:on_random_loot"
             },
             {
               "function": "minecraft:set_damage",

@@ -166,7 +166,7 @@
                 "min": 0,
                 "max": 3
               },
-              "treasure": true
+              "options": "#minecraft:on_random_loot"
             },
             {
               "function": "minecraft:set_damage",
@@ -248,15 +248,11 @@
             {
               "function": "minecraft:enchant_with_levels",
               "levels": 20,
-              "treasure": false
+              "options": "#minecraft:on_random_loot"
             },
             {
               "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 2
-              },
+              "count": 1,
               "add": false
             }
           ]
