@@ -1,13 +1,13 @@
-// 1.21.2	2024-10-24T21:24:45.1084461	Illager Expansion Recrafted/Tags for minecraft:item
-2f2f818b3d2664348a39cd887b1a48f74293dd9c data\minecraft\tags\item\head_armor.json
-c343084512c89ce383b30aaa0ae705e88de87581 data\illagerexp\tags\item\magic_damage_blocking_armor.json
-c61d0c26ea663b884aa9cd3af02568dc60328098 data\minecraft\tags\item\foot_armor.json
-18d58632642cf96bc94ce4564655b4d387aebaf5 data\minecraft\tags\item\hoes.json
-21009d37f547c73af8d70b3888f58ebafbcd382c data\minecraft\tags\item\axes.json
-5de19cf8600fa9c37f5d6687321b44413f9f2885 data\minecraft\tags\item\trim_materials.json
-a80dbf1bbffacfd9ba6f61579dbdd58d739a9a37 data\minecraft\tags\item\shovels.json
-c343084512c89ce383b30aaa0ae705e88de87581 data\minecraft\tags\item\trimmable_armor.json
-35ce808d22daa9310578b18739801986d821c782 data\minecraft\tags\item\chest_armor.json
-91fdf4f5dc87a3beda008fa12d744c69faf45740 data\minecraft\tags\item\swords.json
-5e4620709626f13675b2f95407072c2aa12c429d data\minecraft\tags\item\leg_armor.json
-cf2cd022cd216712bf8c02623af1ae7d077afe81 data\minecraft\tags\item\pickaxes.json
+// 1.21.5	-999999999-01-01T00:00:00	Illager Expansion Recrafted/Tags for minecraft:item
+c343084512c89ce383b30aaa0ae705e88de87581 data/illagerexp/tags/item/magic_damage_blocking_armor.json
+21009d37f547c73af8d70b3888f58ebafbcd382c data/minecraft/tags/item/axes.json
+35ce808d22daa9310578b18739801986d821c782 data/minecraft/tags/item/chest_armor.json
+c61d0c26ea663b884aa9cd3af02568dc60328098 data/minecraft/tags/item/foot_armor.json
+2f2f818b3d2664348a39cd887b1a48f74293dd9c data/minecraft/tags/item/head_armor.json
+18d58632642cf96bc94ce4564655b4d387aebaf5 data/minecraft/tags/item/hoes.json
+5e4620709626f13675b2f95407072c2aa12c429d data/minecraft/tags/item/leg_armor.json
+cf2cd022cd216712bf8c02623af1ae7d077afe81 data/minecraft/tags/item/pickaxes.json
+a80dbf1bbffacfd9ba6f61579dbdd58d739a9a37 data/minecraft/tags/item/shovels.json
+91fdf4f5dc87a3beda008fa12d744c69faf45740 data/minecraft/tags/item/swords.json
+5de19cf8600fa9c37f5d6687321b44413f9f2885 data/minecraft/tags/item/trim_materials.json
+c343084512c89ce383b30aaa0ae705e88de87581 data/minecraft/tags/item/trimmable_armor.json

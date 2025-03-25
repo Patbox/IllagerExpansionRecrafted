@@ -17,19 +17,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Raid.class)
 public abstract class RaidMixin {
-    @Shadow private int badOmenLevel;
-
-    @Shadow public abstract void addRaider(int wave, RaiderEntity raider, @Nullable BlockPos pos, boolean existing);
-
-    @Shadow @Final private ServerWorld world;
-
     @Shadow @Final private int waveCount;
 
+    @Shadow public abstract int getBadOmenLevel();
+
+    @Shadow public abstract void addRaider(ServerWorld world, int wave, RaiderEntity raider, @Nullable BlockPos pos, boolean existing);
+
     @Inject(method = "spawnNextWave", at = @At(value = "INVOKE", target = "Lnet/minecraft/village/raid/Raid;isSpawningExtraWave()Z", shift = At.Shift.AFTER))
-    private void spawnTheBoss(BlockPos pos, CallbackInfo ci, @Local(ordinal = 0) int wave) {
-        if (wave == this.waveCount + 1 && this.badOmenLevel > 4) {
+    private void spawnTheBoss(ServerWorld world, BlockPos pos, CallbackInfo ci, @Local(ordinal = 0) int wave) {
+        if (wave == this.waveCount + 1 && this.getBadOmenLevel() > 4) {
             var raiderEntity = EntityRegistry.INVOKER.create(world, SpawnReason.PATROL);
-            this.addRaider(wave, raiderEntity, pos, false);
+            this.addRaider(world, wave, raiderEntity, pos, false);
         }
     }
 }

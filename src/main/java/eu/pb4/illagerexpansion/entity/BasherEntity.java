@@ -110,7 +110,7 @@ public class BasherEntity
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setStunnedState(nbt.getBoolean("Stunned"));
+        this.setStunnedState(nbt.getBoolean("Stunned", false));
     }
 
     @Override
@@ -196,7 +196,7 @@ public class BasherEntity
                 final ItemStack basherItem = this.getMainHandStack();
                 final boolean isShield = basherItem.isOf(Items.SHIELD);
                 if ((BasherEntity.AXES.contains(item.getItem()) || attacker instanceof IronGolemEntity || this.blockedCount >= 4) && isShield) {
-                    this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0f, 1.0f);
+                    this.playSound(SoundEvents.ITEM_SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
                     if (getWorld() instanceof ServerWorld) {
                         ((ServerWorld) getWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
@@ -206,12 +206,12 @@ public class BasherEntity
                 }
             }
             if (source.getSource() instanceof PersistentProjectileEntity && hasShield) {
-                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK.value(), 1.0f, 1.0f);
                 ++this.blockedCount;
                 return false;
             }
             if (source.getSource() instanceof LivingEntity && hasShield) {
-                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK.value(), 1.0f, 1.0f);
                 ++this.blockedCount;
                 return false;
             }

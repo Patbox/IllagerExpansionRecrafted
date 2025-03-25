@@ -127,7 +127,7 @@ public class InvokerEntity
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setShieldedState(nbt.getBoolean("Invul"));
+        this.setShieldedState(nbt.getBoolean("Invul", false));
         if (this.hasCustomName()) {
             this.bossBar.setName(this.getDisplayName());
         }
@@ -187,7 +187,7 @@ public class InvokerEntity
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    public boolean handleFallDamage(double fallDistance, float damagePerDistance, DamageSource damageSource) {
         return false;
     }
 

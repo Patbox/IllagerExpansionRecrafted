@@ -32,7 +32,7 @@ public class IllusionaryDustItem extends Item implements PolymerAutoItem {
         double x = playerEntity.getX();
         double y = playerEntity.getY();
         double z = playerEntity.getZ();
-        world.playSound(x, y, z, SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS, 1.0f, 1.0f, false);
+        world.playSound(null, x, y, z, SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS, 1.0f, 1.0f);
         if (world instanceof ServerWorld) {
             ((ServerWorld) world).spawnParticles(ParticleTypes.CLOUD, x, y + 1, z, 15, 0.5D, 0.5D, 0.5D, 0.15D);
             playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));

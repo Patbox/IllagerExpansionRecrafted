@@ -25,8 +25,7 @@ public class PlatinumAxeItem extends AxeItem implements PolymerAutoItem {
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        return super.postHit(stack, target, attacker);
     }
 }

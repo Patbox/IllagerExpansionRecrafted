@@ -116,7 +116,7 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.dealtDamage = nbt.getBoolean("DealtDamage");
+        this.dealtDamage = nbt.getBoolean("DealtDamage", false);
     }
 
     @Override

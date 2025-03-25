@@ -11,11 +11,11 @@ import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.item.tooltip.TooltipType;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class PolymerArmorItem extends ArmorItem implements PolymerAutoItem {
+public class PolymerArmorItem extends Item implements PolymerAutoItem {
     private final Item polymerItemBase;
 
     public PolymerArmorItem(ArmorMaterial material, EquipmentType slot, Settings settings) {
-        super(material, slot, settings);
+        super(settings.armor(material, slot));
         this.polymerItemBase = switch (slot) {
             case HELMET -> Items.NETHERITE_HELMET;
             case CHESTPLATE -> Items.NETHERITE_CHESTPLATE;

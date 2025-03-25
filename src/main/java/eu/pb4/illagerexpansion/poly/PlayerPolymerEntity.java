@@ -17,8 +17,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.particle.ParticleTypes;
@@ -43,7 +43,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
         var x = new ItemDisplayElement();
         var holder = new ElementHolder();
         x.setInvisible(true);
-        x.setModelTransformation(ModelTransformationMode.HEAD);
+        x.setItemDisplayContext(ItemDisplayContext.HEAD);
         x.setTeleportDuration(3);
         x.setScale(new Vector3f(0.5f));
         holder.addElement(x);

@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -30,7 +31,7 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
         if (!(entity instanceof IllagerEntity || entity instanceof RavagerEntity) && world instanceof ServerWorld serverWorld ) {
             entity.damage(serverWorld, world.getDamageSources().magic(), 3.0f);
         } else {
@@ -39,7 +40,7 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
         if (entity.getFireTicks() == 0) {
             entity.setFireTicks(0);
         }
-        super.onEntityCollision(state, world, pos, entity);
+        super.onEntityCollision(state, world, pos, entity, handler);
     }
 
     @Override

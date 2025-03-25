@@ -92,7 +92,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    public boolean handleFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 
@@ -106,10 +106,10 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("BoundX")) {
-            this.bounds = new BlockPos(nbt.getInt("BoundX"), nbt.getInt("BoundY"), nbt.getInt("BoundZ"));
+            this.bounds = new BlockPos(nbt.getInt("BoundX", 0), nbt.getInt("BoundY", 0), nbt.getInt("BoundZ", 0));
         }
         if (nbt.contains("LifeTicks")) {
-            this.setLifeTicks(nbt.getInt("LifeTicks"));
+            this.setLifeTicks(nbt.getInt("LifeTicks", 0));
         }
     }
 
@@ -183,7 +183,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     public void tickMovement() {
         if (!getWorld().isClient()) {
             for (int i = 0; i < 2; ++i) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.prevX, this.prevY + 1.2, this.prevZ, 2, 0.2D, 0D, 0.2D, 0.025D);
+                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.getX(), this.getY() + 1.2, this.getZ(), 2, 0.2D, 0D, 0.2D, 0.025D);
             }
         }
         super.tickMovement();

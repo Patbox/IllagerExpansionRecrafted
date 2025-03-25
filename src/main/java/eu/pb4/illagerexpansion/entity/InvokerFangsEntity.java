@@ -14,6 +14,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
@@ -57,9 +59,9 @@ public class InvokerFangsEntity
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.warmup = nbt.getInt("Warmup");
-        if (nbt.containsUuid("Owner")) {
-            this.ownerUuid = nbt.getUuid("Owner");
+        this.warmup = nbt.getInt("Warmup", 0);
+        if (nbt.contains("Owner")) {
+            this.ownerUuid = nbt.get("Owner", Uuids.STRICT_CODEC).orElse(Util.NIL_UUID);
         }
     }
 
@@ -67,7 +69,7 @@ public class InvokerFangsEntity
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putInt("Warmup", this.warmup);
         if (this.ownerUuid != null) {
-            nbt.putUuid("Owner", this.ownerUuid);
+            nbt.put("Owner", Uuids.STRICT_CODEC, this.ownerUuid);
         }
     }
 
@@ -90,7 +92,7 @@ public class InvokerFangsEntity
                         double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
                         double h = 0.3 + this.random.nextDouble() * 0.3;
                         double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-                        this.getWorld().addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
+                        //this.getWorld().addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
                     }
                 }
             }
@@ -140,7 +142,7 @@ public class InvokerFangsEntity
         if (status == 4) {
             this.playingAnimation = true;
             if (!this.isSilent()) {
-                this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f, false);
+                this.getWorld().playSound(this, this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f);
             }
         }
     }

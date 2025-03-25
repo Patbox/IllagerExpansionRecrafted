@@ -6,9 +6,7 @@ import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.component.type.ConsumableComponent;
+import net.minecraft.component.type.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -39,17 +37,14 @@ public class HatchetItem extends Item implements PolymerAutoItem {
     public HatchetItem(Item.Settings settings) {
         super(settings.repairable(ItemRegistry.PLATINUM_CHUNK)
                 .enchantable(1)
+                .component(DataComponentTypes.WEAPON, new WeaponComponent(1, 2))
+                .component(DataComponentTypes.TOOL, new ToolComponent(List.of(), 1, 2, false))
                 .attributeModifiers(AttributeModifiersComponent.builder()
                         .add(EntityAttributes.ATTACK_DAMAGE, new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
                         .add(EntityAttributes.ATTACK_SPEED, new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -1.9f, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
                 .build())
 
         );
-    }
-
-    @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        return !miner.isCreative();
     }
 
     @Override
@@ -97,12 +92,6 @@ public class HatchetItem extends Item implements PolymerAutoItem {
         }
         user.setCurrentHand(hand);
         return ActionResult.CONSUME;
-    }
-
-    @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.damage(1, attacker, EquipmentSlot.MAINHAND);
-        return true;
     }
 
     @Override

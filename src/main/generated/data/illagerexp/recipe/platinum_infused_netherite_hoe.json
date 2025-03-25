@@ -3,7 +3,6 @@
   "addition": "illagerexp:platinum_sheet",
   "base": "minecraft:netherite_hoe",
   "result": {
-    "count": 1,
     "id": "illagerexp:platinum_infused_netherite_hoe"
   },
   "template": "illagerexp:platinum_upgrade_template"

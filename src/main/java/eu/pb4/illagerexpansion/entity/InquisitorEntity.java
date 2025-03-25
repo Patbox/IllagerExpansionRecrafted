@@ -152,8 +152,8 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
 
     public void readCustomDataFromNbt(final NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setStunnedState(nbt.getBoolean("Stunned"));
-        this.setFinalRoarState(nbt.getBoolean("FinalRoar"));
+        this.setStunnedState(nbt.getBoolean("Stunned", false));
+        this.setFinalRoarState(nbt.getBoolean("FinalRoar", false));
     }
 
     @Override
@@ -257,7 +257,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
                 final ItemStack basherItem = this.getOffHandStack();
                 final boolean isShield = basherItem.isOf(Items.SHIELD);
                 if ((InquisitorEntity.AXES.contains(item.getItem()) || attacker instanceof IronGolemEntity || this.blockedCount >= 4) && isShield) {
-                    this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0f, 1.0f);
+                    this.playSound(SoundEvents.ITEM_SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
                     if (this.getWorld() instanceof ServerWorld) {
                         ((ServerWorld)this.getWorld()).spawnParticles((ParticleEffect)new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
@@ -270,13 +270,13 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
                 }
             }
             if (source.getSource() instanceof PersistentProjectileEntity && hasShield) {
-                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK.value(), 1.0f, 1.0f);
                 ++this.blockedCount;
                 return false;
             }
             if (source.getSource() instanceof LivingEntity && hasShield) {
                 ++this.blockedCount;
-                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK.value(), 1.0f, 1.0f);
                 return false;
             }
         }

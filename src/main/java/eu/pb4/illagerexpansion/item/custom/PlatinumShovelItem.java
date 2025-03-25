@@ -20,8 +20,8 @@ public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        return super.postHit(stack, target, attacker);
+        super.postHit(stack, target, attacker);
     }
 }

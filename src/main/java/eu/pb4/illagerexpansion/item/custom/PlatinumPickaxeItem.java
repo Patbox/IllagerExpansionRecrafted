@@ -4,14 +4,15 @@ import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class PlatinumPickaxeItem extends PickaxeItem implements PolymerAutoItem {
+public class PlatinumPickaxeItem extends Item implements PolymerAutoItem {
     public PlatinumPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
-        super(material, attackDamage, attackSpeed, settings);
+        super(settings.pickaxe(material, attackDamage, attackSpeed));
     }
 
     @Override
@@ -20,8 +21,7 @@ public class PlatinumPickaxeItem extends PickaxeItem implements PolymerAutoItem 
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        return super.postHit(stack, target, attacker);
     }
 }

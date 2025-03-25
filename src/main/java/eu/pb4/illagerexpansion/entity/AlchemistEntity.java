@@ -26,6 +26,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.projectile.thrown.LingeringPotionEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
@@ -104,7 +105,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             final double g = Math.sqrt(d * d + f * f);
             var throwed = new ItemStack(Items.LINGERING_POTION);
             throwed.set(DataComponentTypes.POTION_CONTENTS, potion);
-            final PotionEntity potionEntity = new PotionEntity(getWorld(), this, throwed);
+            final PotionEntity potionEntity = new LingeringPotionEntity(getWorld(), this, throwed);
             potionEntity.setPitch(potionEntity.getPitch() + 20.0f);
             potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
             if (!this.isSilent()) {
@@ -154,8 +155,8 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
 
     public void readCustomDataFromNbt(final NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setPotionState(nbt.getBoolean("PotionState"));
-        this.setBowState(nbt.getBoolean("BowState"));
+        this.setPotionState(nbt.getBoolean("PotionState", false));
+        this.setBowState(nbt.getBoolean("BowState", false));
     }
 
     protected void initDataTracker(DataTracker.Builder builder) {

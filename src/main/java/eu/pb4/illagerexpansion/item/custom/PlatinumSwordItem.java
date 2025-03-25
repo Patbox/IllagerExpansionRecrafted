@@ -18,9 +18,9 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
+public class PlatinumSwordItem extends Item implements PolymerAutoItem {
     public PlatinumSwordItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Settings settings) {
-        super(toolMaterial, attackDamage, attackSpeed, settings);
+        super(settings.sword(toolMaterial, attackDamage, attackSpeed));
     }
 
     public static void applyEffects(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -46,8 +46,8 @@ public class PlatinumSwordItem extends SwordItem implements PolymerAutoItem {
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        return super.postHit(stack, target, attacker);
+        super.postHit(stack, target, attacker);
     }
 }

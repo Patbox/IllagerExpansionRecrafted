@@ -12,20 +12,19 @@ import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.ItemTags;
 
 import java.util.*;
 
 public class EnchantToolUtil {
-    Item mainhanditem;
-    Item offhanditem;
-    ItemStack mainStack;
-    ItemStack offStack;
+
 
     public boolean eligibleForEnchant(LivingEntity entity) {
-        mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND).getItem();
-        offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND).getItem();
-        return (mainhanditem instanceof BowItem || mainhanditem instanceof CrossbowItem || mainhanditem instanceof SwordItem || mainhanditem instanceof AxeItem || offhanditem instanceof BowItem
-        || offhanditem instanceof CrossbowItem || offhanditem instanceof SwordItem || offhanditem instanceof AxeItem);
+        var mainhand = entity.getEquippedStack(EquipmentSlot.MAINHAND);
+        var offhand = entity.getEquippedStack(EquipmentSlot.OFFHAND);
+        return (mainhand.getItem() instanceof BowItem || mainhand.getItem() instanceof CrossbowItem
+                || mainhand.isIn(ItemTags.SWORDS) || mainhand.isIn(ItemTags.AXES) || offhand.getItem() instanceof BowItem
+        || offhand.getItem() instanceof CrossbowItem || offhand.isIn(ItemTags.SWORDS) || offhand.isIn(ItemTags.AXES));
     }
 
     public void doEnchant(RegistryWrapper.WrapperLookup lookup, RegistryKey<Enchantment> enchantment, int enchantLevel, LivingEntity entity) {
@@ -39,14 +38,14 @@ public class EnchantToolUtil {
 
     public void enchant(LivingEntity entity) {
         var lookup = entity.getWorld().getRegistryManager();
-        mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND).getItem();
-        offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND).getItem();
-        mainStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
-        offStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
+        var mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND).getItem();
+        var offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND).getItem();
+        var mainStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
+        var offStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
         if (mainhanditem instanceof BowItem || offhanditem instanceof BowItem) {
             doEnchant(lookup, Enchantments.POWER, 3, entity);
             }
-        if (mainhanditem instanceof AxeItem || mainhanditem instanceof SwordItem || offhanditem instanceof SwordItem || offhanditem instanceof AxeItem) {
+        if (mainStack.isIn(ItemTags.AXES) || mainStack.isIn(ItemTags.SWORDS) || offStack.isIn(ItemTags.SWORDS) || offStack.isIn(ItemTags.AXES)) {
             doEnchant(lookup, Enchantments.SHARPNESS, 3, entity);
         }
         if (mainhanditem instanceof CrossbowItem || offhanditem instanceof CrossbowItem) {

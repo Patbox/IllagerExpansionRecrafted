@@ -1,9 +1,15 @@
 package eu.pb4.illagerexpansion.sounds;
 
 import eu.pb4.illagerexpansion.IllagerExpansion;
+import eu.pb4.polymer.core.api.other.PolymerSoundEvent;
+import eu.pb4.polymer.rsm.api.RegistrySyncUtils;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+
+import java.util.Optional;
 
 public class SoundRegistry {
     public static SoundEvent SURRENDERED_AMBIENT = registerSoundEvent("surrendered_ambient", SoundEvents.ENTITY_STRAY_AMBIENT);
@@ -25,7 +31,7 @@ public class SoundRegistry {
     public static SoundEvent INVOKER_FANGS_CAST = registerSoundEvent("invoker_fangs_cast", SoundEvents.ENTITY_EVOKER_CAST_SPELL);
     public static SoundEvent INVOKER_BIG_CAST = registerSoundEvent("invoker_big_cast", SoundEvents.ENTITY_EVOKER_CAST_SPELL);
     public static SoundEvent INVOKER_SUMMON_CAST = registerSoundEvent("invoker_summon_cast", SoundEvents.ENTITY_EVOKER_CAST_SPELL);
-    public static SoundEvent INVOKER_SHIELD_BREAK = registerSoundEvent("invoker_shield_break", SoundEvents.ITEM_SHIELD_BREAK);
+    public static SoundEvent INVOKER_SHIELD_BREAK = registerSoundEvent("invoker_shield_break", SoundEvents.ITEM_SHIELD_BREAK.value());
     public static SoundEvent ILLAGER_BRUTE_AMBIENT = registerSoundEvent("illager_brute_ambient", SoundEvents.ENTITY_VINDICATOR_AMBIENT);
     public static SoundEvent ILLAGER_BRUTE_HURT = registerSoundEvent("illager_brute_hurt", SoundEvents.ENTITY_VINDICATOR_HURT);
     public static SoundEvent ILLAGER_BRUTE_DEATH = registerSoundEvent("illager_brute_death", SoundEvents.ENTITY_VINDICATOR_DEATH);
@@ -43,12 +49,15 @@ public class SoundRegistry {
     public static SoundEvent FIRECALLER_CAST = registerSoundEvent("firecaller_cast", SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL);
     public static SoundEvent SORCERER_HURT = registerSoundEvent("sorcerer_hurt", SoundEvents.ENTITY_EVOKER_HURT);
     public static SoundEvent SORCERER_DEATH = registerSoundEvent("sorcerer_death", SoundEvents.ENTITY_EVOKER_DEATH);
-    public static SoundEvent SORCERER_AMBIENT = registerSoundEvent("sorcerer_idle", SoundEvents.ENTITY_EVOKER_AMBIENT);
+    public static SoundEvent SORCERER_AMBIENT = registerSoundEvent("so2rcerer_idle", SoundEvents.ENTITY_EVOKER_AMBIENT);
     public static SoundEvent SORCERER_CELEBRATE = registerSoundEvent("sorcerer_celebrate", SoundEvents.ENTITY_EVOKER_CELEBRATE);
 
     private static SoundEvent registerSoundEvent(String name, SoundEvent soundEvent) {
         Identifier id = Identifier.of(IllagerExpansion.MOD_ID, name);
-        return soundEvent;//PolymerSoundEvent.of(id, soundEvent);
+        var event = Registry.register(Registries.SOUND_EVENT, id, new SoundEvent(id, Optional.empty()));
+        PolymerSoundEvent.registerOverlay(event, soundEvent);
+        RegistrySyncUtils.setServerEntry(Registries.SOUND_EVENT, event);
+        return event;
     }
     public static void registerSounds() {
     }

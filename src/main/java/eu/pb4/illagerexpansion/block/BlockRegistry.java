@@ -38,9 +38,9 @@ public class BlockRegistry {
         var id = Identifier.of(IllagerExpansion.MOD_ID, name);
         var block = f.apply(AbstractBlock.Settings.create().registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         if (block instanceof PolymerHeadBlock) {
-            x = ItemRegistry.registerItem(name, (s) -> new PolymerHeadBlockItem((Block & PolymerHeadBlock) block, s));
+            x = ItemRegistry.registerItem(name, (s) -> new PolymerHeadBlockItem((Block & PolymerHeadBlock) block, s.useBlockPrefixedTranslationKey()));
         } else {
-            x = ItemRegistry.registerItem(name, (s) -> new PolymerBlockItem(block, s, Items.STRUCTURE_VOID));
+            x = ItemRegistry.registerItem(name, (s) -> new PolymerBlockItem(block, s.useBlockPrefixedTranslationKey(), Items.STRUCTURE_VOID));
         }
         if (!group) {
             ItemRegistry.ITEMS.remove(x);
