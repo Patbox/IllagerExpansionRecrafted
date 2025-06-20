@@ -40,6 +40,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
@@ -127,10 +129,10 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         getWorld().spawnEntity(persistentProjectileEntity);
     }
 
-    public void writeCustomDataToNbt(final NbtCompound nbt) {
+    public void writeCustomData(final WriteView nbt) {
         nbt.putBoolean("BowState", this.inBowState);
         nbt.putBoolean("PotionState", this.inPotionState);
-        super.writeCustomDataToNbt(nbt);
+        super.writeCustomData(nbt);
     }
 
     private List<AreaEffectCloudEntity> getNearbyClouds() {
@@ -153,8 +155,8 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         }
     }
 
-    public void readCustomDataFromNbt(final NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(final ReadView nbt) {
+        super.readCustomData(nbt);
         this.setPotionState(nbt.getBoolean("PotionState", false));
         this.setBowState(nbt.getBoolean("BowState", false));
     }

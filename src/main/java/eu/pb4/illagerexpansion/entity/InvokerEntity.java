@@ -36,6 +36,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -125,8 +127,8 @@ public class InvokerEntity
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(ReadView nbt) {
+        super.readCustomData(nbt);
         this.setShieldedState(nbt.getBoolean("Invul", false));
         if (this.hasCustomName()) {
             this.bossBar.setName(this.getDisplayName());
@@ -145,9 +147,9 @@ public class InvokerEntity
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomData(WriteView nbt) {
         nbt.putBoolean("Invul", this.isShielded);
-        super.writeCustomDataToNbt(nbt);
+        super.writeCustomData(nbt);
     }
 
     public boolean getShieldedState() {

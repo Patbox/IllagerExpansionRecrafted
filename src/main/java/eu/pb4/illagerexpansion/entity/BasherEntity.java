@@ -39,6 +39,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
@@ -86,7 +88,7 @@ public class BasherEntity
     protected void mobTick(ServerWorld world) {
         if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
             boolean bl = ((ServerWorld) getWorld()).hasRaidAt(this.getBlockPos());
-            ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(bl);
+            ((MobNavigation) this.getNavigation()).setCanOpenDoors(bl);
             super.mobTick(world);
         }
         if (!this.isAlive()) {
@@ -102,14 +104,14 @@ public class BasherEntity
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomData(WriteView nbt) {
         nbt.putBoolean("Stunned", this.isStunned);
-        super.writeCustomDataToNbt(nbt);
+        super.writeCustomData(nbt);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(ReadView nbt) {
+        super.readCustomData(nbt);
         this.setStunnedState(nbt.getBoolean("Stunned", false));
     }
 
@@ -224,7 +226,7 @@ public class BasherEntity
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
         EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
-        ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
+        ((MobNavigation) this.getNavigation()).setCanOpenDoors(true);
         this.initEquipment(random, difficulty);
         this.updateEnchantments(world, random, difficulty);
         return entityData2;

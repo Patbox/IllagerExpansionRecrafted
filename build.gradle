@@ -57,13 +57,13 @@ dependencies {
 
     modCompileOnly /*modRuntimeOnly*/("eu.pb4.polyport:trinkets:3.9.0+polymerport.1")
 
-    modImplementation include("eu.pb4:sgui:1.9.0+1.21.5")
-    modImplementation "eu.pb4:polymer-autohost:0.12.1+1.21.5-rc2"
-    modImplementation "eu.pb4:polymer-core:0.12.1+1.21.5-rc2"
-    modImplementation "eu.pb4:polymer-resource-pack:0.12.1+1.21.5-rc2"
-    modImplementation "eu.pb4:polymer-resource-pack-extras:0.12.1+1.21.5-rc2"
-    modImplementation "eu.pb4:polymer-virtual-entity:0.12.1+1.21.5-rc2"
-    modImplementation include("xyz.nucleoid:server-translations-api:2.5.0+1.21.5-rc1")
+    modImplementation include("eu.pb4:sgui:1.10.0+1.21.6")
+    modImplementation "eu.pb4:polymer-autohost:0.13.1+1.21.6"
+    modImplementation "eu.pb4:polymer-core:0.13.1+1.21.6"
+    modImplementation "eu.pb4:polymer-resource-pack:0.13.1+1.21.6"
+    modImplementation "eu.pb4:polymer-resource-pack-extras:0.13.1+1.21.6"
+    modImplementation "eu.pb4:polymer-virtual-entity:0.13.1+1.21.6"
+    modImplementation include("xyz.nucleoid:server-translations-api:2.5.1+1.21.5")
 }
 
 processResources {

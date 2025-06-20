@@ -30,6 +30,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -70,16 +72,16 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 32.0).add(EntityAttributes.MOVEMENT_SPEED, 0.38);
     }
 
-    public void readCustomDataFromNbt(final NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(final ReadView nbt) {
+        super.readCustomData(nbt);
     }
 
     public SoundEvent getCelebratingSound() {
         return SoundEvents.ENTITY_ILLUSIONER_AMBIENT;
     }
 
-    public void writeCustomDataToNbt(final NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomData(final WriteView nbt) {
+        super.writeCustomData(nbt);
     }
 
     protected void mobTick(ServerWorld world) {

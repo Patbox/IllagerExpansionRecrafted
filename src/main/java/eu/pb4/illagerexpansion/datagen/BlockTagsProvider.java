@@ -15,7 +15,7 @@ class BlockTagsProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup arg) {
-        this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
+        this.valueLookupBuilder(BlockTags.AXE_MINEABLE)
                 .add(BlockRegistry.IMBUING_TABLE);
     }
 }

@@ -14,6 +14,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
@@ -58,15 +60,13 @@ public class InvokerFangsEntity
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    protected void readCustomData(ReadView nbt) {
         this.warmup = nbt.getInt("Warmup", 0);
-        if (nbt.contains("Owner")) {
-            this.ownerUuid = nbt.get("Owner", Uuids.STRICT_CODEC).orElse(Util.NIL_UUID);
-        }
+        this.ownerUuid = nbt.read("Owner", Uuids.STRICT_CODEC).orElse(null);
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    protected void writeCustomData(WriteView nbt) {
         nbt.putInt("Warmup", this.warmup);
         if (this.ownerUuid != null) {
             nbt.put("Owner", Uuids.STRICT_CODEC, this.ownerUuid);

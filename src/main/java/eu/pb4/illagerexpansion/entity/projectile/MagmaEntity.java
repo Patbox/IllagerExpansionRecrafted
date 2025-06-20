@@ -16,6 +16,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEntity {
@@ -70,7 +71,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     }
 
     @Override
-    public boolean isCollidable() {
+    public boolean isCollidable(@Nullable Entity entity) {
         return false;
     }
 

@@ -93,7 +93,7 @@
     },
     {
       "rolls": 1.0,
-      "bonus_rolls": 0.0,
+      "bonus_rolls": 1.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -107,8 +107,8 @@
         {
           "condition": "minecraft:random_chance_with_enchanted_bonus",
           "enchantment": "minecraft:looting",
-          "unenchanted_chance": 0.5,
-          "enchanted_chance": 0.6
+          "unenchanted_chance": 0.6,
+          "enchanted_chance": 0.8
         }
       ]
     }

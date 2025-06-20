@@ -29,6 +29,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -103,19 +105,18 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("BoundX")) {
+    public void readCustomData(ReadView nbt) {
+        super.readCustomData(nbt);
+        if (nbt.getInt("BoundX", Integer.MAX_VALUE) != Integer.MAX_VALUE) {
             this.bounds = new BlockPos(nbt.getInt("BoundX", 0), nbt.getInt("BoundY", 0), nbt.getInt("BoundZ", 0));
         }
-        if (nbt.contains("LifeTicks")) {
-            this.setLifeTicks(nbt.getInt("LifeTicks", 0));
-        }
+
+        nbt.getOptionalInt("LifeTicks").ifPresent(this::setLifeTicks);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomData(WriteView nbt) {
+        super.writeCustomData(nbt);
         if (this.bounds != null) {
             nbt.putInt("BoundX", this.bounds.getX());
             nbt.putInt("BoundY", this.bounds.getY());
