@@ -1,22 +1,24 @@
 package eu.pb4.illagerexpansion.entity;
 
-import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
-import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.entity.projectile.MagmaEntity;
+import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
+import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.resourcepack.extras.api.ResourcePackExtras;
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.condition.KilledByPlayerLootCondition;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -75,6 +77,7 @@ public class EntityRegistry {
         PlayerPolymerEntity.HEADS.put(x, stack);
         return x;
     }
+
     private static <T extends Entity> EntityType<T> register(Identifier provoker, EntityType.Builder<T> build) {
         var type = Registry.register(Registries.ENTITY_TYPE, provoker, build.build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, provoker)));
         PolymerEntityUtils.registerType(type);
@@ -92,6 +95,16 @@ public class EntityRegistry {
         FabricDefaultAttributeRegistry.register(PROVOKER, ProvokerEntity.createProvokerAttributes());
         FabricDefaultAttributeRegistry.register(SORCERER, SorcererEntity.createSorcererAttributes());
         FabricDefaultAttributeRegistry.register(SURRENDERED, SurrenderedEntity.createSurrenderedAttributes());
-    }
 
+        LootTableEvents.MODIFY.register((key, builder, source, wrapperLookup) -> {
+            if (!key.getValue().getPath().equals("entities/illusioner")) {
+                return;
+            }
+
+            builder.pool(LootPool.builder()
+                    .rolls(ConstantLootNumberProvider.create(1.0F))
+                    .conditionally(KilledByPlayerLootCondition.builder())
+                    .with(ItemEntry.builder(ItemRegistry.ILLUSIONARY_DUST)).build());
+        });
+    }
 }

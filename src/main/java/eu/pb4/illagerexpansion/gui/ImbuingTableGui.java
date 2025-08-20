@@ -1,24 +1,22 @@
 package eu.pb4.illagerexpansion.gui;
 
+import eu.pb4.illagerexpansion.IllagerExpansion;
+import eu.pb4.illagerexpansion.item.ItemRegistry;
+import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import eu.pb4.illagerexpansion.util.IEGameRules;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import eu.pb4.illagerexpansion.IllagerExpansion;
-import eu.pb4.illagerexpansion.item.ItemRegistry;
-import eu.pb4.illagerexpansion.sounds.SoundRegistry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -30,8 +28,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-
-import java.util.Map;
 
 public class ImbuingTableGui extends SimpleGui {
     protected final CraftingResultInventory output = new CraftingResultInventory();
@@ -120,6 +116,16 @@ public class ImbuingTableGui extends SimpleGui {
         }
 
         return super.onAnyClick(index, type, action);
+    }
+
+    @Override
+    public void onScreenHandlerClosed() {
+        super.onScreenHandlerClosed();
+        this.player.giveItemStack(this.input.getStack(0));
+        this.player.giveItemStack(this.input.getStack(1));
+        this.player.giveItemStack(this.input.getStack(2));
+        this.input.clear();
+        this.output.clear();
     }    final Inventory input = new SimpleInventory(3) {
         @Override
         public void markDirty() {
@@ -127,15 +133,6 @@ public class ImbuingTableGui extends SimpleGui {
             ImbuingTableGui.this.onContentChanged(this);
         }
     };
-
-    @Override
-    public void onClose() {
-        this.player.giveItemStack(this.input.getStack(0));
-        this.player.giveItemStack(this.input.getStack(1));
-        this.player.giveItemStack(this.input.getStack(2));
-        this.input.clear();
-        this.output.clear();
-    }
 
     private void onContentChanged(SimpleInventory inventory) {
         if (inventory == this.input) {
@@ -157,7 +154,7 @@ public class ImbuingTableGui extends SimpleGui {
                 return;
             }
 
-            var gamerules = ((ServerWorld) this.player.getWorld()).getGameRules();
+            var gamerules = this.player.getWorld().getGameRules();
 
             int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 

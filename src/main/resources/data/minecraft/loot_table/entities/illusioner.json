@@ -65,21 +65,6 @@
           "name": "minecraft:arrow"
         }
       ]
-    },
-    {
-      "rolls": 1.0,
-      "bonus_rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "illagerexp:illusionary_dust"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
-      ]
     }
   ]
 }

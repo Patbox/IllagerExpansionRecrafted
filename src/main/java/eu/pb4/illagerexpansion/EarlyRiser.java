@@ -1,17 +1,35 @@
 package eu.pb4.illagerexpansion;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import com.google.gson.JsonParser;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
 
+import java.nio.file.Files;
 
-public class EarlyRiser implements Runnable
-{
+
+public class EarlyRiser implements Runnable {
+
+    private boolean isFriendsAndFoesIllusionerEnabled() {
+        if (!FabricLoader.getInstance().isModLoaded("friendsandfoes")) {
+            return false;
+        }
+
+        try {
+            var file = JsonParser.parseString(Files.readString(FabricLoader.getInstance().getConfigDir().resolve("friendsandfoes.json")));
+            return file.getAsJsonObject().getAsJsonPrimitive("enableIllusioner").getAsBoolean()
+                    && file.getAsJsonObject().getAsJsonPrimitive("enableIllusionerInRaids").getAsBoolean();
+        } catch (Throwable e) {
+            // File doesn't exist or failed to parse, assume it's defaulted, which sets it to true!
+            return true;
+        }
+    }
+
     @Override
     public void run() {
         MappingResolver remapper = FabricLoader.getInstance().getMappingResolver();
-        if (FabricLoader.getInstance().isModLoaded("friendsandfoes")) {
+        if (isFriendsAndFoesIllusionerEnabled()) {
             String Raid = remapper.mapClassName("intermediary", "net.minecraft.class_3765$class_3766");
             String EntityType = 'L' + remapper.mapClassName("intermediary", "net.minecraft.class_1299") + ';';
             ClassTinkerers
