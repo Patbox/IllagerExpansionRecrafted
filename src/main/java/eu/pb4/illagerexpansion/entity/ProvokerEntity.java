@@ -88,9 +88,9 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
         double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         double f = target.getZ() - this.getZ();
         double g = Math.sqrt(d * d + f * f);
-        persistentProjectileEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.6f, 14 - this.getWorld().getDifficulty().getId() * 4);
+        persistentProjectileEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.6f, 14 - this.getEntityWorld().getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.getWorld().spawnEntity(persistentProjectileEntity);
+        this.getEntityWorld().spawnEntity(persistentProjectileEntity);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(12), entity -> (entity instanceof IllagerEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(12), entity -> (entity instanceof IllagerEntity));
         }
 
         @Override
@@ -226,7 +226,7 @@ public class ProvokerEntity extends SpellcastingIllagerEntity implements RangedA
             double x = entity.getX();
             double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER, x, y, z, 10, 0.4D, 0.4D, 0.4D, 0.15D);
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER, x, y, z, 10, 0.4D, 0.4D, 0.4D, 0.15D);
 
         }
 

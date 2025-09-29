@@ -221,7 +221,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof HostileEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof HostileEntity));
         }
 
         @Override
@@ -241,7 +241,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
             double x = ArchivistEntity.this.getX();
             double y = ArchivistEntity.this.getY() + 1;
             double z = ArchivistEntity.this.getZ();
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 150, 3.0D, 3.0D, 3.0D, 0.1D);
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 150, 3.0D, 3.0D, 3.0D, 0.1D);
         }
 
         @Override
@@ -294,7 +294,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
             if (ArchivistEntity.this.isSpellcasting()) {
                 return false;
             }
-            List<IllagerEntity> list = ((ServerWorld) ArchivistEntity.this.getWorld()).getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<IllagerEntity> list = ((ServerWorld) ArchivistEntity.this.getEntityWorld()).getTargets(IllagerEntity.class, this.closeEnchantableMobPredicate, ArchivistEntity.this, ArchivistEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }
@@ -322,8 +322,8 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
             double x = hostileEntity.getX();
             double y = hostileEntity.getY() + 1.5;
             double z = hostileEntity.getZ();
-            if (getWorld() instanceof ServerWorld) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 50, 1.0D, 2.0D, 1.0D, 0.1D);
+            if (getEntityWorld() instanceof ServerWorld) {
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.ENCHANT, x, y, z, 50, 1.0D, 2.0D, 1.0D, 0.1D);
             }
             ArchivistEntity.this.buffcooldown = 300;
         }

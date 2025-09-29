@@ -169,14 +169,14 @@ public class InvokerEntity
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
         if (isAoeCasting && this.isSpellcasting()) {
             SpellParticleUtil spellParticleUtil = new SpellParticleUtil();
-            spellParticleUtil.setSpellParticles(this, this.getWorld(), ParticleTypes.SMOKE, 2, 0.06D);
+            spellParticleUtil.setSpellParticles(this, this.getEntityWorld(), ParticleTypes.SMOKE, 2, 0.06D);
         }
         if (damagecount >= 2) {
             this.setShieldedState(true);
         }
         if (getShieldedState()) {
             if (world instanceof ServerWorld) {
-                ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.5D, 0.7D, 0.5D, 0.15D);
+                ((ServerWorld) this.getEntityWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.5D, 0.7D, 0.5D, 0.15D);
             }
         }
         Vec3d vec3d = this.getVelocity();
@@ -184,7 +184,7 @@ public class InvokerEntity
             this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
         }
         if (world instanceof ServerWorld) {
-            ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.3, this.getZ(), 1, 0.2D, 0.2D, 0.2D, 0.005D);
+            ((ServerWorld) this.getEntityWorld()).spawnParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.3, this.getZ(), 1, 0.2D, 0.2D, 0.2D, 0.005D);
         }
     }
 
@@ -258,8 +258,8 @@ public class InvokerEntity
                 if ((source.isIn(DamageTypeTags.IS_FIRE))) {
                     return false;
                 } else {
-                    if (this.getWorld() instanceof ServerWorld) {
-                        ((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1, this.getZ(), 30, 0.5D, 0.7D, 0.5D, 0.5D);
+                    if (this.getEntityWorld() instanceof ServerWorld) {
+                        ((ServerWorld) this.getEntityWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY() + 1, this.getZ(), 30, 0.5D, 0.7D, 0.5D, 0.5D);
                     }
                     this.playSound(SoundRegistry.INVOKER_SHIELD_BREAK, 1.0f, 1.0f);
                     this.setShieldedState(false);
@@ -336,7 +336,7 @@ public class InvokerEntity
             if (inSecondPhase) {
                 return false;
             }
-            int i = ((ServerWorld) InvokerEntity.this.getWorld()).getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
+            int i = ((ServerWorld) InvokerEntity.this.getEntityWorld()).getTargets(SurrenderedEntity.class, this.closeVexPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(20.0)).size();
             return 3 > i;
         }
 
@@ -352,12 +352,12 @@ public class InvokerEntity
 
         @Override
         protected void castSpell() {
-            ServerWorld serverWorld = (ServerWorld) InvokerEntity.this.getWorld();
+            ServerWorld serverWorld = (ServerWorld) InvokerEntity.this.getEntityWorld();
             for (int i = 0; i < 4; ++i) {
                 BlockPos blockPos = InvokerEntity.this.getBlockPos().add(-2 + InvokerEntity.this.random.nextInt(5), 1, -2 + InvokerEntity.this.random.nextInt(5));
-                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getWorld(), SpawnReason.MOB_SUMMONED);
+                SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getEntityWorld(), SpawnReason.MOB_SUMMONED);
                 surrenderedEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
+                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getEntityWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
                 surrenderedEntity.setOwner(InvokerEntity.this);
                 surrenderedEntity.setBounds(blockPos);
                 surrenderedEntity.setLifeTicks(20 * (30 + InvokerEntity.this.random.nextInt(90)));
@@ -448,16 +448,16 @@ public class InvokerEntity
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!(blockState = InvokerEntity.this.getWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getWorld(), blockPos2, Direction.UP))
+                if (!(blockState = InvokerEntity.this.getEntityWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getEntityWorld(), blockPos2, Direction.UP))
                     continue;
-                if (!InvokerEntity.this.getWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getWorld(), blockPos)).isEmpty()) {
+                if (!InvokerEntity.this.getEntityWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getEntityWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getEntityWorld(), blockPos)).isEmpty()) {
                     d = voxelShape.getMax(Direction.Axis.Y);
                 }
                 bl = true;
                 break;
             } while ((blockPos = blockPos.down()).getY() >= MathHelper.floor(maxY) - 1);
             if (bl) {
-                InvokerEntity.this.getWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup, InvokerEntity.this));
+                InvokerEntity.this.getEntityWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getEntityWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup, InvokerEntity.this));
             }
         }
 
@@ -487,10 +487,10 @@ public class InvokerEntity
             if (InvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!((ServerWorld) InvokerEntity.this.getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (!((ServerWorld) InvokerEntity.this.getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
-            List<SheepEntity> list = ((ServerWorld) InvokerEntity.this.getWorld()).getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<SheepEntity> list = ((ServerWorld) InvokerEntity.this.getEntityWorld()).getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }
@@ -559,7 +559,7 @@ public class InvokerEntity
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
         }
 
         private void knockBack(Entity entity) {
@@ -587,7 +587,7 @@ public class InvokerEntity
             double x = entity.getX();
             double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
         }
 
         @Override
@@ -598,7 +598,7 @@ public class InvokerEntity
             double posx = InvokerEntity.this.getX();
             double posy = InvokerEntity.this.getY();
             double posz = InvokerEntity.this.getZ();
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LARGE_SMOKE, posx, posy + 1, posz, 350, 1.0D, 0.8D, 1.0D, 0.3D);
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.LARGE_SMOKE, posx, posy + 1, posz, 350, 1.0D, 0.8D, 1.0D, 0.3D);
         }
 
         @Override
@@ -643,7 +643,7 @@ public class InvokerEntity
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> ((entity instanceof PlayerEntity && !((PlayerEntity) entity).getAbilities().creativeMode)) || (entity instanceof IronGolemEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> ((entity instanceof PlayerEntity && !((PlayerEntity) entity).getAbilities().creativeMode)) || (entity instanceof IronGolemEntity));
         }
 
         @Override
@@ -668,8 +668,8 @@ public class InvokerEntity
             double x = sorcerer.getX();
             double y = sorcerer.getY() + 1;
             double z = sorcerer.getZ();
-            if (sorcerer.getWorld() instanceof ServerWorld) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
+            if (sorcerer.getEntityWorld() instanceof ServerWorld) {
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
             }
             teleportUtil.doRandomTeleport(InvokerEntity.this);
         }
@@ -718,7 +718,7 @@ public class InvokerEntity
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(18), entity -> !(entity instanceof HostileEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(18), entity -> !(entity instanceof HostileEntity));
         }
 
         private void conjureFangs(double x, double z, double maxY, double y, float yaw, int warmup) {
@@ -730,16 +730,16 @@ public class InvokerEntity
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!(blockState = InvokerEntity.this.getWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getWorld(), blockPos2, Direction.UP))
+                if (!(blockState = InvokerEntity.this.getEntityWorld().getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(InvokerEntity.this.getEntityWorld(), blockPos2, Direction.UP))
                     continue;
-                if (!InvokerEntity.this.getWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getWorld(), blockPos)).isEmpty()) {
+                if (!InvokerEntity.this.getEntityWorld().isAir(blockPos) && !(voxelShape = (blockState2 = InvokerEntity.this.getEntityWorld().getBlockState(blockPos)).getCollisionShape(InvokerEntity.this.getEntityWorld(), blockPos)).isEmpty()) {
                     d = voxelShape.getMax(Direction.Axis.Y);
                 }
                 bl = true;
                 break;
             } while ((blockPos = blockPos.down()).getY() >= MathHelper.floor(maxY) - 1);
             if (bl) {
-                InvokerEntity.this.getWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup + 4, InvokerEntity.this));
+                InvokerEntity.this.getEntityWorld().spawnEntity(new InvokerFangsEntity(InvokerEntity.this.getEntityWorld(), x, (double) blockPos.getY() + 0.2 + d, z, yaw, warmup + 4, InvokerEntity.this));
             }
         }
 

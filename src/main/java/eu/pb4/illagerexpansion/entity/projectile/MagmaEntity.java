@@ -30,8 +30,8 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     }
     @Override
     public void tick() {
-        if (getWorld() instanceof ServerWorld) {
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY(), this.getZ(), 3, 0.3D, 0.3D, 0.3D, 0.05D);
+        if (getEntityWorld() instanceof ServerWorld) {
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY(), this.getZ(), 3, 0.3D, 0.3D, 0.3D, 0.05D);
         }
         super.tick();
     }
@@ -44,27 +44,27 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
-        if (getWorld().isClient) {
+        if (getEntityWorld().isClient()) {
             return;
         }
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
         entity.serverDamage(this.getDamageSources().indirectMagic(this, entity2), 12.0f);
-        if (getWorld() instanceof ServerWorld) {
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
+        if (getEntityWorld() instanceof ServerWorld) {
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
         }
     }
 
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (!getWorld().isClient) {
-            boolean bl = ((ServerWorld) getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-            getWorld().createExplosion(null, this.getX(), this.getY(), this.getZ(), 1, bl, World.ExplosionSourceType.MOB);
+        if (!getEntityWorld().isClient()) {
+            boolean bl = ((ServerWorld) getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+            getEntityWorld().createExplosion(null, this.getX(), this.getY(), this.getZ(), 1, bl, World.ExplosionSourceType.MOB);
             this.discard();
         }
-        if (getWorld() instanceof ServerWorld) {
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
+        if (getEntityWorld() instanceof ServerWorld) {
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.LAVA, this.getX(), this.getY(), this.getZ(), 15, 0.4D, 0.4D, 0.4D, 0.15D);
         }
         this.discard();
 

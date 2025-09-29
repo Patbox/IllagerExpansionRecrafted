@@ -7,6 +7,7 @@
     "AreaEffectCloudEntityAccessor",
     "CreeperEntityAccessor",
     "LivingEntityMixin",
+    "MannequinEntityAccessor",
     "MarauderPatrolMixin",
     "PlayerEntityMixin",
     "RaidMixin",
@@ -16,7 +17,7 @@
     "ZombieVillagerEntityAccessor",
     "datafixer.Schema1460Mixin",
     "poly.EntityAccessor",
-    "poly.PlayerEntityAccessor",
+    "poly.PlayerLikeEntityAccessor",
     "poly.ThrownItemEntityAccessor"
   ],
   "client": [

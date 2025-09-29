@@ -1,8 +1,11 @@
 package eu.pb4.illagerexpansion.poly;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
+import eu.pb4.illagerexpansion.mixin.MannequinEntityAccessor;
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
@@ -10,7 +13,8 @@ import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.VirtualEntityUtils;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
-import eu.pb4.illagerexpansion.mixin.poly.PlayerEntityAccessor;
+import eu.pb4.illagerexpansion.mixin.poly.PlayerLikeEntityAccessor;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,6 +25,7 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.particle.EffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.PlayerAssociatedNetworkHandler;
@@ -73,15 +78,21 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     @Override
     default void onBeforeSpawnPacket(ServerPlayerEntity player, Consumer<Packet<?>> packetConsumer) {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER));
-        var profile = new GameProfile(((Entity) this).getUuid(), "");
-        profile.getProperties().put("textures", this.getSkin());
-        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.getId(), profile, false, Integer.MAX_VALUE,  GameMode.ADVENTURE, Text.empty(), true,0, null));
+        var profile = new GameProfile(((Entity) this).getUuid(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())));
+        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.id(), profile, false, Integer.MAX_VALUE,  GameMode.ADVENTURE, Text.empty(), true,0, null));
         packetConsumer.accept(packet);
     }
 
     @Override
     default void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
-        data.add(DataTracker.SerializedEntry.of(PlayerEntityAccessor.getPLAYER_MODEL_PARTS(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3F : 0xFF)));
+        data.removeIf(x -> x.id() >= PlayerLikeEntityAccessor.getMAIN_ARM_ID().id());
+        if (initial) {
+            data.add(DataTracker.SerializedEntry.of(PlayerLikeEntityAccessor.getPLAYER_MODE_CUSTOMIZATION_ID(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3E : 0xFE)));
+            //data.add(DataTracker.SerializedEntry.of(MannequinEntityAccessor.getPROFILE(), ProfileComponent.ofStatic(
+            //        new GameProfile(((Entity) this).getUuid(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())))
+            //)));
+            //data.add(DataTracker.SerializedEntry.of(MannequinEntityAccessor.getDESCRIPTION(), Optional.empty()));
+        }
     }
 
 
@@ -99,13 +110,15 @@ public interface PlayerPolymerEntity extends PolymerEntity {
                 p.sendPacket(packet);
             }
         } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
-            var packet = new ParticleS2CPacket(ParticleTypes.EFFECT, false, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
+            var packet = new ParticleS2CPacket(EffectParticleEffect.of(ParticleTypes.EFFECT, 0xFFFFFF, 1), false, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
             for (var p : listeners) {
                 p.sendPacket(packet);
             }
         }
 
         var b = BANNER_ELEMENTS.get(this);
+        b.setCustomName(e.getCustomName());
+        b.setCustomNameVisible(e.isCustomNameVisible());
         var stack = e.getEquippedStack(EquipmentSlot.HEAD);
         if (stack.isIn(ItemTags.BANNERS) && !e.isDead()) {
             b.setItem(stack);
@@ -122,6 +135,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     @Override
     default EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.PLAYER;
+        //return EntityType.MANNEQUIN;
     }
 
 

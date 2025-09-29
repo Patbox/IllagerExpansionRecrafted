@@ -107,13 +107,13 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
             final double g = Math.sqrt(d * d + f * f);
             var throwed = new ItemStack(Items.LINGERING_POTION);
             throwed.set(DataComponentTypes.POTION_CONTENTS, potion);
-            final PotionEntity potionEntity = new LingeringPotionEntity(getWorld(), this, throwed);
+            final PotionEntity potionEntity = new LingeringPotionEntity(getEntityWorld(), this, throwed);
             potionEntity.setPitch(potionEntity.getPitch() + 20.0f);
             potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
             if (!this.isSilent()) {
-                getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
+                getEntityWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
             }
-            getWorld().spawnEntity(potionEntity);
+            getEntityWorld().spawnEntity(potionEntity);
             this.setBowState(true);
             return;
         }
@@ -124,9 +124,9 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
         final double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         final double f = target.getZ() - this.getZ();
         final double g = Math.sqrt(d * d + f * f);
-        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6f, (float) (14 - getWorld().getDifficulty().getId() * 4));
+        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6f, (float) (14 - getEntityWorld().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        getWorld().spawnEntity(persistentProjectileEntity);
+        getEntityWorld().spawnEntity(persistentProjectileEntity);
     }
 
     public void writeCustomData(final WriteView nbt) {
@@ -136,7 +136,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     private List<AreaEffectCloudEntity> getNearbyClouds() {
-        return getWorld().getEntitiesByClass(AreaEffectCloudEntity.class, this.getBoundingBox().expand(30.0), Entity::isAlive);
+        return getEntityWorld().getEntitiesByClass(AreaEffectCloudEntity.class, this.getBoundingBox().expand(30.0), Entity::isAlive);
     }
 
     private void cancelEffect(final AreaEffectCloudEntity areaEffectCloudEntity, final LivingEntity entity) {
@@ -147,7 +147,7 @@ public class AlchemistEntity extends IllagerEntity implements RangedAttackMob, P
     }
 
     private void removeEffectsinCloud(final AreaEffectCloudEntity cloudEntity) {
-        final List<LivingEntity> list = getWorld().getEntitiesByClass(LivingEntity.class, cloudEntity.getBoundingBox().expand(0.3), Entity::isAlive);
+        final List<LivingEntity> list = getEntityWorld().getEntitiesByClass(LivingEntity.class, cloudEntity.getBoundingBox().expand(0.3), Entity::isAlive);
         for (final LivingEntity entity : list) {
             if (entity instanceof IllagerEntity) {
                 this.cancelEffect(cloudEntity, entity);

@@ -56,7 +56,7 @@ public class HornOfSightItem extends Item implements PolymerAutoItem {
     }
 
     private List<LivingEntity> getTargets(PlayerEntity user) {
-        return user.getWorld().getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(30), entity -> (entity instanceof LivingEntity) && !(entity instanceof PlayerEntity));
+        return user.getEntityWorld().getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(30), entity -> (entity instanceof LivingEntity) && !(entity instanceof PlayerEntity));
     }
 
     private void glow(LivingEntity entity) {

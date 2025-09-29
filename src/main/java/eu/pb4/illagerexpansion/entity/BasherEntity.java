@@ -87,7 +87,7 @@ public class BasherEntity
     @Override
     protected void mobTick(ServerWorld world) {
         if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
-            boolean bl = ((ServerWorld) getWorld()).hasRaidAt(this.getBlockPos());
+            boolean bl = ((ServerWorld) getEntityWorld()).hasRaidAt(this.getBlockPos());
             ((MobNavigation) this.getNavigation()).setCanOpenDoors(bl);
             super.mobTick(world);
         }
@@ -200,8 +200,8 @@ public class BasherEntity
                 if ((BasherEntity.AXES.contains(item.getItem()) || attacker instanceof IronGolemEntity || this.blockedCount >= 4) && isShield) {
                     this.playSound(SoundEvents.ITEM_SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
-                    if (getWorld() instanceof ServerWorld) {
-                        ((ServerWorld) getWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
+                    if (getEntityWorld() instanceof ServerWorld) {
+                        ((ServerWorld) getEntityWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
                         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_AXE));
                     }
                     return super.damage(world, source, amount);

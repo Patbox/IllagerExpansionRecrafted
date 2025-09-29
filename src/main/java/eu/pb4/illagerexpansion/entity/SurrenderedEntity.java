@@ -182,9 +182,9 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
     @Override
     public void tickMovement() {
-        if (!getWorld().isClient()) {
+        if (!getEntityWorld().isClient()) {
             for (int i = 0; i < 2; ++i) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.getX(), this.getY() + 1.2, this.getZ(), 2, 0.2D, 0D, 0.2D, 0.025D);
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.getX(), this.getY() + 1.2, this.getZ(), 2, 0.2D, 0D, 0.2D, 0.025D);
             }
         }
         super.tickMovement();
@@ -328,7 +328,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
                 return;
             }
             if (SurrenderedEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-                SurrenderedEntity.this.tryAttack((ServerWorld) livingEntity.getWorld(), livingEntity);
+                SurrenderedEntity.this.tryAttack((ServerWorld) livingEntity.getEntityWorld(), livingEntity);
                 SurrenderedEntity.this.setCharging(false);
             } else {
                 double d = SurrenderedEntity.this.squaredDistanceTo(livingEntity);
@@ -363,7 +363,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
             }
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos2 = blockPos.add(SurrenderedEntity.this.random.nextInt(15) - 7, SurrenderedEntity.this.random.nextInt(11) - 5, SurrenderedEntity.this.random.nextInt(15) - 7);
-                if (!SurrenderedEntity.this.getWorld().isAir(blockPos2)) continue;
+                if (!SurrenderedEntity.this.getEntityWorld().isAir(blockPos2)) continue;
                 SurrenderedEntity.this.moveControl.moveTo((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 0.25);
                 if (SurrenderedEntity.this.getTarget() != null) break;
                 SurrenderedEntity.this.getLookControl().lookAt((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 180.0f, 20.0f);

@@ -74,23 +74,23 @@ public class ItemRegistry {
 
     //SPAWN EGGS
     public static final Item PROVOKER_SPAWN_EGG = registerItem("provoker_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.PROVOKER, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.PROVOKER)));
     public static final Item SURRENDERED_SPAWN_EGG = registerItem("surrendered_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.SURRENDERED, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.SURRENDERED)));
     public static final Item BASHER_SPAWN_EGG = registerItem("basher_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.BASHER, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.BASHER)));
     public static final Item SORCERER_SPAWN_EGG = registerItem("sorcerer_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.SORCERER, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.SORCERER)));
     public static final Item ARCHIVIST_SPAWN_EGG = registerItem("archivist_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.ARCHIVIST, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.ARCHIVIST)));
     public static final Item ILLAGER_BRUTE_SPAWN_EGG = registerItem("inquisitor_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.INQUISITOR, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.INQUISITOR)));
     public static final Item MARAUDER_SPAWN_EGG = registerItem("marauder_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.MARAUDER, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.MARAUDER)));
     public static final Item ALCHEMIST_SPAWN_EGG = registerItem("alchemist_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.ALCHEMIST, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.ALCHEMIST)));
     public static final Item FIRECALLER_SPAWN_EGG = registerItem("firecaller_spawn_egg",
-            (s) -> new PolymerSpawnEggItem(EntityRegistry.FIRECALLER, Items.VINDICATOR_SPAWN_EGG, s));
+            (s) -> new PolymerSpawnEggItem(Items.VINDICATOR_SPAWN_EGG, s.spawnEgg(EntityRegistry.FIRECALLER)));
     public static final TagKey<Item> MAGIC_DAMAGE_BLOCKING_ARMOR = TagKey.of(RegistryKeys.ITEM, id("magic_damage_blocking_armor"));
 
     public static Item registerItem(String name, Function<Item.Settings, Item> function) {

@@ -73,16 +73,16 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
         DamageSource damageSource = this.getDamageSources().trident(this, this.getOwner());
 
         if (entity instanceof LivingEntity livingEntity) {
-            f = EnchantmentHelper.getDamage((ServerWorld) this.getWorld(), this.getStack(), livingEntity, damageSource, f);
+            f = EnchantmentHelper.getDamage((ServerWorld) this.getEntityWorld(), this.getStack(), livingEntity, damageSource, f);
         }
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage((ServerWorld) this.getWorld(), damageSource, f)) {
+        if (entity.damage((ServerWorld) this.getEntityWorld(), damageSource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
             if (entity instanceof LivingEntity livingEntity) {
-                    EnchantmentHelper.onTargetDamaged((ServerWorld) this.getWorld(), livingEntity, damageSource, this.getStack());
+                    EnchantmentHelper.onTargetDamaged((ServerWorld) this.getEntityWorld(), livingEntity, damageSource, this.getStack());
 
                 this.onHit(livingEntity);
             }

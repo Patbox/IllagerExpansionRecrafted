@@ -24,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Style;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -38,7 +39,7 @@ public class ImbuingTableGui extends SimpleGui {
 
         this.setTitle(PolymerResourcePackUtils.hasMainPack(player)
                 ? Text.empty().append(Text.literal("-0.")
-                        .setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFont(Identifier.of(IllagerExpansion.MOD_ID, "gui"))))
+                        .setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFont(new StyleSpriteSource.Font(Identifier.of(IllagerExpansion.MOD_ID, "gui")))))
                 .append(Text.literal("Imbue"))
                 : Text.literal("Imbue")
         );
@@ -78,7 +79,7 @@ public class ImbuingTableGui extends SimpleGui {
                 input.setStack(0, ItemStack.EMPTY);
                 input.setStack(1, ItemStack.EMPTY);
                 input.getStack(2).increment(-1);
-                playerEntity.getWorld().playSound(null, player.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundRegistry.SORCERER_COMPLETE_CAST, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                playerEntity.getEntityWorld().playSound(null, player.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundRegistry.SORCERER_COMPLETE_CAST, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
         });
 
@@ -154,7 +155,7 @@ public class ImbuingTableGui extends SimpleGui {
                 return;
             }
 
-            var gamerules = this.player.getWorld().getGameRules();
+            var gamerules = this.player.getEntityWorld().getGameRules();
 
             int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 

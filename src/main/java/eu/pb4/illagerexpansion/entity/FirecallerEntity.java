@@ -177,7 +177,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
     public class ConjureSkullGoal
             extends SpellcastingIllagerEntity.CastSpellGoal {
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(5), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(5), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
         }
 
         @Override
@@ -198,7 +198,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
 
         @Override
         public void tick() {
-            if (getWorld() instanceof ServerWorld world) {
+            if (getEntityWorld() instanceof ServerWorld world) {
                 world.spawnParticles(ParticleTypes.FLAME, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
                 world.spawnParticles(ParticleTypes.LARGE_SMOKE, FirecallerEntity.this.getX(), FirecallerEntity.this.getY() + 2.5, FirecallerEntity.this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.05D);
             }
@@ -216,20 +216,20 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
             double g = targetX - d;
             double h = targetY - e;
             double i = targetZ - f;
-            MagmaEntity Magma = new MagmaEntity(FirecallerEntity.this.getWorld(), FirecallerEntity.this, g, h, i);
+            MagmaEntity Magma = new MagmaEntity(FirecallerEntity.this.getEntityWorld(), FirecallerEntity.this, g, h, i);
             Magma.setOwner(FirecallerEntity.this);
             Magma.setPos(d, e, f);
-            FirecallerEntity.this.getWorld().spawnEntity(Magma);
+            FirecallerEntity.this.getEntityWorld().spawnEntity(Magma);
         }
 
         @Override
         protected void castSpell() {
             this.shootSkullAt(FirecallerEntity.this.getTarget());
-            if (getWorld() instanceof ServerWorld) {
+            if (getEntityWorld() instanceof ServerWorld) {
                 double x = FirecallerEntity.this.getX();
                 double y = FirecallerEntity.this.getY() + 2.5;
                 double z = FirecallerEntity.this.getZ();
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 40, 0.4D, 0.4D, 0.4D, 0.15D);
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.SMOKE, x, y, z, 40, 0.4D, 0.4D, 0.4D, 0.15D);
             }
             FirecallerEntity.this.cooldown = 160;
         }
@@ -275,7 +275,7 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(6), entity -> !(entity instanceof IllagerEntity) && !(entity instanceof SurrenderedEntity) && !(entity instanceof RavagerEntity));
         }
 
 
@@ -291,9 +291,9 @@ public class FirecallerEntity extends SpellcastingIllagerEntity implements Playe
             double x = entity.getX();
             double y = entity.getY() + 1;
             double z = entity.getZ();
-            ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
+            ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.SMOKE, x, y + 1, z, 10, 0.2D, 0.2D, 0.2D, 0.015D);
             BlockPos blockPos = entity.getBlockPos();
-            FirecallerEntity.this.getWorld().setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+            FirecallerEntity.this.getEntityWorld().setBlockState(blockPos, Blocks.FIRE.getDefaultState());
         }
 
         @Override

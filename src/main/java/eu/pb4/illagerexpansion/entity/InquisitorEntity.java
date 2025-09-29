@@ -105,23 +105,23 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
 
     protected void mobTick(ServerWorld world) {
         /*if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
-            boolean bl = ((ServerWorld) this.getWorld()).hasRaidAt(this.getBlockPos());
+            boolean bl = ((ServerWorld) this.getEntityWorld()).hasRaidAt(this.getBlockPos());
             ((MobNavigation) this.getNavigation()).setCanOpenDoors(bl);
         }*/
         super.mobTick(world);
     }
 
     public void tickMovement() {
-        if (this.horizontalCollision && ((ServerWorld) this.getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (this.horizontalCollision && ((ServerWorld) this.getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             boolean bl = false;
             final Box box = this.getBoundingBox().expand(1.0);
             for (final BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
-                final BlockState blockState = this.getWorld().getBlockState(blockPos);
+                final BlockState blockState = this.getEntityWorld().getBlockState(blockPos);
                 final Block block = blockState.getBlock();
                 if (!(block instanceof LeavesBlock) && !(block instanceof DoorBlock) && !(block instanceof TransparentBlock) && !(block instanceof HayBlock) && !(block instanceof SugarCaneBlock) && !(block instanceof CobwebBlock)) {
                     continue;
                 }
-                bl = (this.getWorld().breakBlock(blockPos, true, this) || bl);
+                bl = (this.getEntityWorld().breakBlock(blockPos, true, this) || bl);
                 if (!(block instanceof DoorBlock)) {
                     continue;
                 }
@@ -210,7 +210,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
     }
 
     private List<LivingEntity> getTargets() {
-        return (this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(8.0), entity -> !(entity instanceof HostileEntity)));
+        return (this.getEntityWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(8.0), entity -> !(entity instanceof HostileEntity)));
     }
 
     private void knockBack(final Entity entity) {
@@ -257,9 +257,9 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
                 if ((InquisitorEntity.AXES.contains(item.getItem()) || attacker instanceof IronGolemEntity || this.blockedCount >= 4) && isShield) {
                     this.playSound(SoundEvents.ITEM_SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
-                    if (this.getWorld() instanceof ServerWorld) {
-                        ((ServerWorld) this.getWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
-                        ((ServerWorld) this.getWorld()).spawnParticles((ParticleEffect) ParticleTypes.CLOUD, this.getX(), this.getY() + 1.0, this.getZ(), 30, 0.3, 0.3, 0.3, 0.1);
+                    if (this.getEntityWorld() instanceof ServerWorld) {
+                        ((ServerWorld) this.getEntityWorld()).spawnParticles((ParticleEffect) new ItemStackParticleEffect(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
+                        ((ServerWorld) this.getEntityWorld()).spawnParticles((ParticleEffect) ParticleTypes.CLOUD, this.getX(), this.getY() + 1.0, this.getZ(), 30, 0.3, 0.3, 0.3, 0.1);
                         this.playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 1.0f, 1.0f);
                         this.equipStack(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                     }

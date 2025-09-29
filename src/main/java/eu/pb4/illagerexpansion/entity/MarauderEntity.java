@@ -92,14 +92,14 @@ public class MarauderEntity extends IllagerEntity implements RangedAttackMob, Pl
     @Override
     public void shootAt(LivingEntity target, float pullProgress) {
 
-        HatchetEntity hatchetEntity = new HatchetEntity(this.getWorld(), this, new ItemStack(ItemRegistry.HATCHET));
+        HatchetEntity hatchetEntity = new HatchetEntity(this.getEntityWorld(), this, new ItemStack(ItemRegistry.HATCHET));
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - hatchetEntity.getY();
         double f = target.getZ() - this.getZ();
         double g = Math.sqrt(d * d + f * f);
-        hatchetEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.2f, 14 - this.getWorld().getDifficulty().getId() * 4);
+        hatchetEntity.setVelocity(d, e + g * (double) 0.2f, f, 1.2f, 14 - this.getEntityWorld().getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ITEM_TRIDENT_THROW.value(), 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.getWorld().spawnEntity(hatchetEntity);
+        this.getEntityWorld().spawnEntity(hatchetEntity);
     }
 
 

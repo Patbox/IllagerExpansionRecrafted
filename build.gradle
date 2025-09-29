@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.10.+'
+    id 'fabric-loom' version '1.11.+'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -57,13 +57,13 @@ dependencies {
 
     modCompileOnly /*modRuntimeOnly*/("eu.pb4.polyport:trinkets:3.9.0+polymerport.1")
 
-    modImplementation include("eu.pb4:sgui:1.10.2+1.21.8")
-    modImplementation "eu.pb4:polymer-autohost:0.13.10+1.21.8"
-    modImplementation "eu.pb4:polymer-core:0.13.10+1.21.8"
-    modImplementation "eu.pb4:polymer-resource-pack:0.13.10+1.21.8"
-    modImplementation "eu.pb4:polymer-resource-pack-extras:0.13.10+1.21.8"
-    modImplementation "eu.pb4:polymer-virtual-entity:0.13.10+1.21.8"
-    modImplementation include("xyz.nucleoid:server-translations-api:2.5.1+1.21.5")
+    modImplementation include("eu.pb4:sgui:1.11.0+1.21.9")
+    modImplementation "eu.pb4:polymer-autohost:0.14.0-rc.2+1.21.9-rc1"
+    modImplementation "eu.pb4:polymer-core:0.14.0-rc.2+1.21.9-rc1"
+    modImplementation "eu.pb4:polymer-resource-pack:0.14.0-rc.2+1.21.9-rc1"
+    modImplementation "eu.pb4:polymer-resource-pack-extras:0.14.0-rc.2+1.21.9-rc1"
+    modImplementation "eu.pb4:polymer-virtual-entity:0.14.0-rc.2+1.21.9-rc1"
+    modImplementation include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3")
 }
 
 processResources {

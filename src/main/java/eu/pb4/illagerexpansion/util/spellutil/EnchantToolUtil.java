@@ -37,7 +37,7 @@ public class EnchantToolUtil {
     }
 
     public void enchant(LivingEntity entity) {
-        var lookup = entity.getWorld().getRegistryManager();
+        var lookup = entity.getEntityWorld().getRegistryManager();
         var mainhanditem = entity.getEquippedStack(EquipmentSlot.MAINHAND).getItem();
         var offhanditem = entity.getEquippedStack(EquipmentSlot.OFFHAND).getItem();
         var mainStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);

@@ -53,7 +53,7 @@ public class InvokerFangsEntity
     @Nullable
     public LivingEntity getOwner() {
         Entity entity;
-        if (this.owner == null && this.ownerUuid != null && this.getWorld() instanceof ServerWorld serverWorld && (entity = serverWorld.getEntity(this.ownerUuid)) instanceof LivingEntity) {
+        if (this.owner == null && this.ownerUuid != null && this.getEntityWorld() instanceof ServerWorld serverWorld && (entity = serverWorld.getEntity(this.ownerUuid)) instanceof LivingEntity) {
             this.owner = (LivingEntity)entity;
         }
         return this.owner;
@@ -81,30 +81,29 @@ public class InvokerFangsEntity
     @Override
     public void tick() {
         super.tick();
-        if (this.getWorld().isClient) {
-            if (this.playingAnimation) {
-                --this.ticksLeft;
-                if (this.ticksLeft == 14) {
-                    for (int i = 0; i < 12; ++i) {
-                        double d = this.getX() + (this.random.nextDouble() * 2.0 - 1.0) * (double)this.getWidth() * 0.5;
-                        double e = this.getY() + 0.05 + this.random.nextDouble();
-                        double f = this.getZ() + (this.random.nextDouble() * 2.0 - 1.0) * (double)this.getWidth() * 0.5;
-                        double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-                        double h = 0.3 + this.random.nextDouble() * 0.3;
-                        double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-                        //this.getWorld().addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
-                    }
+        if (this.playingAnimation) {
+            --this.ticksLeft;
+            if (this.ticksLeft == 14) {
+                for (int i = 0; i < 12; ++i) {
+                    double d = this.getX() + (this.random.nextDouble() * 2.0 - 1.0) * (double)this.getWidth() * 0.5;
+                    double e = this.getY() + 0.05 + this.random.nextDouble();
+                    double f = this.getZ() + (this.random.nextDouble() * 2.0 - 1.0) * (double)this.getWidth() * 0.5;
+                    double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
+                    double h = 0.3 + this.random.nextDouble() * 0.3;
+                    double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
+                    ((ServerWorld) this.getEntityWorld()).spawnParticles(ParticleTypes.CRIT, d, e + 1.0, f, 0, g, h, j, 1);
                 }
             }
-        } else if (--this.warmup < 0) {
+        }
+        if (--this.warmup < 0) {
             if (this.warmup == -8) {
-                List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
+                List<LivingEntity> list = this.getEntityWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
                 for (LivingEntity livingEntity : list) {
                     this.damage(livingEntity);
                 }
             }
             if (!this.startedAttack) {
-                this.getWorld().sendEntityStatus(this, (byte)4);
+                this.getEntityWorld().sendEntityStatus(this, (byte)4);
                 this.startedAttack = true;
             }
             if (--this.ticksLeft < 0) {
@@ -142,7 +141,7 @@ public class InvokerFangsEntity
         if (status == 4) {
             this.playingAnimation = true;
             if (!this.isSilent()) {
-                this.getWorld().playSound(this, this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f);
+                this.getEntityWorld().playSound(this, this.getX(), this.getY(), this.getZ(), SoundRegistry.INVOKER_FANGS, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f);
             }
         }
     }

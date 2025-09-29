@@ -189,7 +189,7 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
         }
 
         private List<LivingEntity> getTargets() {
-            return getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(8), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
+            return getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(8), entity -> (entity instanceof PlayerEntity) || (entity instanceof IronGolemEntity));
         }
 
         @Override
@@ -210,8 +210,8 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
             double x = sorcerer.getX();
             double y = sorcerer.getY() + 1;
             double z = sorcerer.getZ();
-            if (sorcerer.getWorld() instanceof ServerWorld) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.WITCH, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
+            if (sorcerer.getEntityWorld() instanceof ServerWorld) {
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.WITCH, x, y, z, 30, 0.3D, 0.5D, 0.3D, 0.015D);
             }
             teleportUtil.doRandomTeleport(SorcererEntity.this);
         }
@@ -268,12 +268,12 @@ public class SorcererEntity extends SpellcastingIllagerEntity implements PlayerP
         protected void castSpell() {
             SetMagicFireUtil setMagicFireUtil = new SetMagicFireUtil();
             LivingEntity target = SorcererEntity.this.getTarget();
-            setMagicFireUtil.setFire(target, SorcererEntity.this.getWorld());
+            setMagicFireUtil.setFire(target, SorcererEntity.this.getEntityWorld());
             SorcererEntity.this.flamecooldown = 100;
             offenseSpell = false;
             target.serverDamage(SorcererEntity.this.getDamageSources().magic(), 3.0f);
-            if (getWorld() instanceof ServerWorld) {
-                ((ServerWorld) getWorld()).spawnParticles(ParticleTypes.FLAME, target.getX(), target.getY() + 1, target.getZ(), 30, 0.3D, 0.5D, 0.3D, 0.08D);
+            if (getEntityWorld() instanceof ServerWorld) {
+                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.FLAME, target.getX(), target.getY() + 1, target.getZ(), 30, 0.3D, 0.5D, 0.3D, 0.08D);
             }
         }
 
