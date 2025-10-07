@@ -31,7 +31,7 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
         if (!(entity instanceof IllagerEntity || entity instanceof RavagerEntity) && world instanceof ServerWorld serverWorld ) {
             entity.damage(serverWorld, world.getDamageSources().magic(), 3.0f);
         } else {
@@ -40,7 +40,7 @@ public class MagicFireBlock extends AbstractFireBlock implements PolymerBlock {
         if (entity.getFireTicks() == 0) {
             entity.setFireTicks(0);
         }
-        super.onEntityCollision(state, world, pos, entity, handler);
+        super.onEntityCollision(state, world, pos, entity, handler, bl);
     }
 
     @Override
