@@ -21,7 +21,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Style;
 import net.minecraft.text.StyleSpriteSource;
@@ -122,9 +121,9 @@ public class ImbuingTableGui extends SimpleGui {
     @Override
     public void onScreenHandlerClosed() {
         super.onScreenHandlerClosed();
-        this.player.giveItemStack(this.input.getStack(0));
-        this.player.giveItemStack(this.input.getStack(1));
-        this.player.giveItemStack(this.input.getStack(2));
+        this.player.giveOrDropStack(this.input.getStack(0));
+        this.player.giveOrDropStack(this.input.getStack(1));
+        this.player.giveOrDropStack(this.input.getStack(2));
         this.input.clear();
         this.output.clear();
     }    final Inventory input = new SimpleInventory(3) {
