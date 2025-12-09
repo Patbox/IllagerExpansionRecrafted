@@ -1,44 +1,43 @@
 package eu.pb4.illagerexpansion.block.custom;
 
 import eu.pb4.polymer.core.api.block.PolymerHeadBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import eu.pb4.illagerexpansion.gui.ImbuingTableGui;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
-    public ImbuingTableBlock(Settings settings) {
+    public ImbuingTableBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
     }
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (canActivate(pos, world)) {
-            new ImbuingTableGui((ServerPlayerEntity) player);
-            return ActionResult.SUCCESS;
+            new ImbuingTableGui((ServerPlayer) player);
+            return InteractionResult.SUCCESS;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
-    public boolean canActivate(BlockPos pos, World world) {
+    public boolean canActivate(BlockPos pos, Level world) {
         int i = 0;
-        BlockPos blockPos = pos.down();
-        for (BlockPos blockradius : BlockPos.iterateOutwards(blockPos, 1, 0, 1)) {
+        BlockPos blockPos = pos.below();
+        for (BlockPos blockradius : BlockPos.withinManhattan(blockPos, 1, 0, 1)) {
             Block blockInRadius = world.getBlockState(blockradius).getBlock();
             if (goodBlock(blockInRadius)) {
                 i++;
@@ -54,16 +53,16 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
         }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         if (canActivate(pos, world)) {
-            world.spawnParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY()+0.8, pos.getZ() + 0.5, 3, 0.7D, 0.3D, 0.7D, 0.05);
+            world.sendParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY()+0.8, pos.getZ() + 0.5, 3, 0.7D, 0.3D, 0.7D, 0.05);
         }
-        world.scheduleBlockTick(pos, this, 5);
+        world.scheduleTick(pos, this, 5);
     }
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        super.onBlockAdded(state, world, pos, oldState, notify);
-        world.scheduleBlockTick(pos, this, 5);
+    public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
+        super.onPlace(state, world, pos, oldState, notify);
+        world.scheduleTick(pos, this, 5);
     }
 
     @Override
@@ -73,6 +72,6 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
 
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return Blocks.PLAYER_HEAD.getDefaultState();
+        return Blocks.PLAYER_HEAD.defaultBlockState();
     }
 }

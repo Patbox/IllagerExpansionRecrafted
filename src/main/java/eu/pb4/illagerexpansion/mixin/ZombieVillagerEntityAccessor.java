@@ -1,14 +1,14 @@
 package eu.pb4.illagerexpansion.mixin;
 
-import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ZombieVillagerEntity.class)
+@Mixin(ZombieVillager.class)
 public interface ZombieVillagerEntityAccessor {
     @Accessor
-    int getConversionTimer();
+    int getVillagerConversionTime();
 
     @Accessor
-    void setConversionTimer(int conversionTimer);
+    void setVillagerConversionTime(int conversionTimer);
 }

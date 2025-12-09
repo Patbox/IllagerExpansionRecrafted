@@ -3,19 +3,19 @@ package eu.pb4.illagerexpansion.datagen;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.tags.ItemTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
-    public ItemTagsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, @Nullable FabricTagProvider.BlockTagProvider blockTagProvider) {
+    public ItemTagsProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture, @Nullable FabricTagProvider.BlockTagProvider blockTagProvider) {
         super(output, registriesFuture, blockTagProvider);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup arg) {
+    protected void addTags(HolderLookup.Provider arg) {
         this.valueLookupBuilder(ItemTags.SWORDS)
                 .add(ItemRegistry.PLATINUM_INFUSED_NETHERITE_SWORD);
         this.valueLookupBuilder(ItemTags.AXES)

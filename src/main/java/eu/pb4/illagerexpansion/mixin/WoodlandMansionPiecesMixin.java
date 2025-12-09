@@ -2,61 +2,61 @@ package eu.pb4.illagerexpansion.mixin;
 
 
 import eu.pb4.illagerexpansion.entity.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.structure.WoodlandMansionGenerator;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.structures.WoodlandMansionPieces;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(WoodlandMansionGenerator.Piece.class)
+@Mixin(WoodlandMansionPieces.WoodlandMansionPiece.class)
 public class WoodlandMansionPiecesMixin {
-    @Inject(at = @At("HEAD"), cancellable = true, method = "handleMetadata")
-    public void handleDataMarker(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox, CallbackInfo ci) {
-        Random randomValue = Random.create();
+    @Inject(at = @At("HEAD"), cancellable = true, method = "handleDataMarker")
+    public void handleDataMarker(String metadata, BlockPos pos, ServerLevelAccessor world, RandomSource random, BoundingBox boundingBox, CallbackInfo ci) {
+        RandomSource randomValue = RandomSource.create();
         int value = randomValue.nextInt(8);
         if (metadata.equals("Provoker")) {
             ProvokerEntity provoker;
-            provoker = EntityRegistry.PROVOKER.create(world.toServerWorld(), SpawnReason.STRUCTURE);
-            provoker.setPersistent();
-            provoker.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            provoker.initialize(world, world.getLocalDifficulty(provoker.getBlockPos()), SpawnReason.STRUCTURE, null);
-            world.spawnEntityAndPassengers(provoker);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+            provoker = EntityRegistry.PROVOKER.create(world.getLevel(), EntitySpawnReason.STRUCTURE);
+            provoker.setPersistenceRequired();
+            provoker.snapTo(pos, 0.0f, 0.0f);
+            provoker.finalizeSpawn(world, world.getCurrentDifficultyAt(provoker.blockPosition()), EntitySpawnReason.STRUCTURE, null);
+            world.addFreshEntityWithPassengers(provoker);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
         int value2 = randomValue.nextInt(2);
         if (metadata.equals("Warrior") && value2 == 1) {
             BasherEntity basher;
-            basher = EntityRegistry.BASHER.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
-            basher.setPersistent();
-            basher.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            basher.initialize(world, world.getLocalDifficulty(basher.getBlockPos()), SpawnReason.STRUCTURE, null);
-            world.spawnEntityAndPassengers(basher);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+            basher = EntityRegistry.BASHER.create(world.getLevel(),  EntitySpawnReason.STRUCTURE);
+            basher.setPersistenceRequired();
+            basher.snapTo(pos, 0.0f, 0.0f);
+            basher.finalizeSpawn(world, world.getCurrentDifficultyAt(basher.blockPosition()), EntitySpawnReason.STRUCTURE, null);
+            world.addFreshEntityWithPassengers(basher);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
         if (metadata.equals("Archivist")) {
             ArchivistEntity archivist;
-            archivist = EntityRegistry.ARCHIVIST.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
-            archivist.setPersistent();
-            archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);
-            world.spawnEntityAndPassengers(archivist);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+            archivist = EntityRegistry.ARCHIVIST.create(world.getLevel(),  EntitySpawnReason.STRUCTURE);
+            archivist.setPersistenceRequired();
+            archivist.snapTo(pos, 0.0f, 0.0f);
+            archivist.finalizeSpawn(world, world.getCurrentDifficultyAt(archivist.blockPosition()), EntitySpawnReason.STRUCTURE, null);
+            world.addFreshEntityWithPassengers(archivist);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
         if (metadata.equals("invoker")) {
             InvokerEntity archivist;
-            archivist = EntityRegistry.INVOKER.create(world.toServerWorld(),  SpawnReason.STRUCTURE);
-            archivist.setPersistent();
-            archivist.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-            archivist.initialize(world, world.getLocalDifficulty(archivist.getBlockPos()), SpawnReason.STRUCTURE, null);
-            world.spawnEntityAndPassengers(archivist);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+            archivist = EntityRegistry.INVOKER.create(world.getLevel(),  EntitySpawnReason.STRUCTURE);
+            archivist.setPersistenceRequired();
+            archivist.snapTo(pos, 0.0f, 0.0f);
+            archivist.finalizeSpawn(world, world.getCurrentDifficultyAt(archivist.blockPosition()), EntitySpawnReason.STRUCTURE, null);
+            world.addFreshEntityWithPassengers(archivist);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 }

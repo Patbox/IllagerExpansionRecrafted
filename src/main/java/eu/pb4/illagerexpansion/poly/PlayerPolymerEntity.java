@@ -14,25 +14,29 @@ import eu.pb4.polymer.virtualentity.api.VirtualEntityUtils;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import eu.pb4.illagerexpansion.mixin.poly.PlayerLikeEntityAccessor;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.particle.EffectParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.server.network.PlayerAssociatedNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.GameMode;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SpellParticleOption;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundRotateHeadPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.illager.AbstractIllager;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import org.joml.Vector3f;
 import xyz.nucleoid.packettweaker.PacketContext;
 
@@ -60,14 +64,14 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     @Override
     default void onEntityPacketSent(Consumer<Packet<?>> consumer, Packet<?> packet) {
         PolymerEntity.super.onEntityPacketSent(consumer, packet);
-        if (packet instanceof EntitySetHeadYawS2CPacket headYawS2CPacket) {
+        if (packet instanceof ClientboundRotateHeadPacket headYawS2CPacket) {
             var ent = (Entity) this;
-            consumer.accept(new EntityS2CPacket.Rotate(ent.getId(), MathHelper.packDegrees(headYawS2CPacket.getHeadYaw()), (byte) (ent.getPitch() * 256.0F / 360.0F), ent.isOnGround()));
+            consumer.accept(new ClientboundMoveEntityPacket.Rot(ent.getId(), Mth.packDegrees(headYawS2CPacket.getYHeadRot()), (byte) (ent.getXRot() * 256.0F / 360.0F), ent.onGround()));
         }
     }
 
     @Override
-    default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
+    default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayer player) {
         items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
         if (PolymerResourcePackUtils.hasMainPack(player)) {
             items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.getOrDefault(((Entity) this).getType(), ItemStack.EMPTY)));
@@ -76,18 +80,18 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     }
 
     @Override
-    default void onBeforeSpawnPacket(ServerPlayerEntity player, Consumer<Packet<?>> packetConsumer) {
-        var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER));
-        var profile = new GameProfile(((Entity) this).getUuid(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())));
-        packet.getEntries().add(new PlayerListS2CPacket.Entry(profile.id(), profile, false, Integer.MAX_VALUE,  GameMode.ADVENTURE, Text.empty(), true,0, null));
+    default void onBeforeSpawnPacket(ServerPlayer player, Consumer<Packet<?>> packetConsumer) {
+        var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER));
+        var profile = new GameProfile(((Entity) this).getUUID(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())));
+        packet.entries().add(new ClientboundPlayerInfoUpdatePacket.Entry(profile.id(), profile, false, Integer.MAX_VALUE,  GameType.ADVENTURE, Component.empty(), true,0, null));
         packetConsumer.accept(packet);
     }
 
     @Override
-    default void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
-        data.removeIf(x -> x.id() >= PlayerLikeEntityAccessor.getMAIN_ARM_ID().id());
+    default void modifyRawTrackedData(List<SynchedEntityData.DataValue<?>> data, ServerPlayer player, boolean initial) {
+        data.removeIf(x -> x.id() >= PlayerLikeEntityAccessor.getDATA_PLAYER_MAIN_HAND().id());
         if (initial) {
-            data.add(DataTracker.SerializedEntry.of(PlayerLikeEntityAccessor.getPLAYER_MODE_CUSTOMIZATION_ID(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3E : 0xFE)));
+            data.add(SynchedEntityData.DataValue.create(PlayerLikeEntityAccessor.getDATA_PLAYER_MODE_CUSTOMISATION(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3E : 0xFE)));
             //data.add(DataTracker.SerializedEntry.of(MannequinEntityAccessor.getPROFILE(), ProfileComponent.ofStatic(
             //        new GameProfile(((Entity) this).getUuid(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())))
             //)));
@@ -96,34 +100,34 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     }
 
 
-    default void onTrackingStopped(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(new PlayerRemoveS2CPacket(List.of(((Entity) this).getUuid())));
+    default void onTrackingStopped(ServerPlayer player) {
+        player.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(((Entity) this).getUUID())));
     }
 
     @Override
-    default void onEntityTrackerTick(Set<PlayerAssociatedNetworkHandler> listeners) {
-        var e = (IllagerEntity) this;
-        if (e.getState() == IllagerEntity.State.SPELLCASTING) {
-            var packet = new EntityAnimationS2CPacket(e, e.getRandom().nextBoolean() ? 0 : 3);
+    default void onEntityTrackerTick(Set<ServerPlayerConnection> listeners) {
+        var e = (AbstractIllager) this;
+        if (e.getArmPose() == AbstractIllager.IllagerArmPose.SPELLCASTING) {
+            var packet = new ClientboundAnimatePacket(e, e.getRandom().nextBoolean() ? 0 : 3);
 
             for (var p : listeners) {
-                p.sendPacket(packet);
+                p.send(packet);
             }
-        } else if (this instanceof Stunnable s && s.getStunnedState() && e.age % 5 == 0) {
-            var packet = new ParticleS2CPacket(EffectParticleEffect.of(ParticleTypes.EFFECT, 0xFFFFFF, 1), false, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
+        } else if (this instanceof Stunnable s && s.getStunnedState() && e.tickCount % 5 == 0) {
+            var packet = new ClientboundLevelParticlesPacket(SpellParticleOption.create(ParticleTypes.EFFECT, 0xFFFFFF, 1), false, false, e.getX(), e.getEyeY(), e.getZ(), 1, 1, 1, 1, 0);
             for (var p : listeners) {
-                p.sendPacket(packet);
+                p.send(packet);
             }
         }
 
         var b = BANNER_ELEMENTS.get(this);
         b.setCustomName(e.getCustomName());
         b.setCustomNameVisible(e.isCustomNameVisible());
-        var stack = e.getEquippedStack(EquipmentSlot.HEAD);
-        if (stack.isIn(ItemTags.BANNERS) && !e.isDead()) {
+        var stack = e.getItemBySlot(EquipmentSlot.HEAD);
+        if (stack.is(ItemTags.BANNERS) && !e.isDeadOrDying()) {
             b.setItem(stack);
-            b.setYaw(e.getHeadYaw());
-            b.setPitch(e.getPitch());
+            b.setYaw(e.getYHeadRot());
+            b.setPitch(e.getXRot());
         } else {
             b.setItem(ItemStack.EMPTY);
         }

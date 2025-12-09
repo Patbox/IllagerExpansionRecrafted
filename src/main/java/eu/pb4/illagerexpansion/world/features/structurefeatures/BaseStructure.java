@@ -5,32 +5,31 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.illagerexpansion.world.features.StructureRegistry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.structure.StructureLiquidSettings;
-import net.minecraft.structure.StructureSetKeys;
-import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.structure.pool.StructurePoolBasedGenerator;
-import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.CheckedRandom;
-import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.HeightContext;
-import net.minecraft.world.gen.heightprovider.HeightProvider;
-import net.minecraft.world.gen.structure.DimensionPadding;
-import net.minecraft.world.gen.structure.JigsawStructure;
-import net.minecraft.world.gen.structure.Structure;
-import net.minecraft.world.gen.structure.StructureType;
-
 import java.util.Optional;
 import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 public class BaseStructure extends Structure {
     public static final MapCodec<BaseStructure> CODEC = RecordCodecBuilder.<BaseStructure>mapCodec((instance) -> {
-        return instance.group(configCodecBuilder(instance), StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter((structure) -> {
+        return instance.group(settingsCodec(instance), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
             return structure.startPool;
         }), Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((structure) -> {
             return structure.startJigsawName;
@@ -38,20 +37,20 @@ public class BaseStructure extends Structure {
             return structure.size;
         }), HeightProvider.CODEC.fieldOf("start_height").forGetter((structure) -> {
             return structure.startHeight;
-        }), Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter((structure) -> {
+        }), Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter((structure) -> {
             return structure.projectStartToHeightmap;
         }), Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter((structure) -> {
             return structure.maxDistanceFromCenter;
         })).apply(instance, BaseStructure::new);
     }).flatXmap(createValidator(), createValidator());
-    protected final RegistryEntry<StructurePool> startPool;
+    protected final Holder<StructureTemplatePool> startPool;
     protected final Optional<Identifier> startJigsawName;
     protected final int size;
     protected final HeightProvider startHeight;
-    protected final Optional<Heightmap.Type> projectStartToHeightmap;
+    protected final Optional<Heightmap.Types> projectStartToHeightmap;
     protected final int maxDistanceFromCenter;
 
-    public BaseStructure(Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
+    public BaseStructure(StructureSettings config, Holder<StructureTemplatePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter) {
         super(config);
         this.startPool = startPool;
         this.startJigsawName = startJigsawName;
@@ -61,49 +60,49 @@ public class BaseStructure extends Structure {
         this.maxDistanceFromCenter = maxDistanceFromCenter;
     }
 
-    public BaseStructure(Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, Heightmap.Type projectStartToHeightmap) {
+    public BaseStructure(StructureSettings config, Holder<StructureTemplatePool> startPool, int size, HeightProvider startHeight, Heightmap.Types projectStartToHeightmap) {
         this(config, startPool, Optional.empty(), size, startHeight, Optional.of(projectStartToHeightmap), 80);
     }
 
-    public BaseStructure(Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight) {
+    public BaseStructure(StructureSettings config, Holder<StructureTemplatePool> startPool, int size, HeightProvider startHeight) {
         this(config, startPool, Optional.empty(), size, startHeight, Optional.empty(), 80);
     }
 
-    public Optional<StructurePosition> getStructurePosition(Context context) {
+    public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         if (!canGenerate(context)) {
             return Optional.empty();
         }
         ChunkPos chunkPos = context.chunkPos();
-        int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
-        BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
+        int i = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
+        BlockPos blockPos = new BlockPos(chunkPos.getMinBlockX(), i, chunkPos.getMinBlockZ());
 
-        return StructurePoolBasedGenerator.generate(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, new JigsawStructure.MaxDistanceFromCenter(this.maxDistanceFromCenter), StructurePoolAliasLookup.EMPTY, DimensionPadding.NONE, StructureLiquidSettings.APPLY_WATERLOGGING);
+        return JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.size, blockPos, false, this.projectStartToHeightmap, new JigsawStructure.MaxDistance(this.maxDistanceFromCenter), PoolAliasLookup.EMPTY, DimensionPadding.ZERO, LiquidSettings.APPLY_WATERLOGGING);
     }
 
-    public StructureType<?> getType() {
+    public StructureType<?> type() {
         return StructureRegistry.BASE_STRUCTURE;
     }
 
-    public boolean canGenerate(Context context) {
+    public boolean canGenerate(GenerationContext context) {
         ChunkPos chunkPos = context.chunkPos();
         int i = chunkPos.x >> 4;
         int j = chunkPos.z >> 4;
-        ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
+        WorldgenRandom chunkRandom = new WorldgenRandom(new LegacyRandomSource(0L));
         chunkRandom.setSeed((long)(i ^ j << 4) ^ context.seed());
         chunkRandom.nextInt();
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !context.chunkGenerator().createStructurePlacementCalculator(context.dynamicRegistryManager().getOrThrow(RegistryKeys.STRUCTURE_SET),
-                context.noiseConfig(),
+        return !context.chunkGenerator().createState(context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET),
+                context.randomState(),
                 context.seed()
-                ).canGenerate(context.dynamicRegistryManager().getOrThrow(RegistryKeys.STRUCTURE_SET).getOrThrow(StructureSetKeys.VILLAGES), chunkPos.x, chunkPos.z, 10);
+                ).hasStructureChunkInRange(context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getOrThrow(BuiltinStructureSets.VILLAGES), chunkPos.x, chunkPos.z, 10);
     }
 
     private static Function<BaseStructure, DataResult<BaseStructure>> createValidator() {
         return (feature) -> {
             byte var10000;
-            switch(feature.getTerrainAdaptation()) {
+            switch(feature.terrainAdaptation()) {
                 case NONE:
                     var10000 = 0;
                     break;

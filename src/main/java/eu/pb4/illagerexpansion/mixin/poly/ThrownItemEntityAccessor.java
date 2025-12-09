@@ -1,15 +1,15 @@
 package eu.pb4.illagerexpansion.mixin.poly;
 
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ThrownItemEntity.class)
+@Mixin(ThrowableItemProjectile.class)
 public interface ThrownItemEntityAccessor {
     @Accessor
-    static TrackedData<ItemStack> getITEM() {
+    static EntityDataAccessor<ItemStack> getDATA_ITEM_STACK() {
         throw new UnsupportedOperationException();
     }
 }

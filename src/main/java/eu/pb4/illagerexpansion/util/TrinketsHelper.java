@@ -2,8 +2,8 @@ package eu.pb4.illagerexpansion.util;
 
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class TrinketsHelper {
@@ -19,7 +19,7 @@ public class TrinketsHelper {
 
     private static void ifTrinkets(LivingEntity entity, Item item, Runnable runnable, MutableBoolean done) {
         TrinketsApi.getTrinketComponent(entity).ifPresent(c -> c.forEach((slotReference, stack) -> {
-            if (stack.isOf(item) && done.booleanValue()) {
+            if (stack.is(item) && done.booleanValue()) {
                 runnable.run();
                 done.setFalse();
             }

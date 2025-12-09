@@ -9,77 +9,77 @@ import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.resourcepack.extras.api.ResourcePackExtras;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.condition.KilledByPlayerLootCondition;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class EntityRegistry {
 
 
     //Register Entities
-    public static final EntityType<ProvokerEntity> PROVOKER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "provoker"),
-            EntityType.Builder.create(ProvokerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<ProvokerEntity> PROVOKER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "provoker"),
+            EntityType.Builder.of(ProvokerEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
 
-    public static final EntityType<InvokerEntity> INVOKER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "invoker"),
-            EntityType.Builder.create(InvokerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<InvokerEntity> INVOKER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "invoker"),
+            EntityType.Builder.of(InvokerEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<BasherEntity> BASHER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "basher"),
-            EntityType.Builder.create(BasherEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<BasherEntity> BASHER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "basher"),
+            EntityType.Builder.of(BasherEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<SorcererEntity> SORCERER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "sorcerer"),
-            EntityType.Builder.create(SorcererEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<SorcererEntity> SORCERER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "sorcerer"),
+            EntityType.Builder.of(SorcererEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<ArchivistEntity> ARCHIVIST = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "archivist"),
-            EntityType.Builder.create(ArchivistEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<ArchivistEntity> ARCHIVIST = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "archivist"),
+            EntityType.Builder.of(ArchivistEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<InquisitorEntity> INQUISITOR = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "inquisitor"),
-            EntityType.Builder.create(InquisitorEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 2.48f)
+    public static final EntityType<InquisitorEntity> INQUISITOR = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "inquisitor"),
+            EntityType.Builder.of(InquisitorEntity::new, MobCategory.MONSTER).sized(0.5f, 2.48f)
     );
-    public static final EntityType<MarauderEntity> MARAUDER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "marauder"),
-            EntityType.Builder.create(MarauderEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<MarauderEntity> MARAUDER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "marauder"),
+            EntityType.Builder.of(MarauderEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<AlchemistEntity> ALCHEMIST = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "alchemist"),
-            EntityType.Builder.create(AlchemistEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<AlchemistEntity> ALCHEMIST = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "alchemist"),
+            EntityType.Builder.of(AlchemistEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<FirecallerEntity> FIRECALLER = registerIllager(Identifier.of(IllagerExpansion.MOD_ID, "firecaller"),
-            EntityType.Builder.create(FirecallerEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.92f)
+    public static final EntityType<FirecallerEntity> FIRECALLER = registerIllager(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "firecaller"),
+            EntityType.Builder.of(FirecallerEntity::new, MobCategory.MONSTER).sized(0.5f, 1.92f)
     );
-    public static final EntityType<SurrenderedEntity> SURRENDERED = register(Identifier.of(IllagerExpansion.MOD_ID, "surrendered"),
-            EntityType.Builder.create(SurrenderedEntity::new, SpawnGroup.MONSTER).dimensions(0.5f, 1.42f).makeFireImmune()
+    public static final EntityType<SurrenderedEntity> SURRENDERED = register(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "surrendered"),
+            EntityType.Builder.of(SurrenderedEntity::new, MobCategory.MONSTER).sized(0.5f, 1.42f).fireImmune()
     );
-    public static final EntityType<HatchetEntity> HATCHET = register(Identifier.of(IllagerExpansion.MOD_ID, "hatchet"),
-            EntityType.Builder.<HatchetEntity>create(HatchetEntity::new, SpawnGroup.MISC).dimensions(0.35f, 0.35f).maxTrackingRange(4).trackingTickInterval(10)
+    public static final EntityType<HatchetEntity> HATCHET = register(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "hatchet"),
+            EntityType.Builder.<HatchetEntity>of(HatchetEntity::new, MobCategory.MISC).sized(0.35f, 0.35f).clientTrackingRange(4).updateInterval(10)
     );
-    public static final EntityType<InvokerFangsEntity> INVOKER_FANGS = register(Identifier.of(IllagerExpansion.MOD_ID, "invoker_fangs"),
-            EntityType.Builder.<InvokerFangsEntity>create(InvokerFangsEntity::new, SpawnGroup.MISC).dimensions(0.65f, 1.05f)
+    public static final EntityType<InvokerFangsEntity> INVOKER_FANGS = register(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "invoker_fangs"),
+            EntityType.Builder.<InvokerFangsEntity>of(InvokerFangsEntity::new, MobCategory.MISC).sized(0.65f, 1.05f)
     );
-    public static final EntityType<MagmaEntity> MAGMA = register(Identifier.of(IllagerExpansion.MOD_ID, "magma"),
-            EntityType.Builder.<MagmaEntity>create(MagmaEntity::new, SpawnGroup.MISC).dimensions(0.95f, 1.05f)
+    public static final EntityType<MagmaEntity> MAGMA = register(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "magma"),
+            EntityType.Builder.<MagmaEntity>of(MagmaEntity::new, MobCategory.MISC).sized(0.95f, 1.05f)
     );
 
     private static <T extends Entity> EntityType<T> registerIllager(Identifier provoker, EntityType.Builder<T> build) {
         var x = register(provoker, build);
         var stack = new ItemStack(Items.BIRCH_BUTTON);
-        stack.set(DataComponentTypes.ITEM_MODEL, ResourcePackExtras.bridgeModel(provoker.withPrefixedPath("pbentity/")));
+        stack.set(DataComponents.ITEM_MODEL, ResourcePackExtras.bridgeModel(provoker.withPrefix("pbentity/")));
         PlayerPolymerEntity.HEADS.put(x, stack);
         return x;
     }
 
     private static <T extends Entity> EntityType<T> register(Identifier provoker, EntityType.Builder<T> build) {
-        var type = Registry.register(Registries.ENTITY_TYPE, provoker, build.build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, provoker)));
+        var type = Registry.register(BuiltInRegistries.ENTITY_TYPE, provoker, build.build(ResourceKey.create(Registries.ENTITY_TYPE, provoker)));
         PolymerEntityUtils.registerType(type);
         return type;
     }
@@ -97,14 +97,14 @@ public class EntityRegistry {
         FabricDefaultAttributeRegistry.register(SURRENDERED, SurrenderedEntity.createSurrenderedAttributes());
 
         LootTableEvents.MODIFY.register((key, builder, source, wrapperLookup) -> {
-            if (!key.getValue().getPath().equals("entities/illusioner")) {
+            if (!key.identifier().getPath().equals("entities/illusioner")) {
                 return;
             }
 
-            builder.pool(LootPool.builder()
-                    .rolls(ConstantLootNumberProvider.create(1.0F))
-                    .conditionally(KilledByPlayerLootCondition.builder())
-                    .with(ItemEntry.builder(ItemRegistry.ILLUSIONARY_DUST)).build());
+            builder.pool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .when(LootItemKilledByPlayerCondition.killedByPlayer())
+                    .add(LootItem.lootTableItem(ItemRegistry.ILLUSIONARY_DUST)).build());
         });
     }
 }

@@ -1,15 +1,15 @@
 package eu.pb4.illagerexpansion.mixin.poly;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.data.TrackedData;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Pose;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Entity.class)
 public interface EntityAccessor {
     @Accessor
-    static TrackedData<EntityPose> getPOSE() {
+    static EntityDataAccessor<Pose> getDATA_POSE() {
         throw new UnsupportedOperationException();
     }
 }

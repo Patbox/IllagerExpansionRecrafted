@@ -1,26 +1,26 @@
 package eu.pb4.illagerexpansion.util.spellutil;
 
 import eu.pb4.illagerexpansion.block.BlockRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public class SetMagicFireUtil {
 
 
-    public void setFire(LivingEntity entity, World world) {
-        BlockPos entitylocation = entity.getBlockPos();
-        BlockPos downLocation = entitylocation.down();
+    public void setFire(LivingEntity entity, Level world) {
+        BlockPos entitylocation = entity.blockPosition();
+        BlockPos downLocation = entitylocation.below();
         Block blockBelow = world.getBlockState(downLocation).getBlock();
         if (goodBlock(blockBelow)) {
             return;
         }
-        for (BlockPos blockradius : BlockPos.iterateOutwards(entitylocation, 1,1, 1)) {
+        for (BlockPos blockradius : BlockPos.withinManhattan(entitylocation, 1,1, 1)) {
             Block blockInRadius = world.getBlockState(blockradius).getBlock();
             if (goodBlock(blockInRadius)) {
-                world.setBlockState(blockradius, BlockRegistry.MAGIC_FIRE.getDefaultState());
+                world.setBlockAndUpdate(blockradius, BlockRegistry.MAGIC_FIRE.defaultBlockState());
             }
         }
 

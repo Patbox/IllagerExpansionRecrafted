@@ -3,9 +3,8 @@ package eu.pb4.illagerexpansion.poly;
 import eu.pb4.polymer.common.api.PolymerCommonUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 

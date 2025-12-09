@@ -2,20 +2,20 @@ package eu.pb4.illagerexpansion.entity.goal;
 
 import eu.pb4.illagerexpansion.entity.MarauderEntity;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TimeHelper;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.TimeUtil;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
 
 public class HatchetAttackGoal
-        extends ProjectileAttackGoal {
-    private final HostileEntity hostile;
-    public static final UniformIntProvider COOLDOWN_RANGE = TimeHelper.betweenSeconds(1, 2);
+        extends RangedAttackGoal {
+    private final Monster hostile;
+    public static final UniformInt COOLDOWN_RANGE = TimeUtil.rangeOfSeconds(1, 2);
     private double speed;
     private int attackInterval;
     private final float squaredRange;
@@ -32,22 +32,22 @@ public class HatchetAttackGoal
     }
 
     @Override
-    public boolean canStart() {
-        return super.canStart() && this.hostile.getMainHandStack().isOf(ItemRegistry.HATCHET);
+    public boolean canUse() {
+        return super.canUse() && this.hostile.getMainHandItem().is(ItemRegistry.HATCHET);
     }
 
     @Override
     public void start() {
         super.start();
-        this.hostile.setAttacking(true);
-        this.hostile.setCurrentHand(Hand.MAIN_HAND);
+        this.hostile.setAggressive(true);
+        this.hostile.startUsingItem(InteractionHand.MAIN_HAND);
     }
 
     @Override
     public void stop() {
         super.stop();
-        this.hostile.clearActiveItem();
-        this.hostile.setAttacking(false);
+        this.hostile.stopUsingItem();
+        this.hostile.setAggressive(false);
         this.seeingTargetTicker = 0;
     }
 
@@ -63,25 +63,25 @@ public class HatchetAttackGoal
             }
             return;
         }
-        boolean canSeeTarget = hostile.getVisibilityCache().canSee(target);
-        boolean bl = ((MobEntity)this.hostile).getVisibilityCache().canSee(target);
-        this.hostile.getLookControl().lookAt(target, 30.0f, 30.0f);
+        boolean canSeeTarget = hostile.getSensing().hasLineOfSight(target);
+        boolean bl = ((Mob)this.hostile).getSensing().hasLineOfSight(target);
+        this.hostile.getLookControl().setLookAt(target, 30.0f, 30.0f);
         boolean bl4 = bl2 = this.seeingTargetTicker > 0;
         if (bl != bl2) {
             this.seeingTargetTicker = 0;
         }
         this.seeingTargetTicker = bl ? ++this.seeingTargetTicker : --this.seeingTargetTicker;
-        double d = ((Entity)this.hostile).squaredDistanceTo(target);
+        double d = ((Entity)this.hostile).distanceToSqr(target);
         boolean bl5 = bl3 = (d > (double)this.squaredRange || this.seeingTargetTicker < 5);
         if (bl3) {
             --this.cooldown;
             if (this.cooldown <= 0) {
-                this.hostile.getNavigation().startMovingTo(target, speed);
-                this.cooldown = COOLDOWN_RANGE.get(this.hostile.getRandom());
+                this.hostile.getNavigation().moveTo(target, speed);
+                this.cooldown = COOLDOWN_RANGE.sample(this.hostile.getRandom());
             }
         } else {
             this.cooldown = 0;
-            ((MobEntity)this.hostile).getNavigation().stop();
+            ((Mob)this.hostile).getNavigation().stop();
         }
         --chargeTime;
         if (hostile instanceof MarauderEntity) {
@@ -89,7 +89,7 @@ public class HatchetAttackGoal
                 ((MarauderEntity)hostile).setCharging(true);
             }
             if (chargeTime == -80) {
-                ((MarauderEntity)hostile).shootAt(target, 1.0f);
+                ((MarauderEntity)hostile).performRangedAttack(target, 1.0f);
                 ((MarauderEntity)hostile).setCharging(false);
                 chargeTime = 0;
             }

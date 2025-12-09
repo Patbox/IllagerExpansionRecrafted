@@ -1,15 +1,14 @@
 package eu.pb4.illagerexpansion.util.spellutil;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.Random;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public class TeleportUtil {
 
     private boolean teleportTo(LivingEntity entity, double x, double y, double z) {
-        boolean doTeleport = entity.teleport(x, y, z, false);
+        boolean doTeleport = entity.randomTeleport(x, y, z, false);
         return doTeleport;
     }
 

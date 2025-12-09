@@ -3,101 +3,104 @@ package eu.pb4.illagerexpansion.item.custom;
 import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.*;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.Tool;
+import net.minecraft.world.item.component.Weapon;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
 public class HatchetItem extends Item implements PolymerAutoItem {
-    public HatchetItem(Item.Settings settings) {
+    public HatchetItem(Item.Properties settings) {
         super(settings.repairable(ItemRegistry.PLATINUM_CHUNK)
                 .enchantable(1)
-                .component(DataComponentTypes.WEAPON, new WeaponComponent(1, 2))
-                .component(DataComponentTypes.TOOL, new ToolComponent(List.of(), 1, 2, false))
-                .attributeModifiers(AttributeModifiersComponent.builder()
-                        .add(EntityAttributes.ATTACK_DAMAGE, new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
-                        .add(EntityAttributes.ATTACK_SPEED, new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -1.9f, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+                .component(DataComponents.WEAPON, new Weapon(1, 2))
+                .component(DataComponents.TOOL, new Tool(List.of(), 1, 2, false))
+                .attributes(ItemAttributeModifiers.builder()
+                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 6.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -1.9f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                 .build())
 
         );
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.SPEAR;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.SPEAR;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 72000;
     }
 
     @Override
-    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (!(user instanceof PlayerEntity playerEntity)) {
+    public boolean releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (!(user instanceof Player playerEntity)) {
             return false;
         }
-        int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
+        int i = this.getUseDuration(stack, user) - remainingUseTicks;
         if (i < 10) {
             return false;
         }
-        stack.damage(1, playerEntity, EquipmentSlot.MAINHAND);
+        stack.hurtAndBreak(1, playerEntity, EquipmentSlot.MAINHAND);
         HatchetEntity hatchetentity = new HatchetEntity(world, playerEntity, stack);
-        hatchetentity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, 1.0f + 0.5f, 1.0f);
-        if (playerEntity.getAbilities().creativeMode) {
-            hatchetentity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+        hatchetentity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0f, 1.0f + 0.5f, 1.0f);
+        if (playerEntity.getAbilities().instabuild) {
+            hatchetentity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         }
-        world.spawnEntity(hatchetentity);
-        world.playSoundFromEntity(null, hatchetentity, SoundEvents.ITEM_TRIDENT_THROW.value(), SoundCategory.PLAYERS, 1.0f, 1.0f);
-        if (!playerEntity.getAbilities().creativeMode) {
-            playerEntity.getInventory().removeOne(stack);
+        world.addFreshEntity(hatchetentity);
+        world.playSound(null, hatchetentity, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        if (!playerEntity.getAbilities().instabuild) {
+            playerEntity.getInventory().removeItem(stack);
         }
-        playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        playerEntity.awardStat(Stats.ITEM_USED.get(this));
         return false;
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
-            return ActionResult.FAIL;
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        if (itemStack.getDamageValue() >= itemStack.getMaxDamage() - 1) {
+            return InteractionResult.FAIL;
         }
-        if (EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH) && !user.isTouchingWaterOrRain()) {
-            return ActionResult.FAIL;
+        if (EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.TRIDENT_SPIN_ATTACK_STRENGTH) && !user.isInWaterOrRain()) {
+            return InteractionResult.FAIL;
         }
-        user.setCurrentHand(hand);
-        return ActionResult.CONSUME;
+        user.startUsingItem(hand);
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if ((double) state.getHardness(world, pos) != 0.0) {
-            stack.damage(2, miner, EquipmentSlot.MAINHAND);
+    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
+        if ((double) state.getDestroySpeed(world, pos) != 0.0) {
+            stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
         }
         return true;
     }
@@ -108,11 +111,11 @@ public class HatchetItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType tooltipType, PacketContext context) {
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
         var out = PolymerAutoItem.super.getPolymerItemStack(itemStack, tooltipType, context);
-        if (!out.contains(DataComponentTypes.CONSUMABLE)) {
-            out.set(DataComponentTypes.CONSUMABLE, new ConsumableComponent(
-                    99999999999999999f, getUseAction(itemStack), Registries.SOUND_EVENT.getEntry(SoundEvents.INTENTIONALLY_EMPTY), false, List.of()
+        if (!out.has(DataComponents.CONSUMABLE)) {
+            out.set(DataComponents.CONSUMABLE, new Consumable(
+                    99999999999999999f, getUseAnimation(itemStack), BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.EMPTY), false, List.of()
                     ));
         }
         return out;

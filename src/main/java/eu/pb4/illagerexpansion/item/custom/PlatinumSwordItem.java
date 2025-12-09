@@ -3,40 +3,40 @@ package eu.pb4.illagerexpansion.item.custom;
 import eu.pb4.illagerexpansion.mixin.CreeperEntityAccessor;
 import eu.pb4.illagerexpansion.mixin.ZombieVillagerEntityAccessor;
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.mob.PhantomEntity;
-import net.minecraft.entity.mob.ZombieVillagerEntity;
-import net.minecraft.item.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ToolMaterial;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
 public class PlatinumSwordItem extends Item implements PolymerAutoItem {
-    public PlatinumSwordItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Settings settings) {
+    public PlatinumSwordItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Properties settings) {
         super(settings.sword(toolMaterial, attackDamage, attackSpeed));
     }
 
     public static void applyEffects(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        for (var s : List.copyOf(target.getStatusEffects())) {
-            target.removeStatusEffect(s.getEffectType());
-            target.addStatusEffect(new StatusEffectInstance(s.getEffectType(), (int) Math.round(s.getDuration() * 0.8), s.getAmplifier(),
-                    s.isAmbient(), s.shouldShowParticles(), s.shouldShowIcon(), null));
+        for (var s : List.copyOf(target.getActiveEffects())) {
+            target.removeEffect(s.getEffect());
+            target.addEffect(new MobEffectInstance(s.getEffect(), (int) Math.round(s.getDuration() * 0.8), s.getAmplifier(),
+                    s.isAmbient(), s.isVisible(), s.showIcon(), null));
         }
 
-        if (target instanceof PhantomEntity) {
-            target.setVelocity(target.getBoundingBox().getCenter().subtract(attacker.getBoundingBox().getCenter()).normalize().multiply(-0.8));
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 40));
-        } else if (target instanceof CreeperEntity creeperEntity) {
-            ((CreeperEntityAccessor) creeperEntity).setCurrentFuseTime(Math.max(((CreeperEntityAccessor) creeperEntity).getCurrentFuseTime() - 10, 5));
-        } else if (target instanceof ZombieVillagerEntity villagerEntity && villagerEntity.isConverting()) {
-            ((ZombieVillagerEntityAccessor) villagerEntity).setConversionTimer(((ZombieVillagerEntityAccessor) villagerEntity).getConversionTimer() - 5);
+        if (target instanceof Phantom) {
+            target.setDeltaMovement(target.getBoundingBox().getCenter().subtract(attacker.getBoundingBox().getCenter()).normalize().scale(-0.8));
+            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40));
+        } else if (target instanceof Creeper creeperEntity) {
+            ((CreeperEntityAccessor) creeperEntity).setSwell(Math.max(((CreeperEntityAccessor) creeperEntity).getSwell() - 10, 5));
+        } else if (target instanceof ZombieVillager villagerEntity && villagerEntity.isConverting()) {
+            ((ZombieVillagerEntityAccessor) villagerEntity).setVillagerConversionTime(((ZombieVillagerEntityAccessor) villagerEntity).getVillagerConversionTime() - 5);
         }
     }
 
@@ -46,8 +46,8 @@ public class PlatinumSwordItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        super.postHit(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 }

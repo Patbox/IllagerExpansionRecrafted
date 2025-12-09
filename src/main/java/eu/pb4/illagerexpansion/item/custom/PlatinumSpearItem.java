@@ -1,12 +1,14 @@
 package eu.pb4.illagerexpansion.item.custom;
 
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class PlatinumSpearItem extends Item implements PolymerAutoItem {
-    public PlatinumSpearItem(Settings settings) {
+    public PlatinumSpearItem(Properties settings) {
         super(settings);
     }
 
@@ -16,8 +18,8 @@ public class PlatinumSpearItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        super.postHit(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 }

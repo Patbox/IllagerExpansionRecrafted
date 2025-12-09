@@ -4,26 +4,28 @@ import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.polymer.virtualentity.api.tracker.DisplayTrackedData;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ItemSupplier;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -31,105 +33,105 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class HatchetEntity extends PersistentProjectileEntity implements FlyingItemEntity, PolymerEntity {
+public class HatchetEntity extends AbstractArrow implements ItemSupplier, PolymerEntity {
     private boolean dealtDamage;
-    private static final TrackedData<Float> ROLL = DataTracker.registerData(HatchetEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final EntityDataAccessor<Float> ROLL = SynchedEntityData.defineId(HatchetEntity.class, EntityDataSerializers.FLOAT);
 
-    public HatchetEntity(EntityType<? extends HatchetEntity> entityType, World world) {
+    public HatchetEntity(EntityType<? extends HatchetEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    public HatchetEntity(World world, LivingEntity owner, ItemStack stack) {
+    public HatchetEntity(Level world, LivingEntity owner, ItemStack stack) {
         super(EntityRegistry.HATCHET, owner, world, stack, stack);
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(ROLL, 0f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ROLL, 0f);
     }
 
     @Override
     public void tick() {
         super.tick();
         if (!this.isInGround()) {
-            this.dataTracker.set(ROLL, (float) (this.dataTracker.get(ROLL) - MathHelper.RADIANS_PER_DEGREE * this.getVelocity().lengthSquared() * 15) % MathHelper.TAU);
+            this.entityData.set(ROLL, (float) (this.entityData.get(ROLL) - Mth.DEG_TO_RAD * this.getDeltaMovement().lengthSqr() * 15) % Mth.TWO_PI);
         }
     }
 
     @Override
     @Nullable
-    protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
+    protected EntityHitResult findHitEntity(Vec3 currentPosition, Vec3 nextPosition) {
         if (this.dealtDamage) {
             return null;
         }
-        return super.getEntityCollision(currentPosition, nextPosition);
+        return super.findHitEntity(currentPosition, nextPosition);
     }
 
     @Override
-    protected void onEntityHit(EntityHitResult entityHitResult) {
+    protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
-        DamageSource damageSource = this.getDamageSources().trident(this, this.getOwner());
+        DamageSource damageSource = this.damageSources().trident(this, this.getOwner());
 
         if (entity instanceof LivingEntity livingEntity) {
-            f = EnchantmentHelper.getDamage((ServerWorld) this.getEntityWorld(), this.getStack(), livingEntity, damageSource, f);
+            f = EnchantmentHelper.modifyDamage((ServerLevel) this.level(), this.getItem(), livingEntity, damageSource, f);
         }
         this.dealtDamage = true;
-        SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage((ServerWorld) this.getEntityWorld(), damageSource, f)) {
+        SoundEvent soundEvent = SoundEvents.TRIDENT_HIT;
+        if (entity.hurtServer((ServerLevel) this.level(), damageSource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
             if (entity instanceof LivingEntity livingEntity) {
-                    EnchantmentHelper.onTargetDamaged((ServerWorld) this.getEntityWorld(), livingEntity, damageSource, this.getStack());
+                    EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) this.level(), livingEntity, damageSource, this.getItem());
 
-                this.onHit(livingEntity);
+                this.doPostHurtEffects(livingEntity);
             }
         }
-        this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
         float g = 1.0f;
         this.playSound(soundEvent, g, 1.0f);
     }
 
 
     @Override
-    protected boolean tryPickup(PlayerEntity player) {
-        return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
+    protected boolean tryPickup(Player player) {
+        return super.tryPickup(player) || this.isNoPhysics() && this.ownedBy(player) && player.getInventory().add(this.getPickupItem());
     }
 
     @Override
-    protected ItemStack getDefaultItemStack() {
-        return ItemRegistry.HATCHET.getDefaultStack();
+    protected ItemStack getDefaultPickupItem() {
+        return ItemRegistry.HATCHET.getDefaultInstance();
     }
 
     @Override
-    protected SoundEvent getHitSound() {
-        return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
+    protected SoundEvent getDefaultHitGroundSoundEvent() {
+        return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
     @Override
-    public void onPlayerCollision(PlayerEntity player) {
-        if (this.isOwner(player) || this.getOwner() == null) {
-            super.onPlayerCollision(player);
+    public void playerTouch(Player player) {
+        if (this.ownedBy(player) || this.getOwner() == null) {
+            super.playerTouch(player);
         }
     }
 
     @Override
-    public void readCustomData(ReadView nbt) {
-        super.readCustomData(nbt);
-        this.dealtDamage = nbt.getBoolean("DealtDamage", false);
+    public void readAdditionalSaveData(ValueInput nbt) {
+        super.readAdditionalSaveData(nbt);
+        this.dealtDamage = nbt.getBooleanOr("DealtDamage", false);
     }
 
     @Override
-    public void writeCustomData(WriteView nbt) {
-        super.writeCustomData(nbt);
+    public void addAdditionalSaveData(ValueOutput nbt) {
+        super.addAdditionalSaveData(nbt);
         nbt.putBoolean("DealtDamage", this.dealtDamage);
     }
 
 
     @Override
-    protected float getDragInWater() {
+    protected float getWaterInertia() {
         return 0.99f;
     }
 
@@ -139,25 +141,25 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     }
 
     @Override
-    public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
+    public void modifyRawTrackedData(List<SynchedEntityData.DataValue<?>> data, ServerPlayer player, boolean initial) {
         var sendBase = true;
         for (int i = 0; i < data.size(); i++) {
             var roll = data.get(i);
-            if (roll.id() == ROLL.id() && roll.handler() == ROLL.dataType()) {
-                data.set(i, DataTracker.SerializedEntry.of(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(MathHelper.HALF_PI).rotateZ((float) roll.value())));
+            if (roll.id() == ROLL.id() && roll.serializer() == ROLL.serializer()) {
+                data.set(i, SynchedEntityData.DataValue.create(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI).rotateZ((float) roll.value())));
                 sendBase = false;
                 break;
             }
         }
 
         if (initial) {
-            data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.Item.ITEM, this.getStack().copy()));
-            data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.SCALE, new Vector3f(0.6f)));
-            data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.TRANSLATION, new Vector3f(0, -0.1f, 0)));
-            data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.INTERPOLATION_DURATION, 2));
-            data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.TELEPORTATION_DURATION, 4));
+            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.Item.ITEM, this.getItem().copy()));
+            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.SCALE, new Vector3f(0.6f)));
+            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.TRANSLATION, new Vector3f(0, -0.1f, 0)));
+            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.INTERPOLATION_DURATION, 2));
+            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.TELEPORTATION_DURATION, 4));
             if (sendBase) {
-                data.add(DataTracker.SerializedEntry.of(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(MathHelper.HALF_PI)));
+                data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI)));
             }
         }
 
@@ -169,12 +171,12 @@ public class HatchetEntity extends PersistentProjectileEntity implements FlyingI
     }
 
     @Override
-    public Vec3d getSyncedPos() {
-        return super.getSyncedPos().add(0, 0.1, 0);
+    public Vec3 trackingPosition() {
+        return super.trackingPosition().add(0, 0.1, 0);
     }
 
     @Override
-    public ItemStack getStack() {
-        return this.getItemStack();
+    public ItemStack getItem() {
+        return this.getPickupItemStackOrigin();
     }
 }

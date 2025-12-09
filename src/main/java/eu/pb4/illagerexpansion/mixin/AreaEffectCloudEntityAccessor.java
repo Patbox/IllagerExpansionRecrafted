@@ -1,12 +1,12 @@
 package eu.pb4.illagerexpansion.mixin;
 
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.entity.AreaEffectCloudEntity;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.item.alchemy.PotionContents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AreaEffectCloudEntity.class)
+@Mixin(AreaEffectCloud.class)
 public interface AreaEffectCloudEntityAccessor {
     @Accessor
-    PotionContentsComponent getPotionContentsComponent();
+    PotionContents getPotionContents();
 }

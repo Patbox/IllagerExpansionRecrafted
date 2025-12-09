@@ -1,16 +1,17 @@
 package eu.pb4.illagerexpansion.item.custom;
 
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.ToolMaterial;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
-    public PlatinumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
+    public PlatinumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {
         super(material, attackDamage, attackSpeed, settings);
     }
 
@@ -20,8 +21,8 @@ public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
     }
 
     @Override
-    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         PlatinumSwordItem.applyEffects(stack, target, attacker);
-        super.postHit(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 }

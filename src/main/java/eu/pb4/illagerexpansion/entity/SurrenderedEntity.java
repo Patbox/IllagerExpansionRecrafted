@@ -3,65 +3,75 @@ package eu.pb4.illagerexpansion.entity;
 import com.mojang.datafixers.util.Pair;
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
-    protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(SurrenderedEntity.class, TrackedDataHandlerRegistry.BYTE);
+public class SurrenderedEntity extends Skeleton implements PolymerEntity {
+    protected static final EntityDataAccessor<Byte> VEX_FLAGS = SynchedEntityData.defineId(SurrenderedEntity.class, EntityDataSerializers.BYTE);
     private static final int CHARGING_FLAG = 1;
-    @Nullable MobEntity owner;
+    @Nullable Mob owner;
     @Nullable
     private BlockPos bounds;
     private boolean alive;
     private int lifeTicks;
-    private AttributeContainer attributeContainer;
+    private AttributeMap attributeContainer;
 
 
-    public SurrenderedEntity(EntityType<? extends SurrenderedEntity> entityType, World world) {
+    public SurrenderedEntity(EntityType<? extends SurrenderedEntity> entityType, Level world) {
         super(entityType, world);
         this.moveControl = new SurrenderedEntity.VexMoveControl(this);
     }
 
     @Override
-    public void move(MovementType movementType, Vec3d movement) {
+    public void move(MoverType movementType, Vec3 movement) {
         super.move(movementType, movement);
     }
 
@@ -71,52 +81,52 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         this.setNoGravity(true);
         if (this.alive && --this.lifeTicks <= 0) {
             this.lifeTicks = 20;
-            this.serverDamage(this.getDamageSources().starve(), 1.0f);
+            this.hurt(this.damageSources().starve(), 1.0f);
         }
     }
 
     @Override
-    protected void initGoals() {
-        super.initGoals();
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(2, new SurrenderedEntity.ChargeTargetGoal());
-        this.goalSelector.add(8, new SurrenderedEntity.LookAtTargetGoal());
-        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
-        this.targetSelector.add(2, new SurrenderedEntity.TrackOwnerTargetGoal(this));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
+    protected void registerGoals() {
+        super.registerGoals();
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new SurrenderedEntity.ChargeTargetGoal());
+        this.goalSelector.addGoal(8, new SurrenderedEntity.LookAtTargetGoal());
+        this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0f, 1.0f));
+        this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0f));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, Raider.class).setAlertOthers());
+        this.targetSelector.addGoal(2, new SurrenderedEntity.TrackOwnerTargetGoal(this));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-    public static DefaultAttributeContainer.Builder createSurrenderedAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 18.0D)
-                .add(EntityAttributes.ATTACK_DAMAGE, 5.0D);
+    public static AttributeSupplier.Builder createSurrenderedAttributes() {
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 18.0D)
+                .add(Attributes.ATTACK_DAMAGE, 5.0D);
     }
 
     @Override
-    public boolean handleFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
+    public boolean causeFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(VEX_FLAGS, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(VEX_FLAGS, (byte) 0);
     }
 
     @Override
-    public void readCustomData(ReadView nbt) {
-        super.readCustomData(nbt);
-        if (nbt.getInt("BoundX", Integer.MAX_VALUE) != Integer.MAX_VALUE) {
-            this.bounds = new BlockPos(nbt.getInt("BoundX", 0), nbt.getInt("BoundY", 0), nbt.getInt("BoundZ", 0));
+    public void readAdditionalSaveData(ValueInput nbt) {
+        super.readAdditionalSaveData(nbt);
+        if (nbt.getIntOr("BoundX", Integer.MAX_VALUE) != Integer.MAX_VALUE) {
+            this.bounds = new BlockPos(nbt.getIntOr("BoundX", 0), nbt.getIntOr("BoundY", 0), nbt.getIntOr("BoundZ", 0));
         }
 
-        nbt.getOptionalInt("LifeTicks").ifPresent(this::setLifeTicks);
+        nbt.getInt("LifeTicks").ifPresent(this::setLifeTicks);
     }
 
     @Override
-    public void writeCustomData(WriteView nbt) {
-        super.writeCustomData(nbt);
+    public void addAdditionalSaveData(ValueOutput nbt) {
+        super.addAdditionalSaveData(nbt);
         if (this.bounds != null) {
             nbt.putInt("BoundX", this.bounds.getX());
             nbt.putInt("BoundY", this.bounds.getY());
@@ -128,11 +138,11 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Nullable
-    public MobEntity getOwner() {
+    public Mob getOwner() {
         return this.owner;
     }
 
-    public void setOwner(@Nullable MobEntity owner) {
+    public void setOwner(@Nullable Mob owner) {
         this.owner = owner;
     }
 
@@ -146,14 +156,14 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     private boolean areFlagsSet(int mask) {
-        byte i = this.dataTracker.get(VEX_FLAGS);
+        byte i = this.entityData.get(VEX_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setVexFlag(int mask, boolean value) {
-        int i = this.dataTracker.get(VEX_FLAGS);
+        int i = this.entityData.get(VEX_FLAGS);
         i = value ? (i |= mask) : (i &= ~mask);
-        this.dataTracker.set(VEX_FLAGS, (byte) (i & 0xFF));
+        this.entityData.set(VEX_FLAGS, (byte) (i & 0xFF));
     }
 
     public boolean isCharging() {
@@ -170,24 +180,24 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public boolean tryAttack(ServerWorld world, Entity target) {
-        if (!super.tryAttack(world, target)) {
+    public boolean doHurtTarget(ServerLevel world, Entity target) {
+        if (!super.doHurtTarget(world, target)) {
             return false;
         }
         if (target instanceof LivingEntity) {
-            ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1), this);
+            ((LivingEntity) target).addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 1), this);
         }
         return true;
     }
 
     @Override
-    public void tickMovement() {
-        if (!getEntityWorld().isClient()) {
+    public void aiStep() {
+        if (!level().isClientSide()) {
             for (int i = 0; i < 2; ++i) {
-                ((ServerWorld) getEntityWorld()).spawnParticles(ParticleTypes.WHITE_ASH, this.getX(), this.getY() + 1.2, this.getZ(), 2, 0.2D, 0D, 0.2D, 0.025D);
+                ((ServerLevel) level()).sendParticles(ParticleTypes.WHITE_ASH, this.getX(), this.getY() + 1.2, this.getZ(), 2, 0.2D, 0D, 0.2D, 0.025D);
             }
         }
-        super.tickMovement();
+        super.aiStep();
     }
 
     @Override
@@ -206,44 +216,44 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
     }
 
     @Override
-    public float getBrightnessAtEyes() {
+    public float getLightLevelDependentMagicValue() {
         return 1.0f;
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
-        this.initEquipment(random, difficulty);
-        this.updateEnchantments(world, random, difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData entityData) {
+        this.populateDefaultEquipmentSlots(random, difficulty);
+        this.populateDefaultEquipmentEnchantments(world, random, difficulty);
+        return super.finalizeSpawn(world, difficulty, spawnReason, entityData);
     }
 
     @Override
-    protected void initEquipment(Random random, LocalDifficulty difficulty) {
-        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.AIR));
-        this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
+    protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.AIR));
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
     }
 
     @Override
-    public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
+    public void modifyRawTrackedData(List<SynchedEntityData.DataValue<?>> data, ServerPlayer player, boolean initial) {
         var found = false;
         for (int i = 0; i < data.size(); i++) {
             var e = data.get(i);
 
-            if (e.id() == Entity.FLAGS.id()) {
-                data.set(i, DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) e.value()) | 0x1 << 5)));
+            if (e.id() == Entity.DATA_SHARED_FLAGS_ID.id()) {
+                data.set(i, SynchedEntityData.DataValue.create(Entity.DATA_SHARED_FLAGS_ID, (byte) (((byte) e.value()) | 0x1 << 5)));
                 found = true;
             }
         }
 
         if (!found && initial) {
-            data.add(DataTracker.SerializedEntry.of(Entity.FLAGS, (byte) (((byte) 0x1 << 5))));
+            data.add(SynchedEntityData.DataValue.create(Entity.DATA_SHARED_FLAGS_ID, (byte) (((byte) 0x1 << 5))));
         }
     }
 
     @Override
-    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayerEntity player) {
-        return List.of(new Pair<>(EquipmentSlot.HEAD, Items.SKELETON_SKULL.getDefaultStack()), new Pair<>(EquipmentSlot.CHEST, Items.CHAINMAIL_CHESTPLATE.getDefaultStack()));
+    public List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayer player) {
+        return List.of(new Pair<>(EquipmentSlot.HEAD, Items.SKELETON_SKULL.getDefaultInstance()), new Pair<>(EquipmentSlot.CHEST, Items.CHAINMAIL_CHESTPLATE.getDefaultInstance()));
     }
 
     @Override
@@ -258,25 +268,25 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
         @Override
         public void tick() {
-            if (this.state != MoveControl.State.MOVE_TO) {
+            if (this.operation != MoveControl.Operation.MOVE_TO) {
                 return;
             }
-            Vec3d vec3d = new Vec3d(this.targetX - SurrenderedEntity.this.getX(), this.targetY - SurrenderedEntity.this.getY(), this.targetZ - SurrenderedEntity.this.getZ());
+            Vec3 vec3d = new Vec3(this.wantedX - SurrenderedEntity.this.getX(), this.wantedY - SurrenderedEntity.this.getY(), this.wantedZ - SurrenderedEntity.this.getZ());
             double d = vec3d.length();
-            if (d < SurrenderedEntity.this.getBoundingBox().getAverageSideLength()) {
-                this.state = MoveControl.State.WAIT;
-                SurrenderedEntity.this.setVelocity(SurrenderedEntity.this.getVelocity().multiply(0.5));
+            if (d < SurrenderedEntity.this.getBoundingBox().getSize()) {
+                this.operation = MoveControl.Operation.WAIT;
+                SurrenderedEntity.this.setDeltaMovement(SurrenderedEntity.this.getDeltaMovement().scale(0.5));
             } else {
-                SurrenderedEntity.this.setVelocity(SurrenderedEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
+                SurrenderedEntity.this.setDeltaMovement(SurrenderedEntity.this.getDeltaMovement().add(vec3d.scale(this.speedModifier * 0.05 / d)));
                 if (SurrenderedEntity.this.getTarget() == null) {
-                    Vec3d vec3d2 = SurrenderedEntity.this.getVelocity();
-                    SurrenderedEntity.this.setYaw(-((float) MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
-                    SurrenderedEntity.this.bodyYaw = SurrenderedEntity.this.getYaw();
+                    Vec3 vec3d2 = SurrenderedEntity.this.getDeltaMovement();
+                    SurrenderedEntity.this.setYRot(-((float) Mth.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
+                    SurrenderedEntity.this.yBodyRot = SurrenderedEntity.this.getYRot();
                 } else {
                     double e = SurrenderedEntity.this.getTarget().getX() - SurrenderedEntity.this.getX();
                     double f = SurrenderedEntity.this.getTarget().getZ() - SurrenderedEntity.this.getZ();
-                    SurrenderedEntity.this.setYaw(-((float) MathHelper.atan2(e, f)) * 57.295776f);
-                    SurrenderedEntity.this.bodyYaw = SurrenderedEntity.this.getYaw();
+                    SurrenderedEntity.this.setYRot(-((float) Mth.atan2(e, f)) * 57.295776f);
+                    SurrenderedEntity.this.yBodyRot = SurrenderedEntity.this.getYRot();
                 }
             }
         }
@@ -284,28 +294,28 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
     class ChargeTargetGoal extends Goal {
         public ChargeTargetGoal() {
-            this.setControls(EnumSet.of(Goal.Control.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
-        public boolean canStart() {
-            if (SurrenderedEntity.this.getTarget() != null && !SurrenderedEntity.this.getMoveControl().isMoving() && SurrenderedEntity.this.random.nextInt(SurrenderedEntity.ChargeTargetGoal.toGoalTicks(7)) == 0) {
-                return SurrenderedEntity.this.squaredDistanceTo(SurrenderedEntity.this.getTarget()) > 4.0;
+        public boolean canUse() {
+            if (SurrenderedEntity.this.getTarget() != null && !SurrenderedEntity.this.getMoveControl().hasWanted() && SurrenderedEntity.this.random.nextInt(SurrenderedEntity.ChargeTargetGoal.reducedTickDelay(7)) == 0) {
+                return SurrenderedEntity.this.distanceToSqr(SurrenderedEntity.this.getTarget()) > 4.0;
             }
             return false;
         }
 
         @Override
-        public boolean shouldContinue() {
-            return SurrenderedEntity.this.getMoveControl().isMoving() && SurrenderedEntity.this.isCharging() && SurrenderedEntity.this.getTarget() != null && SurrenderedEntity.this.getTarget().isAlive();
+        public boolean canContinueToUse() {
+            return SurrenderedEntity.this.getMoveControl().hasWanted() && SurrenderedEntity.this.isCharging() && SurrenderedEntity.this.getTarget() != null && SurrenderedEntity.this.getTarget().isAlive();
         }
 
         @Override
         public void start() {
             LivingEntity livingEntity = SurrenderedEntity.this.getTarget();
             if (livingEntity != null) {
-                Vec3d vec3d = livingEntity.getEyePos();
-                SurrenderedEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
+                Vec3 vec3d = livingEntity.getEyePosition();
+                SurrenderedEntity.this.moveControl.setWantedPosition(vec3d.x, vec3d.y, vec3d.z, 1.0);
             }
             SurrenderedEntity.this.setCharging(true);
             SurrenderedEntity.this.playSound(SoundRegistry.SURRENDERED_CHARGE, 1.0f, 1.0f);
@@ -317,7 +327,7 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         }
 
         @Override
-        public boolean shouldRunEveryTick() {
+        public boolean requiresUpdateEveryTick() {
             return true;
         }
 
@@ -328,13 +338,13 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
                 return;
             }
             if (SurrenderedEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-                SurrenderedEntity.this.tryAttack((ServerWorld) livingEntity.getEntityWorld(), livingEntity);
+                SurrenderedEntity.this.doHurtTarget((ServerLevel) livingEntity.level(), livingEntity);
                 SurrenderedEntity.this.setCharging(false);
             } else {
-                double d = SurrenderedEntity.this.squaredDistanceTo(livingEntity);
+                double d = SurrenderedEntity.this.distanceToSqr(livingEntity);
                 if (d < 9.0) {
-                    Vec3d vec3d = livingEntity.getEyePos();
-                    SurrenderedEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
+                    Vec3 vec3d = livingEntity.getEyePosition();
+                    SurrenderedEntity.this.moveControl.setWantedPosition(vec3d.x, vec3d.y, vec3d.z, 1.0);
                 }
             }
         }
@@ -342,16 +352,16 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
 
     class LookAtTargetGoal extends Goal {
         public LookAtTargetGoal() {
-            this.setControls(EnumSet.of(Goal.Control.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
-        public boolean canStart() {
-            return !SurrenderedEntity.this.getMoveControl().isMoving() && SurrenderedEntity.this.random.nextInt(SurrenderedEntity.LookAtTargetGoal.toGoalTicks(7)) == 0;
+        public boolean canUse() {
+            return !SurrenderedEntity.this.getMoveControl().hasWanted() && SurrenderedEntity.this.random.nextInt(SurrenderedEntity.LookAtTargetGoal.reducedTickDelay(7)) == 0;
         }
 
         @Override
-        public boolean shouldContinue() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -359,30 +369,30 @@ public class SurrenderedEntity extends SkeletonEntity implements PolymerEntity {
         public void tick() {
             BlockPos blockPos = SurrenderedEntity.this.getBounds();
             if (blockPos == null) {
-                blockPos = SurrenderedEntity.this.getBlockPos();
+                blockPos = SurrenderedEntity.this.blockPosition();
             }
             for (int i = 0; i < 3; ++i) {
-                BlockPos blockPos2 = blockPos.add(SurrenderedEntity.this.random.nextInt(15) - 7, SurrenderedEntity.this.random.nextInt(11) - 5, SurrenderedEntity.this.random.nextInt(15) - 7);
-                if (!SurrenderedEntity.this.getEntityWorld().isAir(blockPos2)) continue;
-                SurrenderedEntity.this.moveControl.moveTo((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 0.25);
+                BlockPos blockPos2 = blockPos.offset(SurrenderedEntity.this.random.nextInt(15) - 7, SurrenderedEntity.this.random.nextInt(11) - 5, SurrenderedEntity.this.random.nextInt(15) - 7);
+                if (!SurrenderedEntity.this.level().isEmptyBlock(blockPos2)) continue;
+                SurrenderedEntity.this.moveControl.setWantedPosition((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 0.25);
                 if (SurrenderedEntity.this.getTarget() != null) break;
-                SurrenderedEntity.this.getLookControl().lookAt((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 180.0f, 20.0f);
+                SurrenderedEntity.this.getLookControl().setLookAt((double) blockPos2.getX() + 0.5, (double) blockPos2.getY() + 0.5, (double) blockPos2.getZ() + 0.5, 180.0f, 20.0f);
                 break;
             }
         }
     }
 
-    class TrackOwnerTargetGoal extends TrackTargetGoal {
-        private final TargetPredicate targetPredicate;
+    class TrackOwnerTargetGoal extends TargetGoal {
+        private final TargetingConditions targetPredicate;
 
-        public TrackOwnerTargetGoal(PathAwareEntity mob) {
+        public TrackOwnerTargetGoal(PathfinderMob mob) {
             super(mob, false);
-            this.targetPredicate = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
+            this.targetPredicate = TargetingConditions.forNonCombat().ignoreLineOfSight().ignoreInvisibilityTesting();
         }
 
         @Override
-        public boolean canStart() {
-            return SurrenderedEntity.this.owner != null && SurrenderedEntity.this.owner.getTarget() != null && this.canTrack(SurrenderedEntity.this.owner.getTarget(), this.targetPredicate);
+        public boolean canUse() {
+            return SurrenderedEntity.this.owner != null && SurrenderedEntity.this.owner.getTarget() != null && this.canAttack(SurrenderedEntity.this.owner.getTarget(), this.targetPredicate);
         }
 
         @Override

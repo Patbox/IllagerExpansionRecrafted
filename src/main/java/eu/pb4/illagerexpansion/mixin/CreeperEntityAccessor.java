@@ -1,14 +1,14 @@
 package eu.pb4.illagerexpansion.mixin;
 
-import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(CreeperEntity.class)
+@Mixin(Creeper.class)
 public interface CreeperEntityAccessor {
     @Accessor
-    int getCurrentFuseTime();
+    int getSwell();
 
     @Accessor
-    void setCurrentFuseTime(int currentFuseTime);
+    void setSwell(int currentFuseTime);
 }

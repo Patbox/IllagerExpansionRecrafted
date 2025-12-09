@@ -4,101 +4,104 @@ import eu.pb4.illagerexpansion.block.BlockRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.data.recipe.*;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
 class RecipesProvider extends FabricRecipeProvider {
 
-    public RecipesProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public RecipesProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-        var reg = registryLookup.getOrThrow(RegistryKeys.ITEM);
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
+        var reg = registryLookup.lookupOrThrow(Registries.ITEM);
 
-        return new RecipeGenerator(registryLookup, exporter) {
+        return new RecipeProvider(registryLookup, exporter) {
             @Override
-            public void generate() {
-                ShapedRecipeJsonBuilder.create(reg, RecipeCategory.MISC, ItemRegistry.HALLOWED_GEM)
+            public void buildRecipes() {
+                ShapedRecipeBuilder.shaped(reg, RecipeCategory.MISC, ItemRegistry.HALLOWED_GEM)
                         .pattern("#B#")
                         .pattern("RDR")
                         .pattern("#B#")
-                        .input('#', Items.AMETHYST_SHARD)
-                        .input('B', ItemRegistry.UNUSUAL_DUST)
-                        .input('R', ItemRegistry.ILLUSIONARY_DUST)
-                        .input('D', Items.DIAMOND)
-                        .criterion("dust", InventoryChangedCriterion.Conditions.items(ItemRegistry.UNUSUAL_DUST))
-                        .offerTo(exporter);
+                        .define('#', Items.AMETHYST_SHARD)
+                        .define('B', ItemRegistry.UNUSUAL_DUST)
+                        .define('R', ItemRegistry.ILLUSIONARY_DUST)
+                        .define('D', Items.DIAMOND)
+                        .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(ItemRegistry.UNUSUAL_DUST))
+                        .save(output);
 
-                ShapedRecipeJsonBuilder.create(reg, RecipeCategory.MISC, ItemRegistry.HORN_OF_SIGHT)
+                ShapedRecipeBuilder.shaped(reg, RecipeCategory.MISC, ItemRegistry.HORN_OF_SIGHT)
                         .pattern("GAG")
                         .pattern("GHG")
                         .pattern("GGG")
-                        .input('A', ItemRegistry.HALLOWED_GEM)
-                        .input('G', Items.GOLD_INGOT)
-                        .input('H', Items.GOAT_HORN)
-                        .criterion("dust", InventoryChangedCriterion.Conditions.items(Items.GOAT_HORN))
-                        .offerTo(exporter);
+                        .define('A', ItemRegistry.HALLOWED_GEM)
+                        .define('G', Items.GOLD_INGOT)
+                        .define('H', Items.GOAT_HORN)
+                        .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GOAT_HORN))
+                        .save(output);
 
-                ShapedRecipeJsonBuilder.create(reg, RecipeCategory.MISC, BlockRegistry.IMBUING_TABLE)
+                ShapedRecipeBuilder.shaped(reg, RecipeCategory.MISC, BlockRegistry.IMBUING_TABLE)
                         .pattern("#P#")
                         .pattern("OSO")
                         .pattern("#E#")
-                        .input('#', Items.COPPER_BLOCK)
-                        .input('P', Items.PAPER)
-                        .input('O', Items.DARK_OAK_LOG)
-                        .input('S', ItemRegistry.PRIMAL_ESSENCE)
-                        .input('E', Items.EXPERIENCE_BOTTLE)
-                        .criterion("dust", InventoryChangedCriterion.Conditions.items(Items.GOAT_HORN))
-                        .offerTo(exporter);
+                        .define('#', Items.COPPER_BLOCK)
+                        .define('P', Items.PAPER)
+                        .define('O', Items.DARK_OAK_LOG)
+                        .define('S', ItemRegistry.PRIMAL_ESSENCE)
+                        .define('E', Items.EXPERIENCE_BOTTLE)
+                        .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GOAT_HORN))
+                        .save(output);
 
-                ShapelessRecipeJsonBuilder.create(reg, RecipeCategory.MISC, ItemRegistry.PLATINUM_SHEET)
-                        .input(ItemRegistry.PLATINUM_CHUNK, 4)
-                        .criterion("dust", InventoryChangedCriterion.Conditions.items(ItemRegistry.PLATINUM_CHUNK))
-                        .offerTo(exporter);
+                ShapelessRecipeBuilder.shapeless(reg, RecipeCategory.MISC, ItemRegistry.PLATINUM_SHEET)
+                        .requires(ItemRegistry.PLATINUM_CHUNK, 4)
+                        .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(ItemRegistry.PLATINUM_CHUNK))
+                        .save(output);
 
-                ShapedRecipeJsonBuilder.create(reg, RecipeCategory.MISC, ItemRegistry.PLATINUM_UPGRADE_TEMPLATE, 2)
+                ShapedRecipeBuilder.shaped(reg, RecipeCategory.MISC, ItemRegistry.PLATINUM_UPGRADE_TEMPLATE, 2)
                         .pattern("#P#")
                         .pattern("#S#")
                         .pattern("###")
-                        .input('#', Items.DIAMOND)
-                        .input('S', Items.COPPER_BLOCK)
-                        .input('P', ItemRegistry.PLATINUM_UPGRADE_TEMPLATE)
-                        .criterion("dust", InventoryChangedCriterion.Conditions.items(Items.GOAT_HORN))
-                        .offerTo(exporter);
+                        .define('#', Items.DIAMOND)
+                        .define('S', Items.COPPER_BLOCK)
+                        .define('P', ItemRegistry.PLATINUM_UPGRADE_TEMPLATE)
+                        .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GOAT_HORN))
+                        .save(output);
 
                 for (var x : List.of(ItemRegistry.PLATINUM_INFUSED_NETHERITE_AXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SPEAR, ItemRegistry.PLATINUM_INFUSED_NETHERITE_PICKAXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SHOVEL,
                         ItemRegistry.PLATINUM_INFUSED_NETHERITE_HOE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SWORD, ItemRegistry.PLATINUM_INFUSED_NETHERITE_CHESTPLATE,
                         ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS, ItemRegistry.PLATINUM_INFUSED_NETHERITE_HELMET,
                         ItemRegistry.PLATINUM_INFUSED_NETHERITE_LEGGINGS)) {
-                    SmithingTransformRecipeJsonBuilder.create(
-                                    Ingredient.ofItems(ItemRegistry.PLATINUM_UPGRADE_TEMPLATE),
-                                    Ingredient.ofItems(Registries.ITEM.get(Identifier.of(Registries.ITEM.getId(x).getPath().substring("platinum_infused_".length())))),
-                                    Ingredient.ofItems(ItemRegistry.PLATINUM_SHEET),
+                    SmithingTransformRecipeBuilder.smithing(
+                                    Ingredient.of(ItemRegistry.PLATINUM_UPGRADE_TEMPLATE),
+                                    Ingredient.of(BuiltInRegistries.ITEM.getValue(Identifier.parse(BuiltInRegistries.ITEM.getKey(x).getPath().substring("platinum_infused_".length())))),
+                                    Ingredient.of(ItemRegistry.PLATINUM_SHEET),
                                     RecipeCategory.TOOLS,
                                     x
                             )
-                            .criterion("dust", InventoryChangedCriterion.Conditions.items(ItemRegistry.PLATINUM_SHEET))
-                            .offerTo(exporter, getRecipeName(x));
+                            .unlocks("dust", InventoryChangeTrigger.TriggerInstance.hasItems(ItemRegistry.PLATINUM_SHEET))
+                            .save(output, getSimpleRecipeName(x));
                 }
             }
         };
     }
 
-    public void of(RecipeExporter exporter, RecipeEntry<?>... recipes) {
+    public void of(RecipeOutput exporter, RecipeHolder<?>... recipes) {
         for (var recipe : recipes) {
             exporter.accept(recipe.id(), recipe.value(), null);
         }

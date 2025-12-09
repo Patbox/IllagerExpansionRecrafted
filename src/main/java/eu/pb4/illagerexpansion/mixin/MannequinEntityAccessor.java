@@ -1,23 +1,23 @@
 package eu.pb4.illagerexpansion.mixin;
 
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.decoration.MannequinEntity;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Optional;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.entity.decoration.Mannequin;
+import net.minecraft.world.item.component.ResolvableProfile;
 
-@Mixin(MannequinEntity.class)
+@Mixin(Mannequin.class)
 public interface MannequinEntityAccessor {
     @Accessor
-    static TrackedData<ProfileComponent> getPROFILE() {
+    static EntityDataAccessor<ResolvableProfile> getDATA_PROFILE() {
         throw new UnsupportedOperationException();
     }
 
     @Accessor
-    static TrackedData<Optional<Text>> getDESCRIPTION() {
+    static EntityDataAccessor<Optional<Component>> getDATA_DESCRIPTION() {
         throw new UnsupportedOperationException();
     }
 }

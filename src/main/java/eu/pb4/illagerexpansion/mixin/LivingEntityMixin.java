@@ -1,12 +1,12 @@
 package eu.pb4.illagerexpansion.mixin;
 
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.ArmorType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,18 +14,18 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot slot);
+    @Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
 
-    @ModifyVariable(method = "applyArmorToDamage", at = @At("HEAD"), argsOnly = true)
+    @ModifyVariable(method = "getDamageAfterArmorAbsorb", at = @At("HEAD"), argsOnly = true)
     private float changeDamage(float amount, DamageSource source) {
-        if (!source.isOf(DamageTypes.MAGIC) && !source.isOf(DamageTypes.INDIRECT_MAGIC)) {
+        if (!source.is(DamageTypes.MAGIC) && !source.is(DamageTypes.INDIRECT_MAGIC)) {
             return amount;
         }
 
         float mult = 1;
 
-        for (var armor : EquipmentType.values()) {
-            if (this.getEquippedStack(armor.getEquipmentSlot()).isIn(ItemRegistry.MAGIC_DAMAGE_BLOCKING_ARMOR)) {
+        for (var armor : ArmorType.values()) {
+            if (this.getItemBySlot(armor.getSlot()).is(ItemRegistry.MAGIC_DAMAGE_BLOCKING_ARMOR)) {
                 mult -= 0.08f;
             }
         }

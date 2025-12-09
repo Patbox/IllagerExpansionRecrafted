@@ -1,21 +1,21 @@
 package eu.pb4.illagerexpansion.entity.goal;
 
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Items;
 
-public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
-    private final MobEntity mob;
+public class PotionBowAttackGoal<T extends Monster> extends Goal {
+    private final Mob mob;
     private final RangedAttackMob owner;
     private final double mobSpeed;
     private final int minIntervalTicks;
@@ -51,14 +51,14 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
         this.maxIntervalTicks = attackInterval;
         this.maxShootRange = range;
         this.squaredMaxShootRange = this.maxShootRange * this.maxShootRange;
-        this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     public void setAttackInterval(final int attackInterval) {
         this.attackInterval = attackInterval;
     }
 
-    public boolean canStart() {
+    public boolean canUse() {
         return this.actor.getTarget() != null && this.isHoldingBow();
     }
 
@@ -66,24 +66,24 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
         return this.actor.isHolding(Items.BOW) || this.actor.isHolding(Items.LINGERING_POTION);
     }
 
-    public boolean shouldContinue() {
-        return (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isHoldingBow();
+    public boolean canContinueToUse() {
+        return (this.canUse() || !this.actor.getNavigation().isDone()) && this.isHoldingBow();
     }
 
     public void start() {
         super.start();
-        this.actor.setAttacking(true);
+        this.actor.setAggressive(true);
     }
 
     public void stop() {
         super.stop();
-        this.actor.setAttacking(false);
+        this.actor.setAggressive(false);
         this.targetSeeingTicker = 0;
         this.cooldown = -1;
-        this.actor.clearActiveItem();
+        this.actor.stopUsingItem();
     }
 
-    public boolean shouldRunEveryTick() {
+    public boolean requiresUpdateEveryTick() {
         return true;
     }
 
@@ -92,16 +92,16 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
         if (livingEntity == null) {
             return;
         }
-        if (this.actor.getEquippedStack(EquipmentSlot.MAINHAND).isOf(Items.LINGERING_POTION)) {
-            final double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-            final boolean bl = this.mob.getVisibilityCache().canSee(livingEntity);
+        if (this.actor.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.LINGERING_POTION)) {
+            final double d = this.mob.distanceToSqr(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+            final boolean bl = this.mob.getSensing().hasLineOfSight(livingEntity);
             this.seenTargetTicks = (bl ? (++this.seenTargetTicks) : 0);
             if (d > this.squaredMaxShootRange || this.seenTargetTicks < 5) {
-                this.mob.getNavigation().startMovingTo(livingEntity, this.mobSpeed);
+                this.mob.getNavigation().moveTo(livingEntity, this.mobSpeed);
             } else {
                 this.mob.getNavigation().stop();
             }
-            this.mob.getLookControl().lookAt(livingEntity, 30.0f, 30.0f);
+            this.mob.getLookControl().setLookAt(livingEntity, 30.0f, 30.0f);
             final int updateCountdownTicks = this.updateCountdownTicks - 1;
             this.updateCountdownTicks = updateCountdownTicks;
             if (updateCountdownTicks == 0) {
@@ -109,16 +109,16 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
                     return;
                 }
                 final float f = (float) Math.sqrt(d) / this.maxShootRange;
-                final float g = MathHelper.clamp(f, 0.1f, 1.0f);
-                this.owner.shootAt(livingEntity, g);
-                this.updateCountdownTicks = MathHelper.floor(f * (this.maxIntervalTicks - this.minIntervalTicks) + this.minIntervalTicks);
+                final float g = Mth.clamp(f, 0.1f, 1.0f);
+                this.owner.performRangedAttack(livingEntity, g);
+                this.updateCountdownTicks = Mth.floor(f * (this.maxIntervalTicks - this.minIntervalTicks) + this.minIntervalTicks);
             } else if (this.updateCountdownTicks < 0) {
-                this.updateCountdownTicks = MathHelper.floor(MathHelper.lerp(Math.sqrt(d) / this.maxShootRange, this.minIntervalTicks, this.maxIntervalTicks));
+                this.updateCountdownTicks = Mth.floor(Mth.lerp(Math.sqrt(d) / this.maxShootRange, this.minIntervalTicks, this.maxIntervalTicks));
             }
         }
-        if (this.actor.getEquippedStack(EquipmentSlot.MAINHAND).isOf(Items.BOW)) {
-            final double d = this.actor.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-            final boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
+        if (this.actor.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.BOW)) {
+            final double d = this.actor.distanceToSqr(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+            final boolean bl = this.actor.getSensing().hasLineOfSight(livingEntity);
             final boolean bl3;
             final boolean bl2 = bl3 = (this.targetSeeingTicker > 0);
             if (bl != bl2) {
@@ -126,7 +126,7 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
             }
             this.targetSeeingTicker = (bl ? (++this.targetSeeingTicker) : (--this.targetSeeingTicker));
             if (d > this.squaredRange || this.targetSeeingTicker < 20) {
-                this.actor.getNavigation().startMovingTo(livingEntity, this.speed);
+                this.actor.getNavigation().moveTo(livingEntity, this.speed);
                 this.combatTicks = -1;
             } else {
                 this.actor.getNavigation().stop();
@@ -151,27 +151,27 @@ public class PotionBowAttackGoal<T extends HostileEntity> extends Goal {
                 } else if (d < this.squaredRange * 0.25f) {
                     this.backward = true;
                 }
-                this.actor.getMoveControl().strafeTo(this.backward ? -0.5f : 0.5f, this.movingToLeft ? 0.5f : -0.5f);
-                this.actor.lookAtEntity(livingEntity, 30.0f, 30.0f);
+                this.actor.getMoveControl().strafe(this.backward ? -0.5f : 0.5f, this.movingToLeft ? 0.5f : -0.5f);
+                this.actor.lookAt(livingEntity, 30.0f, 30.0f);
             } else {
-                this.actor.getLookControl().lookAt(livingEntity, 30.0f, 30.0f);
+                this.actor.getLookControl().setLookAt(livingEntity, 30.0f, 30.0f);
             }
             if (this.actor.isUsingItem()) {
                 if (!bl && this.targetSeeingTicker < -60) {
-                    this.actor.clearActiveItem();
+                    this.actor.stopUsingItem();
                 } else {
                     final int i;
-                    if (bl && (i = this.actor.getItemUseTime()) >= 20) {
-                        this.actor.clearActiveItem();
-                        ((RangedAttackMob) this.actor).shootAt(livingEntity, BowItem.getPullProgress(i));
+                    if (bl && (i = this.actor.getTicksUsingItem()) >= 20) {
+                        this.actor.stopUsingItem();
+                        ((RangedAttackMob) this.actor).performRangedAttack(livingEntity, BowItem.getPowerForTime(i));
                         this.cooldown = this.attackInterval;
                     }
                 }
             } else {
                 final int cooldown = this.cooldown - 1;
                 this.cooldown = cooldown;
-                if (cooldown <= 0 && this.targetSeeingTicker >= -60 && this.actor.getEquippedStack(EquipmentSlot.MAINHAND).isOf(Items.BOW)) {
-                    this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.BOW));
+                if (cooldown <= 0 && this.targetSeeingTicker >= -60 && this.actor.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.BOW)) {
+                    this.actor.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.actor, Items.BOW));
                 }
             }
         }
