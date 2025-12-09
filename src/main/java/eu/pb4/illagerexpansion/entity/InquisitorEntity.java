@@ -51,6 +51,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.*;
+import net.minecraft.world.rule.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -112,7 +113,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
     }
 
     public void tickMovement() {
-        if (this.horizontalCollision && ((ServerWorld) this.getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (this.horizontalCollision && ((ServerWorld) this.getEntityWorld()).getGameRules().getValue(GameRules.DO_MOB_GRIEFING)) {
             boolean bl = false;
             final Box box = this.getBoundingBox().expand(1.0);
             for (final BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
@@ -222,7 +223,7 @@ public class InquisitorEntity extends IllagerEntity implements PlayerPolymerEnti
 
     protected void knockback(final LivingEntity target) {
         this.knockBack(target);
-        target.velocityModified = true;
+        target.knockedBack = true;
         target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 0));
     }
 

@@ -57,6 +57,8 @@ public class ItemRegistry {
             (s) -> new PlatinumHoeItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, -2, 0.0f, s.fireproof()));
     public static final Item PLATINUM_INFUSED_NETHERITE_SWORD = registerItem("platinum_infused_netherite_sword",
             (s) -> new PlatinumSwordItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE,3, -2.4f, s.fireproof() ));
+    public static final Item PLATINUM_INFUSED_NETHERITE_SPEAR = registerItem("platinum_infused_netherite_spear",
+            (s) -> new PlatinumSpearItem(s.fireproof().spear(ModToolMaterial.PLATINUM_INFUSED_NETHERITE, 1.15F, 1.2F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F) ));
 
     public static final Item PLATINUM_INFUSED_NETHERITE_SHOVEL = registerItem("platinum_infused_netherite_shovel",
             (s) -> new PlatinumShovelItem(ModToolMaterial.PLATINUM_INFUSED_NETHERITE,  1.5f, -3.0f, s.fireproof()));

@@ -1,4 +1,4 @@
-// 1.21.10	-999999999-01-01T00:00:00	Illager Expansion Recrafted/recipes
+// 1.21.11	-999999999-01-01T00:00:00	Illager Expansion Recrafted/recipes
 58091c01b289f13cbe5f9ed8654a0d902f2c2553 data/illagerexp/advancement/recipes/misc/hallowed_gem.json
 fae7b135cf659259f3cdef37d2fa2243a7dc98ec data/illagerexp/advancement/recipes/misc/horn_of_sight.json
 6a017314b3567e31b4a028ea7da1d203a1b1aa62 data/illagerexp/advancement/recipes/misc/imbuing_table.json
@@ -12,6 +12,7 @@ f6e70abcc2303181515eab7df36bd9fe403352d1 data/illagerexp/advancement/recipes/too
 f4ea116c5b48dd88439482431a86318b9370c6f9 data/illagerexp/advancement/recipes/tools/platinum_infused_netherite_leggings.json
 0ef0d52421313985b6129dfcc37976f8efebf0fc data/illagerexp/advancement/recipes/tools/platinum_infused_netherite_pickaxe.json
 fbd1678e447ad47bce163b4c03b2626afe640148 data/illagerexp/advancement/recipes/tools/platinum_infused_netherite_shovel.json
+3722311b5cddf4fba3ffa2297245357e37d7f10a data/illagerexp/advancement/recipes/tools/platinum_infused_netherite_spear.json
 cbd47fc4c42d9e3ed1f49fc57fccd7034e3ba519 data/illagerexp/advancement/recipes/tools/platinum_infused_netherite_sword.json
 59271e7542dd6b7255fb254c8aaf327a4ad83ddf data/illagerexp/recipe/hallowed_gem.json
 c44d5aa5659ddcb4aa7488bf28a8e4e8b1052e86 data/illagerexp/recipe/horn_of_sight.json
@@ -24,6 +25,7 @@ e6d756a6a0d45859808a56d670e1db9c09cb0c6d data/illagerexp/recipe/platinum_infused
 b51502effc7d7c0533d287f2747a9c957847087e data/illagerexp/recipe/platinum_infused_netherite_leggings.json
 b8b43692e9fa2c438635303ed6a165b061a338b9 data/illagerexp/recipe/platinum_infused_netherite_pickaxe.json
 a1b005f9a43b929a556511be40f1de13a131afc5 data/illagerexp/recipe/platinum_infused_netherite_shovel.json
+47a3e51981539392c81fae5d5b861686328e387c data/illagerexp/recipe/platinum_infused_netherite_spear.json
 41305fcf43ed0d332c53335aebbbd9ea7dc268bb data/illagerexp/recipe/platinum_infused_netherite_sword.json
 bee164ecc53de1466c44e2eb7a64a0f60617c504 data/illagerexp/recipe/platinum_sheet.json
 d0bba0cd10b98b53f3f1743db1870d87479e7dee data/illagerexp/recipe/platinum_upgrade_template.json

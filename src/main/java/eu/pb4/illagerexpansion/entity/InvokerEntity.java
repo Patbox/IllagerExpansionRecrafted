@@ -45,8 +45,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.rule.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -357,7 +357,7 @@ public class InvokerEntity
                 BlockPos blockPos = InvokerEntity.this.getBlockPos().add(-2 + InvokerEntity.this.random.nextInt(5), 1, -2 + InvokerEntity.this.random.nextInt(5));
                 SurrenderedEntity surrenderedEntity = EntityRegistry.SURRENDERED.create(InvokerEntity.this.getEntityWorld(), SpawnReason.MOB_SUMMONED);
                 surrenderedEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-                surrenderedEntity.initialize(serverWorld, InvokerEntity.this.getEntityWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
+                surrenderedEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
                 surrenderedEntity.setOwner(InvokerEntity.this);
                 surrenderedEntity.setBounds(blockPos);
                 surrenderedEntity.setLifeTicks(20 * (30 + InvokerEntity.this.random.nextInt(90)));
@@ -487,7 +487,7 @@ public class InvokerEntity
             if (InvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!((ServerWorld) InvokerEntity.this.getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (!((ServerWorld) InvokerEntity.this.getEntityWorld()).getGameRules().getValue(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
             List<SheepEntity> list = ((ServerWorld) InvokerEntity.this.getEntityWorld()).getTargets(SheepEntity.class, this.convertibleSheepPredicate, InvokerEntity.this, InvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
@@ -571,7 +571,7 @@ public class InvokerEntity
 
         protected void knockback(LivingEntity target) {
             this.knockBack(target);
-            target.velocityModified = true;
+            target.knockedBack = true;
         }
 
 

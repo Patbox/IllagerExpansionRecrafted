@@ -9,13 +9,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.rule.GameRules;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
@@ -59,7 +58,7 @@ public class MagmaEntity extends ExplosiveProjectileEntity implements PolymerEnt
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         if (!getEntityWorld().isClient()) {
-            boolean bl = ((ServerWorld) getEntityWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+            boolean bl = ((ServerWorld) getEntityWorld()).getGameRules().getValue(GameRules.DO_MOB_GRIEFING);
             getEntityWorld().createExplosion(null, this.getX(), this.getY(), this.getZ(), 1, bl, World.ExplosionSourceType.MOB);
             this.discard();
         }

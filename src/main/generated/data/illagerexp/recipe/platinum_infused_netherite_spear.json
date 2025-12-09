@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "illagerexp:platinum_sheet",
+  "base": "minecraft:netherite_spear",
+  "result": {
+    "id": "illagerexp:platinum_infused_netherite_spear"
+  },
+  "template": "illagerexp:platinum_upgrade_template"
+}

@@ -158,11 +158,11 @@ public class ImbuingTableGui extends SimpleGui {
 
             int imbueLevel = bookEnchantments.getLevel(bookEnchantment) + 1;
 
-            var cost = Math.max(bookEnchantment.value().getMinPower(imbueLevel) * gamerules.get(IEGameRules.XP_COST_BOOK_MULTIPLIER).get(),
-                    gamerules.get(IEGameRules.XP_COST_BOOK_MIN).get());
+            var cost = Math.max(bookEnchantment.value().getMinPower(imbueLevel) * gamerules.getValue(IEGameRules.XP_COST_BOOK_MULTIPLIER),
+                    gamerules.getValue(IEGameRules.XP_COST_BOOK_MIN));
 
-            var itemMin = gamerules.get(IEGameRules.XP_COST_ITEM_MIN).get();
-            var itemMul = gamerules.get(IEGameRules.XP_COST_ITEM_MULTIPLIER).get();
+            var itemMin = gamerules.getValue(IEGameRules.XP_COST_ITEM_MIN);
+            var itemMul = gamerules.getValue(IEGameRules.XP_COST_ITEM_MULTIPLIER);
 
             var toolMap = imbuingItem.getEnchantments();
             var newEnch = new ItemEnchantmentsComponent.Builder(bookEnchantments);
@@ -179,7 +179,7 @@ public class ImbuingTableGui extends SimpleGui {
 
             newEnch.add(bookEnchantment, imbueLevel);
             imbuingResult.set(DataComponentTypes.ENCHANTMENTS, newEnch.build());
-            if (cost > gamerules.getInt(IEGameRules.XP_COST_MAX) && !this.player.isCreative()) {
+            if (cost > gamerules.getValue(IEGameRules.XP_COST_MAX) && !this.player.isCreative()) {
                 this.cost = 0;
                 output.setStack(0, ItemStack.EMPTY);
                 this.setSlot(2, new GuiElementBuilder(Items.EXPERIENCE_BOTTLE).hideDefaultTooltip()

@@ -217,7 +217,7 @@ public class ArchivistEntity extends SpellcastingIllagerEntity implements Player
 
         protected void knockback(LivingEntity target) {
             this.knockBack(target);
-            target.velocityModified = true;
+            target.knockedBack = true;
         }
 
         private List<LivingEntity> getTargets() {

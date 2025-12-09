@@ -80,9 +80,10 @@ class RecipesProvider extends FabricRecipeProvider {
                         .criterion("dust", InventoryChangedCriterion.Conditions.items(Items.GOAT_HORN))
                         .offerTo(exporter);
 
-                for (var x : List.of(ItemRegistry.PLATINUM_INFUSED_NETHERITE_AXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_PICKAXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SHOVEL,
+                for (var x : List.of(ItemRegistry.PLATINUM_INFUSED_NETHERITE_AXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SPEAR, ItemRegistry.PLATINUM_INFUSED_NETHERITE_PICKAXE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SHOVEL,
                         ItemRegistry.PLATINUM_INFUSED_NETHERITE_HOE, ItemRegistry.PLATINUM_INFUSED_NETHERITE_SWORD, ItemRegistry.PLATINUM_INFUSED_NETHERITE_CHESTPLATE,
-                        ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS, ItemRegistry.PLATINUM_INFUSED_NETHERITE_HELMET, ItemRegistry.PLATINUM_INFUSED_NETHERITE_LEGGINGS)) {
+                        ItemRegistry.PLATINUM_INFUSED_NETHERITE_BOOTS, ItemRegistry.PLATINUM_INFUSED_NETHERITE_HELMET,
+                        ItemRegistry.PLATINUM_INFUSED_NETHERITE_LEGGINGS)) {
                     SmithingTransformRecipeJsonBuilder.create(
                                     Ingredient.ofItems(ItemRegistry.PLATINUM_UPGRADE_TEMPLATE),
                                     Ingredient.ofItems(Registries.ITEM.get(Identifier.of(Registries.ITEM.getId(x).getPath().substring("platinum_infused_".length())))),
