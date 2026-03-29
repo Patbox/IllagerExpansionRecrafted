@@ -173,7 +173,7 @@ public class ImbuingTableGui extends SimpleGui {
 
                 int level = toolMap.getLevel(imbueEnchant);
                 newEnch.upgrade(imbueEnchant, level);
-                cost += Math.max(imbueEnchant.value().getMinCost(imbueLevel) * itemMul, itemMin);
+                cost += Math.max(imbueEnchant.value().getMinCost(level) * itemMul, itemMin);
             }
 
             newEnch.upgrade(bookEnchantment, imbueLevel);
