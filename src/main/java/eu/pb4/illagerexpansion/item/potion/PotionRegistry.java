@@ -2,7 +2,7 @@ package eu.pb4.illagerexpansion.item.potion;
 
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.polymer.core.api.other.SimplePolymerPotion;
-import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
+import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,7 +23,7 @@ public class PotionRegistry {
     }
 
     public static void registerPotions() {
-        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+        FabricPotionBrewingBuilder.BUILD.register(builder -> {
             builder.addMix(Potions.AWKWARD, Items.GOAT_HORN, PotionRegistry.BERSERKING);
             builder.addMix(PotionRegistry.BERSERKING, Items.REDSTONE, PotionRegistry.BERSERKING_LONG);
             builder.addMix(PotionRegistry.BERSERKING, Items.GLOWSTONE_DUST, PotionRegistry.BERSERKING_STRONG);

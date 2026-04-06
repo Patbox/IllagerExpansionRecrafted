@@ -16,7 +16,7 @@ import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public class MagicFireBlock extends BaseFireBlock implements PolymerBlock {
     public MagicFireBlock(Properties settings, float damage) {

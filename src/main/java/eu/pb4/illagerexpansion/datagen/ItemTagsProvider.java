@@ -1,17 +1,17 @@
 package eu.pb4.illagerexpansion.datagen;
 
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.ItemTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
-    public ItemTagsProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture, @Nullable FabricTagProvider.BlockTagProvider blockTagProvider) {
-        super(output, registriesFuture, blockTagProvider);
+class ItemTagsProvider extends FabricTagsProvider.ItemTagsProvider {
+    public ItemTagsProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture, @Nullable FabricTagsProvider.BlockTagsProvider blockTagsProvider) {
+        super(output, registriesFuture, blockTagsProvider);
     }
 
     @Override

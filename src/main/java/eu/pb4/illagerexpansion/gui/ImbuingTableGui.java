@@ -20,6 +20,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -42,23 +43,23 @@ public class ImbuingTableGui extends SimpleGui {
                 : Component.literal("Imbue")
         );
 
-        this.setSlotRedirect(18 + 1, new Slot(this.input, 0, 26, 54) {
+        this.setSlot(18 + 1, new Slot(this.input, 0, 26, 54) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(Items.ENCHANTED_BOOK);
             }
         });
 
-        this.setSlotRedirect(18 + 4, new Slot(this.input, 1, 80, 54));
+        this.setSlot(18 + 4, new Slot(this.input, 1, 80, 54));
 
-        this.setSlotRedirect(18 + 7, new Slot(this.input, 2, 134, 54) {
+        this.setSlot(18 + 7, new Slot(this.input, 2, 134, 54) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(ItemRegistry.HALLOWED_GEM);
             }
         });
 
-        this.setSlotRedirect(4, new Slot(this.output, 3, 80, 14) {
+        this.setSlot(4, new Slot(this.output, 3, 80, 14) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
@@ -97,9 +98,9 @@ public class ImbuingTableGui extends SimpleGui {
     }
 
     @Override
-    public boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
-        if (action == net.minecraft.world.inventory.ClickType.QUICK_MOVE) {
-            var slot = this.getSlotRedirect(index);
+    public boolean onAnyClick(int index, ClickType type, ContainerInput action) {
+        if (action == ContainerInput.QUICK_MOVE) {
+            var slot = this.getCustomSlot(index);
             if (slot != null && slot.container == output && slot.hasItem()) {
                 var firstEmpty = this.player.getInventory().getFreeSlot();
                 if (firstEmpty != -1) {
@@ -118,14 +119,16 @@ public class ImbuingTableGui extends SimpleGui {
     }
 
     @Override
-    public void onScreenHandlerClosed() {
-        super.onScreenHandlerClosed();
+    public void onRemoved() {
+        super.onRemoved();
         this.player.handleExtraItemsCreatedOnUse(this.input.getItem(0));
         this.player.handleExtraItemsCreatedOnUse(this.input.getItem(1));
         this.player.handleExtraItemsCreatedOnUse(this.input.getItem(2));
         this.input.clearContent();
         this.output.clearContent();
-    }    final Container input = new SimpleContainer(3) {
+    }
+    
+    final Container input = new SimpleContainer(3) {
         @Override
         public void setChanged() {
             super.setChanged();

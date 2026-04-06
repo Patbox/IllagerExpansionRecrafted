@@ -65,7 +65,7 @@ import java.util.List;
 public class InvokerEntity
         extends SpellcasterIllager implements PlayerPolymerEntity {
     private static final EntityDataAccessor<Boolean> SHIELDED = SynchedEntityData.defineId(InvokerEntity.class, EntityDataSerializers.BOOLEAN);
-    private final ServerBossEvent bossBar = (ServerBossEvent) new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true);
+    private final ServerBossEvent bossBar = (ServerBossEvent) new ServerBossEvent(this.uuid, this.getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true);
     public boolean inSecondPhase = false;
     public int cooldown;
     public int tpcooldown;
@@ -235,7 +235,7 @@ public class InvokerEntity
         if (other instanceof SurrenderedEntity) {
             return this.isAlliedTo(((SurrenderedEntity) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getType().is(EntityTypeTags.ILLAGER)) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).is(EntityTypeTags.ILLAGER)) {
             return this.getTeam() == null && other.getTeam() == null;
         }
         return false;

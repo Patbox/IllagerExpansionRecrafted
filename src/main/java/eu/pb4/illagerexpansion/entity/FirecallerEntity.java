@@ -120,7 +120,7 @@ public class FirecallerEntity extends SpellcasterIllager implements PlayerPolyme
         if (other instanceof Vex) {
             return this.isAlliedTo(((Vex) other).getOwner());
         }
-        return other instanceof LivingEntity && ((LivingEntity) other).getType().is(EntityTypeTags.ILLAGER) && this.getTeam() == null && other.getTeam() == null;
+        return other instanceof LivingEntity && ((LivingEntity) other).is(EntityTypeTags.ILLAGER) && this.getTeam() == null && other.getTeam() == null;
     }
 
     protected SoundEvent getAmbientSound() {

@@ -1,7 +1,7 @@
 package eu.pb4.illagerexpansion.datagen;
 
 import com.google.common.hash.HashCode;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 class AssetProvider implements DataProvider {
     private final PackOutput output;
 
-    public AssetProvider(FabricDataOutput output) {
+    public AssetProvider(FabricPackOutput output) {
         this.output = output;
     }
 

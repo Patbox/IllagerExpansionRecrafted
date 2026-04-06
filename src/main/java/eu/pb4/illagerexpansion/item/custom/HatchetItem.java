@@ -4,6 +4,7 @@ import eu.pb4.illagerexpansion.entity.projectile.HatchetEntity;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -32,7 +33,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 import java.util.List;
 
@@ -111,8 +112,8 @@ public class HatchetItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
-        var out = PolymerAutoItem.super.getPolymerItemStack(itemStack, tooltipType, context);
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context, HolderLookup.Provider lookup) {
+        var out = PolymerAutoItem.super.getPolymerItemStack(itemStack, tooltipType, context, lookup);
         if (!out.has(DataComponents.CONSUMABLE)) {
             out.set(DataComponents.CONSUMABLE, new Consumable(
                     99999999999999999f, getUseAnimation(itemStack), BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.EMPTY), false, List.of()

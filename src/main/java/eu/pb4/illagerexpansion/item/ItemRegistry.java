@@ -1,6 +1,6 @@
 package eu.pb4.illagerexpansion.item;
 
-import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
+import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
 import eu.pb4.polymer.core.api.item.PolymerSpawnEggItem;
 import eu.pb4.illagerexpansion.IllagerExpansion;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
@@ -108,7 +108,7 @@ public class ItemRegistry {
 
 
     public static void registerModItems() {
-        PolymerItemGroupUtils.registerPolymerItemGroup(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "main"),
+        PolymerCreativeModeTabUtils.registerPolymerCreativeModeTab(Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "main"),
                 CreativeModeTab.builder(null, -1)
                         .title(Component.translatable("itemGroup.illagerexp.sandboxmisc"))
                         .icon(() -> new ItemStack(ItemRegistry.HORN_OF_SIGHT))

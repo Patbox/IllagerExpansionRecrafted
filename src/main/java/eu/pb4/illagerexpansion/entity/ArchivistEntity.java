@@ -123,7 +123,7 @@ public class ArchivistEntity extends SpellcasterIllager implements PlayerPolymer
         if (other instanceof Vex) {
             return this.isAlliedTo(((Vex) other).getOwner());
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getType().is(EntityTypeTags.ILLAGER)) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).is(EntityTypeTags.ILLAGER)) {
             return this.getTeam() == null && other.getTeam() == null;
         }
         return false;

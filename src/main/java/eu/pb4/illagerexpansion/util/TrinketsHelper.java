@@ -1,6 +1,6 @@
 package eu.pb4.illagerexpansion.util;
 
-import dev.emi.trinkets.api.TrinketsApi;
+import eu.pb4.trinkets.api.TrinketsApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -18,11 +18,11 @@ public class TrinketsHelper {
     }
 
     private static void ifTrinkets(LivingEntity entity, Item item, Runnable runnable, MutableBoolean done) {
-        TrinketsApi.getTrinketComponent(entity).ifPresent(c -> c.forEach((slotReference, stack) -> {
+        TrinketsApi.getAttachment(entity).forEach((slotReference, stack) -> {
             if (stack.is(item) && done.booleanValue()) {
                 runnable.run();
                 done.setFalse();
             }
-        }));
+        });
     }
 }

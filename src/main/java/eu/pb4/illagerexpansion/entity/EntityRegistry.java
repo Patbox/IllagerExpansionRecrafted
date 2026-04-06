@@ -10,6 +10,7 @@ import eu.pb4.polymer.resourcepack.extras.api.ResourcePackExtras;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -72,8 +74,7 @@ public class EntityRegistry {
 
     private static <T extends Entity> EntityType<T> registerIllager(Identifier provoker, EntityType.Builder<T> build) {
         var x = register(provoker, build);
-        var stack = new ItemStack(Items.BIRCH_BUTTON);
-        stack.set(DataComponents.ITEM_MODEL, ResourcePackExtras.bridgeModel(provoker.withPrefix("pbentity/")));
+        var stack = new ItemStackTemplate(Items.BIRCH_BUTTON, DataComponentPatch.builder().set(DataComponents.ITEM_MODEL, ResourcePackExtras.bridgeModel(provoker.withPrefix("pbentity/"))).build());
         PlayerPolymerEntity.HEADS.put(x, stack);
         return x;
     }

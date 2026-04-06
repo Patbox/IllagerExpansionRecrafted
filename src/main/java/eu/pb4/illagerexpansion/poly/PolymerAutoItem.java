@@ -3,17 +3,18 @@ package eu.pb4.illagerexpansion.poly;
 import eu.pb4.polymer.common.api.PolymerCommonUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public interface PolymerAutoItem extends PolymerItem {
 
     @Override
-    default @Nullable Identifier getPolymerItemModel(ItemStack stack, PacketContext context) {
-        return PolymerCommonUtils.hasResourcePack(context.getClientConnection(), PolymerResourcePackUtils.getMainUuid())
-                ? PolymerItem.super.getPolymerItemModel(stack, context)
+    default @Nullable Identifier getPolymerItemModel(ItemStack stack, PacketContext context, HolderLookup.Provider lookup) {
+        return PolymerCommonUtils.hasResourcePack(context, PolymerResourcePackUtils.getMainUuid())
+                ? PolymerItem.super.getPolymerItemModel(stack, context, lookup)
                 : null
                 ;
     }

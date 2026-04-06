@@ -85,8 +85,8 @@ public class BaseStructure extends Structure {
 
     public boolean canGenerate(GenerationContext context) {
         ChunkPos chunkPos = context.chunkPos();
-        int i = chunkPos.x >> 4;
-        int j = chunkPos.z >> 4;
+        int i = chunkPos.x() >> 4;
+        int j = chunkPos.z() >> 4;
         WorldgenRandom chunkRandom = new WorldgenRandom(new LegacyRandomSource(0L));
         chunkRandom.setSeed((long)(i ^ j << 4) ^ context.seed());
         chunkRandom.nextInt();
@@ -96,7 +96,7 @@ public class BaseStructure extends Structure {
         return !context.chunkGenerator().createState(context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET),
                 context.randomState(),
                 context.seed()
-                ).hasStructureChunkInRange(context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getOrThrow(BuiltinStructureSets.VILLAGES), chunkPos.x, chunkPos.z, 10);
+                ).hasStructureChunkInRange(context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getOrThrow(BuiltinStructureSets.VILLAGES), chunkPos.x(), chunkPos.z(), 10);
     }
 
     private static Function<BaseStructure, DataResult<BaseStructure>> createValidator() {

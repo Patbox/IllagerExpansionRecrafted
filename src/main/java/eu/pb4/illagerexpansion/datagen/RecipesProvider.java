@@ -2,7 +2,7 @@ package eu.pb4.illagerexpansion.datagen;
 
 import eu.pb4.illagerexpansion.block.BlockRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 class RecipesProvider extends FabricRecipeProvider {
 
-    public RecipesProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    public RecipesProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 

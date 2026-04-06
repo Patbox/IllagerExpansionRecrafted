@@ -50,6 +50,7 @@ import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -209,7 +210,7 @@ public class BasherEntity
                     this.playSound(SoundEvents.SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
                     if (level() instanceof ServerLevel) {
-                        ((ServerLevel) level()).sendParticles((ParticleOptions) new ItemParticleOption(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
+                        ((ServerLevel) level()).sendParticles((ParticleOptions) new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(basherItem)), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
                         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_AXE));
                     }
                     return super.hurtServer(world, source, amount);
@@ -254,7 +255,7 @@ public class BasherEntity
         if (super.considersEntityAsAlly(other)) {
             return true;
         }
-        if (other instanceof LivingEntity && ((LivingEntity) other).getType().is(EntityTypeTags.ILLAGER)) {
+        if (other instanceof LivingEntity && ((LivingEntity) other).is(EntityTypeTags.ILLAGER)) {
             return this.getTeam() == null && other.getTeam() == null;
         }
         return false;

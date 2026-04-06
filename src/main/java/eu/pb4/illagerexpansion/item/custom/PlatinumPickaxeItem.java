@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ToolMaterial;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public class PlatinumPickaxeItem extends Item implements PolymerAutoItem {
     public PlatinumPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {

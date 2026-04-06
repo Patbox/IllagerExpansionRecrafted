@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import eu.pb4.illagerexpansion.gui.ImbuingTableGui;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     public ImbuingTableBlock(Properties settings) {

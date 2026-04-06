@@ -2,7 +2,7 @@ package eu.pb4.illagerexpansion.item.custom;
 
 import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import eu.pb4.illagerexpansion.sounds.SoundRegistry;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;

@@ -54,6 +54,7 @@ import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -262,7 +263,7 @@ public class InquisitorEntity extends AbstractIllager implements PlayerPolymerEn
     }
 
     public boolean considersEntityAsAlly(final Entity other) {
-        return super.considersEntityAsAlly(other) || (other instanceof LivingEntity && other.getType().is(EntityTypeTags.ILLAGER) && this.getTeam() == null && other.getTeam() == null);
+        return super.considersEntityAsAlly(other) || (other instanceof LivingEntity && other.is(EntityTypeTags.ILLAGER) && this.getTeam() == null && other.getTeam() == null);
     }
 
     public boolean hurtServer(ServerLevel world, final DamageSource source, final float amount) {
@@ -277,7 +278,7 @@ public class InquisitorEntity extends AbstractIllager implements PlayerPolymerEn
                     this.playSound(SoundEvents.SHIELD_BREAK.value(), 1.0f, 1.0f);
                     this.setStunnedState(true);
                     if (this.level() instanceof ServerLevel) {
-                        ((ServerLevel) this.level()).sendParticles((ParticleOptions) new ItemParticleOption(ParticleTypes.ITEM, basherItem), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
+                        ((ServerLevel) this.level()).sendParticles((ParticleOptions) new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(basherItem)), this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.3, 0.2, 0.3, 0.003);
                         ((ServerLevel) this.level()).sendParticles((ParticleOptions) ParticleTypes.CLOUD, this.getX(), this.getY() + 1.0, this.getZ(), 30, 0.3, 0.3, 0.3, 0.1);
                         this.playSound(SoundEvents.RAVAGER_ROAR, 1.0f, 1.0f);
                         this.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);

@@ -1,7 +1,7 @@
 package eu.pb4.illagerexpansion.entity.projectile;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
-import eu.pb4.polymer.virtualentity.api.tracker.DisplayTrackedData;
+import eu.pb4.polymer.virtualentity.api.data.DisplayEntityData;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 import java.util.List;
 
@@ -146,20 +146,20 @@ public class HatchetEntity extends AbstractArrow implements ItemSupplier, Polyme
         for (int i = 0; i < data.size(); i++) {
             var roll = data.get(i);
             if (roll.id() == ROLL.id() && roll.serializer() == ROLL.serializer()) {
-                data.set(i, SynchedEntityData.DataValue.create(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI).rotateZ((float) roll.value())));
+                data.set(i, SynchedEntityData.DataValue.create(DisplayEntityData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI).rotateZ((float) roll.value())));
                 sendBase = false;
                 break;
             }
         }
 
         if (initial) {
-            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.Item.ITEM, this.getItem().copy()));
-            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.SCALE, new Vector3f(0.6f)));
-            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.TRANSLATION, new Vector3f(0, -0.1f, 0)));
-            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.INTERPOLATION_DURATION, 2));
-            data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.TELEPORTATION_DURATION, 4));
+            data.add(SynchedEntityData.DataValue.create(DisplayEntityData.Item.ITEM, this.getItem().copy()));
+            data.add(SynchedEntityData.DataValue.create(DisplayEntityData.SCALE, new Vector3f(0.6f)));
+            data.add(SynchedEntityData.DataValue.create(DisplayEntityData.TRANSLATION, new Vector3f(0, -0.1f, 0)));
+            data.add(SynchedEntityData.DataValue.create(DisplayEntityData.INTERPOLATION_DURATION, 2));
+            data.add(SynchedEntityData.DataValue.create(DisplayEntityData.TELEPORTATION_DURATION, 4));
             if (sendBase) {
-                data.add(SynchedEntityData.DataValue.create(DisplayTrackedData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI)));
+                data.add(SynchedEntityData.DataValue.create(DisplayEntityData.LEFT_ROTATION, new Quaternionf().rotateY(Mth.HALF_PI)));
             }
         }
 

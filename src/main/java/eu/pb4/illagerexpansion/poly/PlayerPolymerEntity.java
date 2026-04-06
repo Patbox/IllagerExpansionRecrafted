@@ -36,15 +36,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.illager.AbstractIllager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.GameType;
 import org.joml.Vector3f;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public interface PlayerPolymerEntity extends PolymerEntity {
-    Map<EntityType<?>, ItemStack> HEADS = new HashMap<>();
+    Map<EntityType<?>, ItemStackTemplate> HEADS = new HashMap<>();
 
     WeakHashMap<LivingEntity, ItemDisplayElement> BANNER_ELEMENTS = new WeakHashMap<>();
 
@@ -74,14 +75,14 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayer player) {
         items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
         if (PolymerResourcePackUtils.hasMainPack(player)) {
-            items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.getOrDefault(((Entity) this).getType(), ItemStack.EMPTY)));
+            items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.get(((Entity) this).getType()).create()));
         }
         return PolymerEntity.super.getPolymerVisibleEquipment(items, player);
     }
 
     @Override
     default void onBeforeSpawnPacket(ServerPlayer player, Consumer<Packet<?>> packetConsumer) {
-        var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER));
+        var packet = PolymerEntityUtils.createMutablePlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER));
         var profile = new GameProfile(((Entity) this).getUUID(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())));
         packet.entries().add(new ClientboundPlayerInfoUpdatePacket.Entry(profile.id(), profile, false, Integer.MAX_VALUE,  GameType.ADVENTURE, Component.empty(), true,0, null));
         packetConsumer.accept(packet);

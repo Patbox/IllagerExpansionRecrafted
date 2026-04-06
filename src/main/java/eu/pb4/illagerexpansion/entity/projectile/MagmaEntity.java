@@ -2,6 +2,7 @@ package eu.pb4.illagerexpansion.entity.projectile;
 
 
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,7 +17,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import eu.pb4.illagerexpansion.entity.EntityRegistry;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MagmaEntity extends AbstractHurtingProjectile implements PolymerEntity {
 

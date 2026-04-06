@@ -8,7 +8,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.ToolMaterial;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
     public PlatinumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {

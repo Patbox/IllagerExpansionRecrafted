@@ -20,9 +20,9 @@ public class NoWaterlogProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos pivot, StructureTemplate.StructureBlockInfo structureBlockInfo, StructureTemplate.StructureBlockInfo structureBlockInfo2, StructurePlaceSettings data) {
-        ChunkPos currentChunkPos = new ChunkPos(structureBlockInfo2.pos());
+        ChunkPos currentChunkPos = ChunkPos.containing(structureBlockInfo2.pos());
         if (structureBlockInfo2.state().getBlock() instanceof SimpleWaterloggedBlock) {
-            ChunkAccess currentChunk = world.getChunk(currentChunkPos.x, currentChunkPos.z);
+            ChunkAccess currentChunk = world.getChunk(currentChunkPos.x(), currentChunkPos.z());
             if (world.getFluidState(structureBlockInfo2.pos()).is(FluidTags.WATER)) {
                 currentChunk.setBlockState(structureBlockInfo2.pos(), structureBlockInfo2.state());
             }

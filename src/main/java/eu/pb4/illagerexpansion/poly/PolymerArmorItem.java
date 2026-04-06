@@ -4,6 +4,7 @@ package eu.pb4.illagerexpansion.poly;
 import eu.pb4.polymer.common.api.PolymerCommonUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +12,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
-import xyz.nucleoid.packettweaker.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
 public class PolymerArmorItem extends Item implements PolymerAutoItem {
     private final Item polymerItemBase;
@@ -33,10 +34,10 @@ public class PolymerArmorItem extends Item implements PolymerAutoItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
-        var out = PolymerAutoItem.super.getPolymerItemStack(itemStack, tooltipType, context);
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context, HolderLookup.Provider lookup) {
+        var out = PolymerAutoItem.super.getPolymerItemStack(itemStack, tooltipType, context, lookup);
 
-        if (!PolymerCommonUtils.hasResourcePack(context.getClientConnection(), PolymerResourcePackUtils.getMainUuid())) {
+        if (!PolymerCommonUtils.hasResourcePack(context, PolymerResourcePackUtils.getMainUuid())) {
             out.set(DataComponents.EQUIPPABLE, this.polymerItemBase.components().get(DataComponents.EQUIPPABLE));
         }
 
