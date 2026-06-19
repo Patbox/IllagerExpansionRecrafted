@@ -49,7 +49,8 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
         return false;
     }
         private boolean goodBlock(Block block) {
-            return block == Blocks.COPPER_BLOCK || block == Blocks.CUT_COPPER || block == Blocks.WAXED_COPPER_BLOCK || block == Blocks.WAXED_CUT_COPPER;
+            return block == Blocks.COPPER_BLOCK.weathering().unaffected() || block == Blocks.CUT_COPPER.weathering().unaffected()
+                    || block == Blocks.COPPER_BLOCK.waxed().unaffected() || block == Blocks.CUT_COPPER.waxed().unaffected();
         }
 
     @Override

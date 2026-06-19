@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "A": "illagerexp:hallowed_gem",
     "G": "minecraft:gold_ingot",

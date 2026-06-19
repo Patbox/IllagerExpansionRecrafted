@@ -12,14 +12,15 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import org.jspecify.annotations.Nullable;
 
 //Credit to TelepathicGrunt for providing the anti-waterlogging processor!!
 
-public class NoWaterlogProcessor extends StructureProcessor {
+public class NoWaterlogProcessor implements StructureProcessor {
     public static MapCodec<NoWaterlogProcessor> CODEC = MapCodec.unit(NoWaterlogProcessor::new);
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos pivot, StructureTemplate.StructureBlockInfo structureBlockInfo, StructureTemplate.StructureBlockInfo structureBlockInfo2, StructurePlaceSettings data) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos pivot, BlockPos templateRelativePos, StructureTemplate.StructureBlockInfo structureBlockInfo2, StructurePlaceSettings data) {
         ChunkPos currentChunkPos = ChunkPos.containing(structureBlockInfo2.pos());
         if (structureBlockInfo2.state().getBlock() instanceof SimpleWaterloggedBlock) {
             ChunkAccess currentChunk = world.getChunk(currentChunkPos.x(), currentChunkPos.z());
@@ -31,7 +32,7 @@ public class NoWaterlogProcessor extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
-        return ProcessorRegistry.NO_WATERLOG_PROCESSOR;
+    public MapCodec<? extends StructureProcessor> codec() {
+        return CODEC;
     }
 }

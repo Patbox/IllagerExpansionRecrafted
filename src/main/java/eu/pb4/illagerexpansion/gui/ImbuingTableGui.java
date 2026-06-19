@@ -88,7 +88,7 @@ public class ImbuingTableGui extends SimpleGui {
             this.setSlot(27 + 7, new GuiElementBuilder(Items.EMERALD).setName(Component.empty()));
 
 
-            var filler = new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).setName(Component.empty());
+            var filler = new GuiElementBuilder(Items.STAINED_GLASS_PANE.white()).setName(Component.empty());
             while (this.getFirstEmptySlot() != -1) {
                 this.addSlot(filler);
             }

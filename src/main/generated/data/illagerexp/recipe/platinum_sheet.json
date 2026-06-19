@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
     "illagerexp:platinum_chunk",
     "illagerexp:platinum_chunk",

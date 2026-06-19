@@ -1,6 +1,5 @@
 package eu.pb4.illagerexpansion.entity;
 
-import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import eu.pb4.illagerexpansion.poly.EntitySkins;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
@@ -271,7 +270,7 @@ public class ProvokerEntity extends SpellcasterIllager implements RangedAttackMo
 
         @Override
         protected SpellcasterIllager.IllagerSpell getSpell() {
-            return ClassTinkerers.getEnum(IllagerSpell.class, "IE_PROVOKE");
+            return IllagerSpell.valueOf("IE_PROVOKE");
         }
     }
 }

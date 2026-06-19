@@ -4,7 +4,7 @@ import eu.pb4.illagerexpansion.block.BlockRegistry;
 import eu.pb4.illagerexpansion.item.ItemRegistry;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -60,7 +60,7 @@ class RecipesProvider extends FabricRecipeProvider {
                         .pattern("#P#")
                         .pattern("OSO")
                         .pattern("#E#")
-                        .define('#', Items.COPPER_BLOCK)
+                        .define('#', Items.COPPER_BLOCK.weathering().unaffected())
                         .define('P', Items.PAPER)
                         .define('O', Items.DARK_OAK_LOG)
                         .define('S', ItemRegistry.PRIMAL_ESSENCE)
@@ -78,7 +78,7 @@ class RecipesProvider extends FabricRecipeProvider {
                         .pattern("#S#")
                         .pattern("###")
                         .define('#', Items.DIAMOND)
-                        .define('S', Items.COPPER_BLOCK)
+                        .define('S', Items.COPPER_BLOCK.weathering().unaffected())
                         .define('P', ItemRegistry.PLATINUM_UPGRADE_TEMPLATE)
                         .unlockedBy("dust", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GOAT_HORN))
                         .save(output);

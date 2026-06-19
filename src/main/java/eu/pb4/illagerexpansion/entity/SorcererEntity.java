@@ -1,6 +1,5 @@
 package eu.pb4.illagerexpansion.entity;
 
-import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import eu.pb4.illagerexpansion.poly.EntitySkins;
 import eu.pb4.illagerexpansion.poly.PlayerPolymerEntity;
@@ -246,7 +245,7 @@ public class SorcererEntity extends SpellcasterIllager implements PlayerPolymerE
 
         @Override
         protected SpellcasterIllager.IllagerSpell getSpell() {
-            return ClassTinkerers.getEnum(IllagerSpell.class, "IE_CONJURE_TELEPORT");
+            return IllagerSpell.valueOf("IE_CONJURE_TELEPORT");
         }
     }
 
@@ -307,7 +306,7 @@ public class SorcererEntity extends SpellcasterIllager implements PlayerPolymerE
 
         @Override
         protected SpellcasterIllager.IllagerSpell getSpell() {
-            return ClassTinkerers.getEnum(IllagerSpell.class, "IE_CONJURE_FLAMES");
+            return IllagerSpell.valueOf("IE_CONJURE_FLAMES");
         }
     }
 }

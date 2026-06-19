@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ItemSupplier;
@@ -80,7 +81,7 @@ public class HatchetEntity extends AbstractArrow implements ItemSupplier, Polyme
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.TRIDENT_HIT;
         if (entity.hurtServer((ServerLevel) this.level(), damageSource, f)) {
-            if (entity.getType() == EntityType.ENDERMAN) {
+            if (entity.getType() == EntityTypes.ENDERMAN) {
                 return;
             }
             if (entity instanceof LivingEntity livingEntity) {
@@ -167,7 +168,7 @@ public class HatchetEntity extends AbstractArrow implements ItemSupplier, Polyme
 
     @Override
     public EntityType<?> getPolymerEntityType(PacketContext context) {
-        return EntityType.ITEM_DISPLAY;
+        return EntityTypes.ITEM_DISPLAY;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package eu.pb4.illagerexpansion.mixin;
 
+import eu.pb4.illagerexpansion.world.NoWaterlogProcessor;
 import eu.pb4.illagerexpansion.world.ProcessorRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -22,7 +23,7 @@ public class StructureTemplateMixin {
     private void preventAutoWaterlogging(ServerLevelAccessor world, BlockPos pos, BlockPos pivot, StructurePlaceSettings placementData, RandomSource random, int flags, CallbackInfoReturnable<Boolean> cir) {
 
         if(placementData.getProcessors().stream().anyMatch(processor ->
-                ((StructureProcessorAccessor)processor).callGetType() == ProcessorRegistry.NO_WATERLOG_PROCESSOR)) {
+                processor.codec() == NoWaterlogProcessor.CODEC)) {
             placementData.setLiquidSettings(LiquidSettings.IGNORE_WATERLOGGING);
         }
     }

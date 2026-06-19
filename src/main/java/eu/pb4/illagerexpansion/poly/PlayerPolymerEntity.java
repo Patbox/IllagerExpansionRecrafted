@@ -29,14 +29,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.illager.AbstractIllager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.GameType;
 import org.joml.Vector3f;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
@@ -82,10 +80,10 @@ public interface PlayerPolymerEntity extends PolymerEntity {
 
     @Override
     default void onBeforeSpawnPacket(ServerPlayer player, Consumer<Packet<?>> packetConsumer) {
-        var packet = PolymerEntityUtils.createMutablePlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER));
+        /*var packet = PolymerEntityUtils.createMutablePlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER));
         var profile = new GameProfile(((Entity) this).getUUID(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())));
         packet.entries().add(new ClientboundPlayerInfoUpdatePacket.Entry(profile.id(), profile, false, Integer.MAX_VALUE,  GameType.ADVENTURE, Component.empty(), true,0, null));
-        packetConsumer.accept(packet);
+        packetConsumer.accept(packet);*/
     }
 
     @Override
@@ -93,16 +91,16 @@ public interface PlayerPolymerEntity extends PolymerEntity {
         data.removeIf(x -> x.id() >= PlayerLikeEntityAccessor.getDATA_PLAYER_MAIN_HAND().id());
         if (initial) {
             data.add(SynchedEntityData.DataValue.create(PlayerLikeEntityAccessor.getDATA_PLAYER_MODE_CUSTOMISATION(), (byte) (PolymerResourcePackUtils.hasMainPack(player) ? 0x3E : 0xFE)));
-            //data.add(DataTracker.SerializedEntry.of(MannequinEntityAccessor.getPROFILE(), ProfileComponent.ofStatic(
-            //        new GameProfile(((Entity) this).getUuid(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())))
-            //)));
-            //data.add(DataTracker.SerializedEntry.of(MannequinEntityAccessor.getDESCRIPTION(), Optional.empty()));
+            data.add(SynchedEntityData.DataValue.create(MannequinEntityAccessor.getDATA_PROFILE(), ResolvableProfile.createResolved(
+                    new GameProfile(((Entity) this).getUUID(), "", new PropertyMap(ImmutableMultimap.of("textures", this.getSkin())))
+            )));
+            data.add(SynchedEntityData.DataValue.create(MannequinEntityAccessor.getDATA_DESCRIPTION(), Optional.empty()));
         }
     }
 
 
     default void onTrackingStopped(ServerPlayer player) {
-        player.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(((Entity) this).getUUID())));
+        //player.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(((Entity) this).getUUID())));
     }
 
     @Override
@@ -139,8 +137,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
 
     @Override
     default EntityType<?> getPolymerEntityType(PacketContext context) {
-        return EntityType.PLAYER;
-        //return EntityType.MANNEQUIN;
+        return EntityTypes.MANNEQUIN;
     }
 
 

@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
@@ -86,7 +87,7 @@ public class MagmaEntity extends AbstractHurtingProjectile implements PolymerEnt
 
     @Override
     public EntityType<?> getPolymerEntityType(PacketContext context) {
-        return EntityType.FIREBALL;
+        return EntityTypes.FIREBALL;
     }
 }
 

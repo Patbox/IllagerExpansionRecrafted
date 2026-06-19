@@ -1,7 +1,6 @@
 package eu.pb4.illagerexpansion.entity;
 
 
-import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
 import eu.pb4.illagerexpansion.entity.projectile.MagmaEntity;
@@ -336,7 +335,7 @@ public class FirecallerEntity extends SpellcasterIllager implements PlayerPolyme
 
         @Override
         protected SpellcasterIllager.IllagerSpell getSpell() {
-            return ClassTinkerers.getEnum(IllagerSpell.class, "IE_PROVOKE");
+            return IllagerSpell.valueOf("IE_PROVOKE");
         }
     }
 }

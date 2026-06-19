@@ -13,6 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -164,7 +165,7 @@ public class InvokerFangsEntity
 
     @Override
     public EntityType<?> getPolymerEntityType(PacketContext context) {
-        return EntityType.EVOKER_FANGS;
+        return EntityTypes.EVOKER_FANGS;
     }
 
 }

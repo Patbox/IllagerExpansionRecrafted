@@ -16,6 +16,8 @@
     "WoodlandMansionPiecesMixin",
     "ZombieVillagerEntityAccessor",
     "datafixer.Schema1460Mixin",
+    "enumi.IllagerSpellMixin",
+    "enumi.RaiderTypeMixin",
     "poly.EntityAccessor",
     "poly.PlayerLikeEntityAccessor",
     "poly.ThrownItemEntityAccessor"

@@ -9,9 +9,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 
 
 public class ProcessorRegistry {
-    public static StructureProcessorType<NoWaterlogProcessor> NO_WATERLOG_PROCESSOR = () -> NoWaterlogProcessor.CODEC;
 
     public static void registerProcessors() {
-        Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "waterlog"), NO_WATERLOG_PROCESSOR);
+        Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Identifier.fromNamespaceAndPath(IllagerExpansion.MOD_ID, "waterlog"), NoWaterlogProcessor.CODEC);
     }
 }

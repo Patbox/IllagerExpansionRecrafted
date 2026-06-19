@@ -1,6 +1,5 @@
 package eu.pb4.illagerexpansion.entity;
 
-import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
 import eu.pb4.illagerexpansion.poly.EntitySkins;
@@ -361,7 +360,7 @@ public class ArchivistEntity extends SpellcasterIllager implements PlayerPolymer
 
         @Override
         protected SpellcasterIllager.IllagerSpell getSpell() {
-            return ClassTinkerers.getEnum(IllagerSpell.class, "IE_ENCHANT");
+            return IllagerSpell.valueOf("IE_ENCHANT");
         }
     }
 }
