@@ -23,7 +23,7 @@
           {
             "condition": "minecraft:entity_properties",
             "predicate": {
-              "type": "illagerexp:invoker"
+              "entity_type": "illagerexp:invoker"
             },
             "entity": "this"
           }
