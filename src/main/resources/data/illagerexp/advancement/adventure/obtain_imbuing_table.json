@@ -24,9 +24,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "illagerexp:imbuing_table"
-            ]
+            "items": "illagerexp:imbuing_table"
           }
         ]
       }
