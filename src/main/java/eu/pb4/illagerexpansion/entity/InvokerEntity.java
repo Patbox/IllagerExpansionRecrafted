@@ -582,7 +582,7 @@ public class InvokerEntity
 
         protected void knockback(LivingEntity target) {
             this.knockBack(target);
-            target.hurtMarked = true;
+            target.syncVelocity = true;
         }
 
 

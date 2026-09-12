@@ -19,15 +19,13 @@
     "invoker": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "predicate": {
-              "entity_type": "illagerexp:invoker"
-            },
-            "entity": "this"
-          }
-        ]
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "predicate": {
+            "entity_type": "illagerexp:invoker"
+          },
+          "entity": "this"
+        }
       }
     }
   },

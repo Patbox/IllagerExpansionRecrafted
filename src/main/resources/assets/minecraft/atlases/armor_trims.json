@@ -36,10 +36,10 @@
                 "trims/models/armor/host",
                 "trims/models/armor/host_leggings"
             ],
-            "palette_key": "trims/color_palettes/trim_palette",
+            "palette_key": "trim_base",
             "permutations": {
-                "platinum": "illagerexp:trims/color_palettes/platinum",
-                "hallow": "illagerexp:trims/color_palettes/hallow"
+                "platinum": "illagerexp:trims/platinum",
+                "hallow": "illagerexp:trims/hallow"
             }
         }
     ]

@@ -242,7 +242,7 @@ public class InquisitorEntity extends AbstractIllager implements PlayerPolymerEn
 
     protected void blockedByItem(final LivingEntity target) {
         this.knockBack(target);
-        target.hurtMarked = true;
+        target.syncVelocity = true;
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
     }
 

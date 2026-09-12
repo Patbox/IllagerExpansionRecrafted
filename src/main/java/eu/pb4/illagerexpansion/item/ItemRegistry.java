@@ -36,13 +36,13 @@ public class ItemRegistry {
     public static final Item HORN_OF_SIGHT = registerItem("horn_of_sight",
             (s) -> new HornOfSightItem(s.stacksTo(1)));
     public static final Item HALLOWED_GEM = registerItem("hallowed_gem",
-            (s) -> new SimplePolymerAutoItem(s, Items.EMERALD));
+            (s) -> new SimplePolymerAutoItem(s.trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, id("hallow"))), Items.EMERALD));
     public static final Item PRIMAL_ESSENCE = registerItem("primal_essence",
             (s) -> new SimplePolymerAutoItem(s, Items.GHAST_TEAR));
     public static final Item PLATINUM_CHUNK = registerItem("platinum_chunk",
             (s) -> new SimplePolymerAutoItem(s, Items.IRON_NUGGET));
     public static final Item PLATINUM_SHEET = registerItem("platinum_sheet",
-            (s) -> new SimplePolymerAutoItem(s, Items.IRON_INGOT));
+            (s) -> new SimplePolymerAutoItem(s.trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, id("platinum"))), Items.IRON_INGOT));
     public static final Item FIRECALLER_BELT = registerItem("firecaller_belt",
             (s) -> new SimplePolymerAutoItem(s.fireResistant().stacksTo(1), Items.STICK));
 

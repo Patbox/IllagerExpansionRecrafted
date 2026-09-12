@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "illagerexp:platinum_infused_netherite_helmet"
+        "recipes": "illagerexp:platinum_infused_netherite_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

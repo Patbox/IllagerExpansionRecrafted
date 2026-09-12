@@ -4,7 +4,6 @@ import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -13,9 +12,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
-public class PlatinumAxeItem extends AxeItem implements PolymerAutoItem {
+public class PlatinumAxeItem extends Item implements PolymerAutoItem {
     public PlatinumAxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {
-        super(material, attackDamage, attackSpeed, settings);
+        super(settings.axe(material, attackDamage, attackSpeed));
     }
 
     @Override

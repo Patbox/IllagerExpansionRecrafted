@@ -17,9 +17,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:emerald",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -28,23 +29,20 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 3,
                 "max": 10
               }
             }
-          ],
-          "name": "minecraft:emerald"
+          ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:killed_by_player"
+      }
     }
   ]
 }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "illagerexp:platinum_infused_netherite_pickaxe"
+        "recipes": "illagerexp:platinum_infused_netherite_pickaxe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -37,7 +37,7 @@ public class ImbuingTableBlock extends Block implements PolymerHeadBlock {
     public boolean canActivate(BlockPos pos, Level world) {
         int i = 0;
         BlockPos blockPos = pos.below();
-        for (BlockPos blockradius : BlockPos.withinManhattan(blockPos, 1, 0, 1)) {
+        for (BlockPos blockradius : BlockPos.withinBoxByManhattanDistance(blockPos, 1, 0, 1)) {
             Block blockInRadius = world.getBlockState(blockradius).getBlock();
             if (goodBlock(blockInRadius)) {
                 i++;

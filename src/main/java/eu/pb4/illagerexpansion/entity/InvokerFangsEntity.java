@@ -149,7 +149,7 @@ public class InvokerFangsEntity
     }
     protected void knockback(LivingEntity target) {
         this.knockBack(target);
-        target.hurtMarked = true;
+        target.syncVelocity = true;
     }
 
     public float getAnimationProgress(float tickDelta) {

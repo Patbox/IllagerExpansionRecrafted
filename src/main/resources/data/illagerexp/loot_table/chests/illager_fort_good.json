@@ -6,17 +6,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:sweet_berries",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 3,
-                "max": 8
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 3,
+              "max": 8
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -26,25 +24,24 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:crossbow",
-          "functions": [
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.3
+          },
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": 1,
               "add": false
             },
             {
-              "function": "minecraft:set_damage",
+              "type": "minecraft:set_damage",
               "damage": {
+                "type": "minecraft:uniform",
                 "min": 0.1,
                 "max": 0.5
               },
               "add": false
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.3
             }
           ]
         }
@@ -56,17 +53,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:spruce_sapling",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 0,
-                "max": 3
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 0,
+              "max": 3
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -76,23 +71,19 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:name_tag",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 2
-              },
-              "add": false
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.6
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.6
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 2
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -102,17 +93,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:bread",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 6
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 6
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -122,16 +111,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:emerald",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 8
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 8
             }
-          ]
+          }
         }
       ]
     },
@@ -141,15 +128,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:arrow",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 3,
-                "max": 10
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 3,
+              "max": 10
             }
-          ]
+          }
         }
       ]
     },
@@ -159,17 +145,22 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:iron_axe",
-          "functions": [
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.2
+          },
+          "modifier": [
             {
-              "function": "minecraft:enchant_with_levels",
+              "type": "minecraft:enchant_with_levels",
               "levels": {
+                "type": "minecraft:uniform",
                 "min": 0,
                 "max": 3
               },
               "options": "#minecraft:on_random_loot"
             },
             {
-              "function": "minecraft:set_damage",
+              "type": "minecraft:set_damage",
               "damage": {
                 "type": "minecraft:uniform",
                 "min": 0.15,
@@ -177,14 +168,8 @@
               }
             },
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": 1
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.2
             }
           ]
         }
@@ -198,9 +183,13 @@
           "name": "minecraft:shield"
         }
       ],
-      "functions": [
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.2
+      },
+      "modifier": [
         {
-          "function": "minecraft:set_damage",
+          "type": "minecraft:set_damage",
           "damage": {
             "type": "minecraft:uniform",
             "min": 0.15,
@@ -208,14 +197,8 @@
           }
         },
         {
-          "function": "minecraft:set_count",
+          "type": "minecraft:set_count",
           "count": 1
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.2
         }
       ]
     },
@@ -225,16 +208,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:stick",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 3
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 3
             }
-          ]
+          }
         }
       ]
     },
@@ -244,14 +225,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:book",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:enchant_with_levels",
+              "type": "minecraft:enchant_with_levels",
               "levels": 20,
               "options": "#minecraft:on_random_loot"
             },
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": 1,
               "add": false
             }
@@ -267,19 +248,15 @@
           "name": "minecraft:golden_apple"
         }
       ],
-      "functions": [
-        {
-          "function": "minecraft:set_count",
-          "count": 1,
-          "add": false
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.8
-        }
-      ]
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.8
+      },
+      "modifier": {
+        "type": "minecraft:set_count",
+        "count": 1,
+        "add": false
+      }
     },
     {
       "rolls": 1,
@@ -287,17 +264,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:melon_seeds",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 5
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 5
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -307,20 +282,16 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:enchanted_golden_apple",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": 1
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.05
-        }
-      ]
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.05
+      }
     },
     {
       "rolls": 1,
@@ -328,21 +299,18 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:gold_ingot",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 3
-              }
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.6
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 3
             }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.6
-            }
-          ]
+          }
         }
       ]
     },
@@ -352,24 +320,20 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:diamond",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 2
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 2
             }
-          ]
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.3
-        }
-      ]
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.3
+      }
     },
     {
       "rolls": 1,
@@ -377,23 +341,19 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 4
-              },
-              "add": false
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.6
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.6
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 4
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -403,23 +363,19 @@
         {
           "type": "minecraft:item",
           "name": "illagerexp:platinum_upgrade_template",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 1
-              },
-              "add": false
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.6
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.6
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 1
+            },
+            "add": false
+          }
         }
       ]
     }

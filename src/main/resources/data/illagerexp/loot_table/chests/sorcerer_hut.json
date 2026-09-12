@@ -8,17 +8,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:paper",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 4,
-                "max": 11
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 4,
+              "max": 11
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -28,16 +26,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:book",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 4
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 4
             }
-          ]
+          }
         }
       ]
     },
@@ -48,13 +44,11 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:book",
-          "functions": [
-            {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 30,
-              "options": "#minecraft:on_random_loot"
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:enchant_with_levels",
+            "levels": 30,
+            "options": "#minecraft:on_random_loot"
+          }
         }
       ]
     },
@@ -65,17 +59,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:dark_oak_sapling",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 4
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 4
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -85,16 +77,15 @@
         {
           "type": "minecraft:item",
           "name": "illagerexp:unusual_dust",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0,
-                "max": 1
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 0,
+              "max": 1
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -105,17 +96,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:emerald",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 4
-              },
-              "add": false
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 4
+            },
+            "add": false
+          }
         }
       ]
     },
@@ -125,18 +114,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:name_tag",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.5
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.5
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": 1
+          }
         }
       ]
     },
@@ -146,19 +131,15 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_apple",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": false
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.25
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": 1,
+            "add": false
+          }
         }
       ]
     },
@@ -168,18 +149,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:enchanted_golden_apple",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ]
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.05
+          },
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": 1
+          }
         }
       ]
     }

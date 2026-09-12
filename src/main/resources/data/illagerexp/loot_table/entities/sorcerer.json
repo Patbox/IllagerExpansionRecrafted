@@ -7,9 +7,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:emerald",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -18,23 +19,20 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
                 "max": 1.0
               }
             }
-          ],
-          "name": "minecraft:emerald"
+          ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:killed_by_player"
+      }
     },
     {
       "rolls": 1.0,
@@ -42,9 +40,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:book",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -53,16 +52,15 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
                 "max": 1.0
               }
             }
-          ],
-          "name": "minecraft:book"
+          ]
         }
       ]
     },
@@ -75,17 +73,20 @@
           "name": "illagerexp:unusual_dust"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        },
-        {
-          "condition": "minecraft:random_chance_with_enchanted_bonus",
-          "enchantment": "minecraft:looting",
-          "unenchanted_chance": 0.40,
-          "enchanted_chance": 0.50
-        }
-      ]
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:killed_by_player"
+          },
+          {
+            "type": "minecraft:random_chance_with_enchanted_bonus",
+            "enchantment": "minecraft:looting",
+            "unenchanted_chance": 0.4,
+            "enchanted_chance": 0.5
+          }
+        ]
+      }
     }
   ]
 }

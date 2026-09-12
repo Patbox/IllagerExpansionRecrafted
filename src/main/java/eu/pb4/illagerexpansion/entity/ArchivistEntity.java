@@ -227,7 +227,7 @@ public class ArchivistEntity extends SpellcasterIllager implements PlayerPolymer
 
         protected void knockback(LivingEntity target) {
             this.knockBack(target);
-            target.hurtMarked = true;
+            target.syncVelocity = true;
         }
 
         private List<LivingEntity> getTargets() {

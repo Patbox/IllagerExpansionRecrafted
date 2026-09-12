@@ -25,7 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 public class EntityRegistry {
 
@@ -103,7 +103,7 @@ public class EntityRegistry {
             }
 
             builder.pool(LootPool.lootPool()
-                    .setRolls(ConstantValue.exactly(1.0F))
+                    .setRolls(ContextIntProviders.exactly(1))
                     .when(LootItemKilledByPlayerCondition.killedByPlayer())
                     .add(LootItem.lootTableItem(ItemRegistry.ILLUSIONARY_DUST)).build());
         });

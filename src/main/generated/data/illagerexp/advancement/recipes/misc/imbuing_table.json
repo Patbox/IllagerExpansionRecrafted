@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "illagerexp:imbuing_table"
+        "recipes": "illagerexp:imbuing_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

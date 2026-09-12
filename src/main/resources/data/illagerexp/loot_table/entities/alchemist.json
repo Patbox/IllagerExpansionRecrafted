@@ -7,9 +7,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:emerald",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -18,21 +19,48 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
                 "max": 2.0
               }
             }
-          ],
-          "name": "minecraft:emerald"
+          ]
         }
       ],
-      "conditions": [
+      "condition": {
+        "type": "minecraft:killed_by_player"
+      }
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
         {
-          "condition": "minecraft:killed_by_player"
+          "type": "minecraft:item",
+          "name": "minecraft:gunpowder",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0.0,
+                "max": 2.0
+              },
+              "add": false
+            },
+            {
+              "type": "minecraft:enchanted_count_increase",
+              "enchantment": "minecraft:looting",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 2.0
+              }
+            }
+          ]
         }
       ]
     },
@@ -42,9 +70,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:glass_bottle",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
@@ -53,46 +82,15 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
                 "max": 2.0
               }
             }
-          ],
-          "name": "minecraft:gunpowder"
-        }
-      ]
-    },
-    {
-      "rolls": 1.0,
-      "bonus_rolls": 0.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 0.0,
-                "max": 2.0
-              },
-              "add": false
-            },
-            {
-              "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
-              }
-            }
-          ],
-          "name": "minecraft:glass_bottle"
+          ]
         }
       ]
     }

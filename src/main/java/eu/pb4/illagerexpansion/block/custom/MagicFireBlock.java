@@ -24,11 +24,6 @@ public class MagicFireBlock extends BaseFireBlock implements PolymerBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseFireBlock> codec() {
-        return null;
-    }
-
-    @Override
     protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity, InsideBlockEffectApplier handler, boolean bl) {
         if (!(entity instanceof AbstractIllager || entity instanceof Ravager) && world instanceof ServerLevel serverWorld ) {
             entity.hurtServer(serverWorld, world.damageSources().magic(), 3.0f);

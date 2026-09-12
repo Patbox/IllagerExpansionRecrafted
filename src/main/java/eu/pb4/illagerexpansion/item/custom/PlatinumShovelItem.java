@@ -5,14 +5,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.ToolMaterial;
-import org.jetbrains.annotations.Nullable;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
-public class PlatinumShovelItem extends ShovelItem implements PolymerAutoItem {
+public class PlatinumShovelItem extends Item implements PolymerAutoItem {
     public PlatinumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {
-        super(material, attackDamage, attackSpeed, settings);
+        super(settings.shovel(material, attackDamage, attackSpeed));
     }
 
     @Override

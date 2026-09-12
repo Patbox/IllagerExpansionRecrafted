@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "illagerexp:platinum_sheet"
+        "recipes": "illagerexp:platinum_sheet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,5 +1,5 @@
 {
-  "asset_name": "platinum",
+  "palette_id": "illagerexp:trims/platinum",
   "description": {
     "translate": "trim_material.illagerexp.platinum",
     "color": "#789e9e"

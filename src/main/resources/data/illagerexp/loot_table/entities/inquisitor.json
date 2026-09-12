@@ -7,9 +7,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:emerald",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
@@ -18,16 +19,15 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
                 "max": 2.0
               }
             }
-          ],
-          "name": "minecraft:emerald"
+          ]
         }
       ]
     },
@@ -37,9 +37,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:iron_ingot",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
@@ -48,16 +49,15 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
                 "max": 3.0
               }
             }
-          ],
-          "name": "minecraft:iron_ingot"
+          ]
         }
       ]
     },
@@ -67,9 +67,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "minecraft:leather",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2.0,
@@ -78,16 +79,15 @@
               "add": false
             },
             {
+              "type": "minecraft:enchanted_count_increase",
               "enchantment": "minecraft:looting",
-              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
                 "max": 2.0
               }
             }
-          ],
-          "name": "minecraft:leather"
+          ]
         }
       ]
     },
@@ -100,17 +100,20 @@
           "name": "illagerexp:platinum_chunk"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        },
-        {
-          "condition": "minecraft:random_chance_with_enchanted_bonus",
-          "enchantment": "minecraft:looting",
-          "unenchanted_chance": 0.6,
-          "enchanted_chance": 0.8
-        }
-      ]
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:killed_by_player"
+          },
+          {
+            "type": "minecraft:random_chance_with_enchanted_bonus",
+            "enchantment": "minecraft:looting",
+            "unenchanted_chance": 0.6,
+            "enchanted_chance": 0.8
+          }
+        ]
+      }
     }
   ]
 }

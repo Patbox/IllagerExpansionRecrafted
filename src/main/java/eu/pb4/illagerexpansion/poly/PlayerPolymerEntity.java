@@ -18,23 +18,20 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SpellParticleOption;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundRotateHeadPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.illager.AbstractIllager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.GameType;
 import org.joml.Vector3f;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
@@ -71,6 +68,7 @@ public interface PlayerPolymerEntity extends PolymerEntity {
 
     @Override
     default List<Pair<EquipmentSlot, ItemStack>> getPolymerVisibleEquipment(List<Pair<EquipmentSlot, ItemStack>> items, ServerPlayer player) {
+        items = new ArrayList<>(items);
         items.removeIf(x -> x.getFirst() == EquipmentSlot.HEAD);
         if (PolymerResourcePackUtils.hasMainPack(player)) {
             items.add(new Pair<>(EquipmentSlot.HEAD, HEADS.get(((Entity) this).getType()).create()));
@@ -107,7 +105,9 @@ public interface PlayerPolymerEntity extends PolymerEntity {
     default void onEntityTrackerTick(Set<ServerPlayerConnection> listeners) {
         var e = (AbstractIllager) this;
         if (e.getArmPose() == AbstractIllager.IllagerArmPose.SPELLCASTING) {
-            var packet = new ClientboundAnimatePacket(e, e.getRandom().nextBoolean() ? 0 : 3);
+            var packet = new ClientboundSwingAnimationPacket(e,
+                    e.getRandom().nextBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND,
+                    SwingAnimation.DEFAULT);
 
             for (var p : listeners) {
                 p.send(packet);

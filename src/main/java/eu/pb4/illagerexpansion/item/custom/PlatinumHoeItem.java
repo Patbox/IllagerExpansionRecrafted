@@ -4,7 +4,6 @@ import eu.pb4.illagerexpansion.poly.PolymerAutoItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -13,9 +12,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 
-public class PlatinumHoeItem extends HoeItem implements PolymerAutoItem {
+public class PlatinumHoeItem extends Item implements PolymerAutoItem {
     public PlatinumHoeItem(ToolMaterial material, float attackDamage, float attackSpeed,  Properties settings) {
-        super(material, attackDamage, attackSpeed, settings);
+        super(settings.hoe(material, attackDamage, attackSpeed));
     }
 
     @Override
